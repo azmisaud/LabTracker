@@ -9,7 +9,6 @@ Welcome to **Lab Tracker**, a Django-based platform designed to automate and str
 - **Weekly Progress Tracking**: View assigned problems and submission status for each week.
 - **GitHub Integration**: Automatically track problem completion via GitHub repositories.
 - **File Generation**: Generate weekly reports and index files for personal tracking.
-- **Download Progress Reports**: Download detailed reports of your lab progress.
 
 ### For Teachers
 - **Problem Management**: Add, edit, and delete weekly problems for students.
@@ -38,7 +37,6 @@ Welcome to **Lab Tracker**, a Django-based platform designed to automate and str
 - **Task Queue**: Celery with Redis for asynchronous background tasks
 - **Version Control**: Git and GitHub integration for tracking student lab submissions
 - **Frontend**: HTML, CSS (Custom styles), and JavaScript for interactive dashboards
-- **API**: REST API for interaction between components
 
 ## ⚙️ Setup & Installation
 
