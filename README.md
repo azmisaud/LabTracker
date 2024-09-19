@@ -94,3 +94,20 @@ Welcome to **Lab Tracker**, a Django-based platform designed to automate and str
 - **Admin Panel**: Admins have full control over user management, semester setup, and overall system maintenance.
 
 ## 🖼️ Screenshots
+
+### Homepage
+![Homepage](static/images/homepage.jpeg)
+
+### Student Signup
+![Student Signup](static/images/student_signup.jpeg)
+
+
+## 🎯 Roadmap
+
+- Add OAuth support for GitHub login.
+- Implement real-time notifications for problem updates.
+- Expand the reporting system with more customizable options.
+
+## 🤝 Contribution
+
+I welcome contributions! Contact me through the profiles available on GitHub for more details.
