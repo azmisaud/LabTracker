@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Signup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/central.css' %}">
+</head>
+<body>
+    <!-- Header Content -->
+    <header>
+        <div class="header-content">
+            <h1 class="logo">LabTracker</h1>
+            <nav class="navbar">
+                <ul>
+                    <li>
+                        <a href="#">Login</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'homepage' %}">Home</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Signup Form Section -->
+    <div class="form-container">
+        <h2>Student Signup</h2>
+
+        <!-- Instructions Section -->
+        <div class="instructions">
+            <p>Please read the following instructions carefully before signing up:</p>
+            <ul>
+                <li>Your <strong>Username</strong> should match your GitHub username.</li>
+                <li>Ensure your <strong>Enrollment Number</strong> and <strong>Faculty Number</strong> are correct.</li>
+                <li>The <strong>Date of Birth</strong> will be used for password recovery, so enter it accurately.</li>
+                <li>Choose a secure <strong>Password</strong> and make sure to confirm it correctly.</li>
+            </ul>
+        </div>
+
+        <!-- Signup Form -->
+        <form method="post">
+            {% csrf_token %}
+            <!-- Display form errors -->
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in form.non_field_errors %}
+                        <p class="error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                <div class="input-wrapper">
+                    {{ form.username }}
+                </div>
+                {% if form.username.errors %}
+                    <div class="form-errors">
+                        {% for error in form.username.errors %}
+                            <p class="error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <small class="note">Username should be the same as your GitHub username.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.first_name.id_for_label }}">First Name</label>
+                <div class="input-wrapper">
+                    {{ form.first_name }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.last_name.id_for_label }}">Last Name</label>
+                <div class="input-wrapper">
+                    {{ form.last_name }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.enrollment_number.id_for_label }}">Enrollment Number</label>
+                <div class="input-wrapper">
+                    {{ form.enrollment_number }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.faculty_number.id_for_label }}">Faculty Number</label>
+                <div class="input-wrapper">
+                    {{ form.faculty_number }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.date_of_birth.id_for_label }}">Date of Birth</label>
+                <div class="input-wrapper">
+                    {{ form.date_of_birth }}
+                </div>
+                <small class="note">The date of birth will be used in case you forget the password.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.course.id_for_label }}">Course</label>
+                <div class="input-wrapper">
+                    {{ form.course }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.semester.id_for_label }}">Semester</label>
+                <div class="input-wrapper">
+                    {{ form.semester }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}">Password</label>
+                <div class="input-wrapper">
+                    {{ form.password1 }}
+                </div>
+                {% if form.password1.errors %}
+                    <div class="form-errors">
+                        {% for error in form.password1.errors %}
+                            <p class="error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                <div class="input-wrapper">
+                    {{ form.password2 }}
+                </div>
+                {% if form.password2.errors %}
+                    <div class="form-errors">
+                        {% for error in form.password2.errors %}
+                            <p class="error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+</body>
+</html>

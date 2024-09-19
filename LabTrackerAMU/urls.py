@@ -23,6 +23,6 @@ from LabTrackerAMU import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.homepage,name='homepage'),
-    # path('students/',include('students.urls')),
+    path('students/',include('students.urls')),
     
 ]

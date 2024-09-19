@@ -1,0 +1,521 @@
+/* General Styling */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Helvetica Neue', sans-serif;
+    scroll-behavior: smooth; /* Smooth scrolling for a premium feel */
+}
+
+body {
+    background-color: rgb(245, 245, 245); /* Light grey background */
+    color: black;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    line-height: 1.6;
+    overflow-x: hidden; /* Prevent horizontal overflow */
+}
+
+/* Header Content - Identical to Homepage */
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgb(255, 255, 255); /* White */
+    padding: 20px 40px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1); /* Enhanced shadow */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05); /* Thin border for elegance */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+/* Logo Styling - Identical to Homepage */
+.logo {
+    font-size: 28px; /* Slightly larger for emphasis */
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800; /* Extra bold for a strong visual impact */
+    color: rgb(107, 0, 2); /* Maroon */
+    letter-spacing: 1.5px; /* Letter spacing for a refined look */
+    cursor: pointer;
+}
+
+/* Navbar Styling - Identical to Homepage */
+.navbar ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: flex-end;
+    gap: 25px; /* More space between items */
+    align-items: center;
+}
+
+.navbar ul li {
+    position: relative;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-family: 'Garamond', sans-serif;
+    font-weight: 400;
+    font-size: 15px; /* Slightly larger font size */
+    background-color: rgb(107, 0, 2); /* Maroon buttons */
+    padding: 12px 24px; /* More padding for button size */
+    border-radius: 30px; /* Rounded buttons */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.navbar a:hover {
+    background-color: rgb(47, 98, 86); /* Greenish teal on hover */
+    transform: translateY(-6px); /* More pronounced lift effect */
+}
+
+/* Form Container Styling */
+.form-container {
+    background-color: white;
+    margin: 50px auto;
+    padding: 40px;
+    max-width: 600px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    box-sizing: content-box;
+}
+
+.form-container.expanded-width {
+    max-width : 900px;
+    transition: max-width 0.5s ease;
+}
+
+.form-container.expanded-width2 {
+    max-width: 1000px;
+    transition: max-width 0.2s ease;
+}
+
+/* Form Title */
+.form-container h2 {
+    color: rgb(47, 98, 86);
+    margin-bottom: 30px;
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: center;
+    animation: fadeInDown 0.8s ease-out;
+}
+
+/* Instructions Styling */
+.instructions {
+    background-color: rgb(240, 240, 240);
+    padding: 15px;
+    border-left: 4px solid rgb(107, 0, 2);
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: rgb(60, 60, 60);
+}
+
+.instructions ul {
+    padding-left: 20px;
+    list-style-type: disc;
+}
+
+/* Form Group Styling */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: rgb(60, 60, 60);
+}
+
+.form-group .input-wrapper {
+    position: relative;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+input, select, textarea {
+    width: calc(100% - 20px); /* Adjust width for padding */
+    padding: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: rgb(47, 98, 86);
+    outline: none;
+    box-shadow: 0 0 5px rgba(47, 98, 86, 0.2);
+}
+
+/* Error Messages */
+.form-errors {
+    margin-top: 5px;
+    color: rgb(107, 0, 2); /* Error color */
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.error {
+    margin: 0;
+}
+
+/* Notes and Hints */
+small.note {
+    display: block;
+    font-size: 12px;
+    color: rgb(107, 0, 2);
+    margin-top: 5px;
+}
+
+button[type="button"] {
+    margin-bottom: 20px;
+}
+/* Submit Button */
+button[type="submit"],
+button[type="button"]{
+    width: 100%;
+    padding: 12px 20px;
+    background-color: rgb(107, 0, 2);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-top: 20px;
+}
+
+button[type="submit"]:hover ,
+button[type="button"]:hover {
+    background-color: rgb(47, 98, 86);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(47, 98, 86, 0.2);
+}
+
+.forgot-password-button {
+    display: inline-block;
+    width:100%;
+    padding: 10px 20px;
+    background-color: transparent;
+    color: rgb(47,98,86);
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+    text-align: right;
+    transition: color 0.3s ease;
+    text-decoration: none;
+}
+
+.forgot-password-button:hover{
+    color: rgb(107,0,2);
+    text-decoration: underline;
+}
+
+.image-preview{
+    margin-top: 20px;
+    text-align: center;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 300px;
+    width: auto;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.student-details {
+    margin-top: 15px;
+}
+
+.student-details h2 {
+    color: rgb(47, 98, 86);
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.details-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.details-row > div {
+    flex: 1;
+    min-width: 250px;
+}
+
+.details-row p {
+    color: rgb(60,60,60);
+}
+/* Table Styling */
+#weekly_progress {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    text-align: left;
+}
+
+#weekly_progress th, #weekly_progress td {
+    padding: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+#weekly_progress th {
+    background-color: rgb(240, 240, 240); /* Light grey */
+    color: rgb(107, 0, 2); /* Maroon */
+    font-weight: 600;
+}
+
+#weekly_progress tbody tr:nth-child(even) {
+    background-color: rgb(245, 245, 245);
+}
+
+/* PDF Download Button */
+#download_pdf {
+    width: 100%;
+    padding: 10px 20px;
+    background-color: rgb(47,98,86);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+#download_pdf:hover {
+    background-color: rgb(107, 0, 2); /* Greenish teal */
+}
+
+#check_button, #check_another {
+    width: 100%;
+    padding: 12px 20px;
+    background-color: rgb(107,0,2);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-top: 20px;
+}
+
+#check-button:hover, #check_another:hover{
+    background-color: rgb(47,98,86);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(47,98,86,0.2);
+}
+
+.all-student-details {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    text-align: center;
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+.all-student-details h2 {
+    color: rgb(47,98,86);
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.two-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#download_excel, #check_other {
+    padding: 10px 20px;
+    background-color: rgb(107,0,2);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#download_excel:hover, #check_other:hover {
+    background-color: rgb(47,98,86);
+}
+
+#download_excel {
+    margin-right: auto;
+}
+
+#check_other {
+    margin-left: auto;
+}
+#student_table {
+    width: max-content;
+    border-collapse: collapse;
+    margin-top: 20px;
+    text-align: left;
+    overflow-x: auto;
+}
+
+#student_table th, #student_table td {
+    padding: 10px;
+    border: 1px solid rgba(0,0,0,0.1);
+    white-space: nowrap;
+    text-align: center;
+}
+
+#student_table th {
+    background-color: rgba(240,240,240);
+    color: rgb(47,98,86);
+    font-weight: 600;
+}
+
+#student_table tbody tr:nth-child(even) {
+    background-color: rgb(245,245,245);
+}
+
+/* Messages styling in central.css */
+.messages {
+    margin: 20px 0;
+    padding: 10px;
+    text-align: center;
+}
+
+.alert {
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    font-family: 'Garamond', serif; /* Using one of your preferred fonts */
+    font-size: 16px;
+    font-weight: 400; /* Normal weight for the messages */
+    display: inline-block;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Success Message */
+.alert.success {
+    background-color: #e6f7e6; /* Light green background for success */
+    border: 1px solid #a4d3a4; /* Slightly darker green border */
+    color: #2d6b2d; /* Dark green text */
+}
+
+/* Error Message */
+.alert.error {
+    background-color: #f8d7da; /* Light red background for errors */
+    border: 1px solid #f5c2c7; /* Slightly darker red border */
+    color: #721c24; /* Dark red text */
+}
+
+/* Info Message */
+.alert.info {
+    background-color: #d1ecf1; /* Light blue background for info */
+    border: 1px solid #bee5eb; /* Slightly darker blue border */
+    color: #0c5460; /* Dark blue text */
+}
+
+/* Warning Message */
+.alert.warning {
+    background-color: #fff3cd; /* Light yellow background for warning */
+    border: 1px solid #ffeeba; /* Slightly darker yellow border */
+    color: #856404; /* Dark yellow/brown text */
+}
+
+/* Close button for dismissible messages (optional) */
+.alert .close-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: inherit;
+}
+
+
+/* Responsive Adjustments */
+@media screen and (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        padding: 20px 20px;
+    }
+
+    .navbar ul {
+        justify-content: center;
+        gap: 15px; /* Adjusted spacing on smaller screens */
+    }
+
+    .navbar a {
+        padding: 10px 18px;
+        font-size: 14px;
+    }
+
+    .form-container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    button[type="submit"] {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    .details-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+    button {
+        padding: 10px;
+        font-size: 14px;
+    }
+    .all-student-details {
+        overflow-x: auto;
+    }
+    #student_table {
+        display: block;
+        width: 100%;
+    }
+
+    #download_excel {
+        font-size: 12px;
+        padding: 8px 15px;
+    }
+
+    .all-student-details h2 {
+        font-size: 20px;
+    }
+}
+
+/* Keyframes for Animations */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
