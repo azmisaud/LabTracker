@@ -51,3 +51,11 @@ Welcome to **Lab Tracker**, a Django-based platform designed to automate and str
    ```bash
    git clone https://github.com/your-username/lab-tracker.git
    cd lab-tracker
+
+2. Set up virtual environment:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+3. 
+
