@@ -57,5 +57,40 @@ Welcome to **Lab Tracker**, a Django-based platform designed to automate and str
    python -m venv .venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-3. 
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
 
+4. Configure environment variables (create a .env file):
+   ```bash
+   # Project settings
+   DEBUG=True
+   SECRET_KEY=supersecretkey123
+   DATABASE_URL=your_database_url
+   
+   # GitHub API
+   GITHUB_API_TOKEN=ghp_abc123yourtokenhere
+   
+5. Run migrations and create a superuser:
+   ```bash
+   python manage.py migrate
+   python manage.py createsuperuser
+
+6. Start the development server:
+   ```bash
+   python manage.py runserver
+
+7. (Optional) Start the celery worker for automated tasks:
+   ```bash
+   celery -A labtracker worker -l info
+
+
+## 📈 Usage
+
+- **Teacher Dashboard**: Teachers can log in and assign problems, track student progress, and generate reports.
+  
+- **Student Dashboard**: Students can log in to view their assigned problems, track weekly progress, and download reports.
+  
+- **Admin Panel**: Admins have full control over user management, semester setup, and overall system maintenance.
+
+## 🖼️ Screenshots
