@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Tracker - Department of Computer Science, AMU</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/homepage.css' %}">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1 class="logo">LabTracker</h1>
+            <nav class="navbar">
+                <ul>
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn">Student</a>
+                        <div class="dropdown-content">
+                            <a href={#"{% url 'student_signup' %}"#}"#">Sign Up</a>
+                            <a href={#"{% url 'student_login' %}"#}"#">Login</a>
+                        </div>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn">Teacher</a>
+                        <div class="dropdown-content">
+                            <a href={#"{% url 'teacher_login' %}"#}"#">Login</a>
+                        </div>
+                    </li>
+                    <li class="dropdown">
+                        <a href="https://www.amu.ac.in/department/computer-science">Resources</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="overlay">
+        <div class="background-logo">
+            <img src="{% static 'images/img.png' %}" alt="AMU Logo">
+        </div>
+        <h2>Department of Computer Science, AMU</h2>
+        <section class="info">
+            <h3>About the Department</h3>
+            <p>The Department of Computer Science, AMU is one of the oldest and pioneer departments of Computer Science and Information Technology in India. The Department is one of the growing departments of computer science in India, which has been witnessed by various reputed ranking agencies such as Times Higher, India today, NIRF etc.<br>
+                It came into the existence in the year 1971 with the installation of IBM1130 Computing System, under the umbrella of Computer Centre and later blossomed into an independent department known as "Department of Computer Science" in the year 1988.<br>
+                In the year 1980, VAX11/780 system was purchased from DEC (USA) and installed at the centre, which is one of the first computer systems in India. The approval of two new programmes, a three year Master of Computer Science and Applications (MCA) and one year Post Graduate Diploma in Computer Science Applications (PGDCA) by the standing committee of the UGC in the year 1982 and the formal introduction of these courses from the session 1983-84, were one of the major landmarks in the development of Computer Science department.<br>
+                The Department offers various programmes like Ph.D., M.C.A, M.Sc. in (Cyber Security & Digital Forensics), P.G.E.D.P., P.G.D.C.P. and B.Sc. (Hons.) Computer Applications. Syllabi of these programmes are designed considering the requirement of time as well as the demand of the IT industry. In the year 2009, Department of Computer Science witnessed a major breakthrough with the introduction of Ph.D. in order to provide an opportunity to the young and enthusiastic IT professionals to walk over that extra yard, which makes a vital difference and contribute towards the ongoing IT research and development. In the year 2021, a new program M.Sc. (Cyber Security & Digital Forensics) has been introduced to train and produce experts in the area of cyber security and digital forensics.<br>
+                The guidance and cooperation of the experienced and expert faculty members of the department is one of the attracting features of the department, which enlivens the students to stretch their wings, so that they can fly higher than their dreams and serve the country. The Department has state of the art infrastructure in terms of modern conference room, smart class rooms and well equipped separate computing labs for research scholars, undergraduate and post graduate students.<br>
+                In consequence to their arduous training and exposure with the state of the arts professional programs offered, the students graduating from this department get placed in the leading IT industries even before the completion of their final semesters. There are plethora of companies, like TCS, Accenture, Infosys, IBM, JK Techno soft, HCL, Info system, NIC, Wipro, Bharti Telesoft, etc, that recruits the passing out students each year through campus placement. The last semester students have provision of four to six months rigorous training in the leading IT companies and other reputed organizations.<br>
+                VISION : Attaining global recognition in computer science education, research and training to meet the growing needs of the industry and society.
+            </p>
+        </section>
+    </div>
+</body>
+</html>

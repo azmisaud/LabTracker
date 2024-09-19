@@ -1,0 +1,212 @@
+/* General Styling */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Helvetica Neue', sans-serif;
+    scroll-behavior: smooth; /* Smooth scrolling for a premium feel */
+}
+
+body {
+    background-color: rgb(245, 245, 245); /* Light grey background */
+    color: black;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    overflow-x: hidden; /* Prevent horizontal overflow */
+    line-height: 1.6;
+}
+
+/* Header Content */
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgb(255, 255, 255); /* White */
+    padding: 20px 40px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1); /* Enhanced shadow */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05); /* Thin border for elegance */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.header-content:hover {
+    background-color: rgb(240, 240, 240); /* Subtle background change on hover */
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
+}
+
+/* Logo Styling */
+.logo {
+    font-size: 28px;
+    font-family: 'Montserrat', sans-serif;
+    /* Slightly larger for emphasis */
+    font-weight: 900; /* Extra bold for a strong visual impact */
+    color: rgb(107, 0, 2); /* Maroon */
+    letter-spacing: 1px; /* Letter spacing for a refined look */
+    transition: color 0.3s ease;
+    cursor: pointer;
+}
+
+.logo:hover {
+    color: rgb(47, 98, 86); /* Greenish teal on hover */
+}
+
+/* Navbar Styling */
+.navbar ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: flex-end;
+    gap: 25px; /* More space between items */
+    align-items: center;
+}
+
+.navbar ul li {
+    position: relative;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    font-size: 15px; /* Slightly larger font size */
+    background-color: rgb(107, 0, 2); /* Maroon buttons */
+    padding: 12px 24px; /* More padding for button size */
+    border-radius: 24px; /* Rounded buttons */
+    box-shadow: 0 6px 20px rgba(107, 0, 2, 0.2); /* Deeper shadow */
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.navbar a:hover {
+    background-color: rgb(47, 98, 86); /* Greenish teal on hover */
+    transform: translateY(-6px); /* More pronounced lift effect */
+    box-shadow: 0 10px 30px rgba(47, 98, 86, 0.3); /* Enhanced shadow on hover */
+}
+
+/* Dropdown Content */
+.dropdown-content {
+    position: absolute;
+    top: 120%;
+    left: 0;
+    min-width: 120px; /* Increased width for elegance */
+    z-index: 1000;
+    border-radius: 10px !important; /* Rounded corners */
+    padding:0;
+    display: none; /* Initially hidden */
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transform: translateY(10px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    border: none;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: white; /* Text color */
+    text-decoration: none;
+    display: block;
+    padding: 10px; /* Adjusted padding for elegance */
+    font-size: 15px; /* Uniform font size for all links */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    background-color: rgb(107, 0, 2); /* Background color of the dropdown */
+    border:none;
+}
+
+.dropdown-content a:hover {
+    background-color: rgb(47, 98, 86); /* Greenish teal background on hover */
+}
+
+/* Show dropdown on hover or when focused */
+.dropdown:hover .dropdown-content,
+.dropdown:focus-within .dropdown-content,
+.dropdown-content:hover {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Overlay */
+.overlay {
+    background-color: rgba(47, 98, 86, 0.08); /* Softer overlay color */
+    padding: 50px 20px;
+    position: relative;
+    min-height: 100vh;
+    overflow: auto;
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.05); /* Subtle inner shadow */
+}
+
+/* Background Logo */
+.background-logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.08; /* Softer watermark effect */
+    z-index: -1;
+}
+
+.background-logo img {
+    max-width: 350px;
+    max-height: 350px;
+}
+
+/* Headings */
+h2 {
+    color: rgb(47, 98, 86); /* Greenish Teal */
+    margin-bottom: 25px;
+    font-size: 24px; /* Larger font size for headings */
+    font-weight: 600; /* Bolder weight for prominence */
+    text-transform: uppercase;
+    letter-spacing: 1.5px; /* More letter spacing for emphasis */
+    animation: fadeInDown 0.8s ease-out;
+}
+
+h3 {
+    color:black;
+    margin-bottom: 15px;
+}
+
+/* Paragraph Styling */
+.info p {
+    max-width: 700px; /* Refined width for better readability */
+    line-height: 1.75;
+    text-align: justify;
+    font-size: 16px;
+    color: rgb(60, 60, 60); /* Softer black */
+    /* Spacing below paragraphs */
+    margin: 0 auto 20px;
+}
+
+/* Responsive Styling */
+@media screen and (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        padding: 20px 20px;
+    }
+
+    .navbar ul {
+        justify-content: center;
+        gap: 15px; /* Adjusted spacing on smaller screens */
+    }
+
+    .navbar a {
+        padding: 10px 18px;
+        font-size: 14px;
+    }
+
+    .dropdown-content {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+/* Keyframes for Animations */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
