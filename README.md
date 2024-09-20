@@ -101,6 +101,8 @@ Welcome to **Lab Tracker**, a Django-based platform designed to automate and str
 ### Student Signup
 ![Student Signup](static/images/student_signup.jpeg)
 
+### Student Login
+![Student Login](static/images/student_login.jpeg)
 
 ## 🎯 Roadmap
 

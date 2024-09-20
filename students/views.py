@@ -1,6 +1,7 @@
+from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from students.forms import StudentSignUpForm
-
+from django.contrib.auth import login as auth_login, logout
 
 def student_signup(request):
     """
@@ -37,3 +38,40 @@ def student_signup(request):
 
     # Render the sign-up template with the form
     return render(request, 'students/signup.html', {'form': form})
+
+
+def student_login(request):
+    """
+    Handle the login process for students using Django's AuthenticationForm.
+
+    This view function checks if the incoming request is a POST request (i.e., the login form has been submitted).
+    If the form submission is valid, it authenticates and logs in the user. If the request method is not POST,
+    the function renders a blank login form.
+
+    Args:
+        request: HttpRequest object that contains metadata about the request.
+
+    Returns:
+        HttpResponseRedirect: Redirects to the 'student_dashboard' page upon successful login.
+        HttpResponse: Renders the login page with the AuthenticationForm if GET request or invalid POST data.
+
+    Flow:
+    - If the request method is POST:
+        - Instantiate the AuthenticationForm with the POST data.
+        - Validate the form. If valid:
+            - Get the user object.
+            - Authenticate and log in the user.
+            - Redirect the logged-in user to the 'student_dashboard' page.
+    - If the request method is GET:
+        - Instantiate an empty AuthenticationForm and render the login page.
+    """
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            auth_login(request, user)
+            return redirect('student_login')
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'students/login.html', {'form': form})

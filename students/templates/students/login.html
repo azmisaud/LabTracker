@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/central.css' %}"> <!-- Include your CSS file -->
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1 class="logo">LabTracker</h1>
+            <nav class="navbar">
+                <ul>
+                    <li>
+                        <a href="{% url 'student_signup' %}">Sign Up</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'homepage' %}">Home</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="form-container">
+        <h2>Student Login</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            <div class="form-group">
+                <label for="id_username">Username:</label>
+                {{ form.username }}
+            </div>
+            <div class="form-group">
+                <label for="id_password">Password:</label>
+                {{ form.password }}
+            </div>
+            <button type="submit">Login</button>
+        </form>
+
+        <a href="#" class="forgot-password-button">Forgot Password?</a>
+    </div>
+</body>
+</html>
