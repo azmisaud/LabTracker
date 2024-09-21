@@ -104,6 +104,8 @@ Welcome to **Lab Tracker**, a Django-based platform designed to automate and str
 ### Student Login
 ![Student Login](static/images/student_login.jpeg)
 
+### Teacher Login
+![Teacher Login](static/images/teacher_login.jpeg)
 ## 🎯 Roadmap
 
 - Add OAuth support for GitHub login.

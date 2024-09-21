@@ -24,5 +24,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.homepage,name='homepage'),
     path('students/',include('students.urls')),
-    
+    path('teachers/',include('teachers.urls')),
 ]
