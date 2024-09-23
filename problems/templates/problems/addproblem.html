@@ -1,10 +1,101 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Problem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/central.css' %}">
+    <link rel="stylesheet" href="{% static 'css/override.css' %}">
 </head>
 <body>
 
+    <header>
+        <div class="header-content">
+            <h1 class="logo">LabTracker</h1>
+            <div class="navbar-toggle" onclick="document.querySelector('.navbar').classList.toggle('active');">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <nav class="navbar">
+                <ul>
+                    <li>
+                        <a href="{% url 'teacher_dashboard' %}">Dashboard</a>
+                        <a href="{% url 'create_problem' %}">Edit Problem</a>
+                        <a href="{% url 'check_student_details' %}">Student Report</a>
+                        <a href="{% url 'check_whole_class_weekly' %}">Weekly Report</a>
+                        <a href="{% url 'check_whole_class' %}">Whole Report</a>
+                        <a href="{% url 'teacher_logout' %}">Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="form-container">
+        <h2>Add Problem</h2>
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_course">Course:</label>
+                <div class="input-wrapper">
+                    {{ form.course }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_semester">Semester:</label>
+                <div class="input-wrapper">
+                    {{ form.semester }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_week">Week:</label>
+                <div class="input-wrapper">
+                    {{ form.week }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_problemNumber">Problem Number:</label>
+                <div class="input-wrapper">
+                    {{ form.problemNumber }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_description">Description:</label>
+                <div class="input-wrapper">
+                    {{ form.description }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_image">Upload Image (Optional) : </label>
+                <div class="input-wrapper">
+                    {{ form.image }}
+                </div>
+            </div>
+            <button type="submit" class="btn">Submit</button>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var problemNumberInput = document.getElementById('id_problemNumber');
+            if (problemNumberInput) {
+                if (!problemNumberInput.value) {
+                    problemNumberInput.value = 'Problem ';
+                }
+            }
+        });
+    </script>
 </body>
 </html>
