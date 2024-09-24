@@ -254,3 +254,85 @@ def get_problem_details(request):
 
     # Return the response data as a JSON response
     return JsonResponse(response_data)
+
+
+@teacher_required
+def edit_problem(request):
+    """
+    Handles the editing of a specific problem by a teacher.
+
+    This view allows teachers to edit existing problems based on the provided course, semester, week, and problem number.
+    It also logs the teacher's activity after successfully editing a problem.
+
+    Workflow:
+    - The teacher must be logged in and identified through `teacher_id` stored in the session.
+    - If the request method is POST, the function retrieves the corresponding problem using the provided form data.
+    - The retrieved problem is then edited using the `ProblemForm`, and upon successful validation, it is saved.
+    - A `TeacherActivity` entry is created to log the action of editing the problem.
+    - On successful form submission, the user is redirected to the 'create_problem' page with a success message.
+    - If the request is not POST, a blank `ProblemForm` is returned for the teacher to fill out.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request object that may contain form data.
+
+    Returns:
+        HttpResponse:
+        - Renders the problem edit form on GET requests.
+        - On successful submission (POST), redirects to the 'create_problem' page with a success message.
+        - If the teacher is not authenticated, redirects to the teacher login page.
+
+    Example Usage:
+        - On a POST request, the form will capture the fields `course`, `semester`, `week`, and `problemNumber` to identify the problem.
+        - After the form is submitted and validated, the problem is updated, and the teacher's action is logged.
+
+    Raises:
+        Http404: If the problem with the provided `course`, `semester`, `week`, and `problemNumber` does not exist.
+    """
+
+    # Retrieve the teacher ID from the session to ensure the user is authenticated as a teacher
+    teacher_id = request.session.get('teacher_id')
+
+    # If teacher is not logged in, redirect to the teacher login page
+    if not teacher_id:
+        return redirect('teacher_login')
+
+    # Retrieve the teacher instance based on the teacher_id
+    teacher = Teacher.objects.get(id=teacher_id)
+    problem = None  # Default value for problem (used in case the request method is GET)
+
+    if request.method == 'POST':
+        # Get the problem details from the form submission
+        course = request.POST.get('course')
+        semester = request.POST.get('semester')
+        week = request.POST.get('week')
+        problem_number = request.POST.get('problemNumber')
+
+        # Retrieve the specific problem using the provided course, semester, week, and problem number
+        problem = get_object_or_404(Problem, course=course, semester=semester, week=week, problemNumber=problem_number)
+
+        # Initialize the form with the POST data and the current problem instance for editing
+        form = ProblemForm(request.POST, request.FILES, instance=problem)
+
+        if form.is_valid():
+            # Save the edited problem
+            form.save()
+
+            # Log the teacher's activity of editing the problem
+            TeacherActivity.objects.create(
+                teacher=teacher,
+                action='Edited Problem',
+                course=problem.course,
+                semester=problem.semester,
+                week=problem.week,
+                description=problem.description,
+            )
+
+            # Display a success message and redirect the user to the 'create_problem' page
+            messages.success(request, 'PROBLEM EDITED SUCCESSFULLY')
+            return redirect('create_problem')
+    else:
+        # If not POST, initialize an empty form for GET requests
+        form = ProblemForm()
+
+    # Render the edit problem page with the form and the problem details
+    return render(request, 'problems/editproblem.html', {'form': form, 'problem': problem})

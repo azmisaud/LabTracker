@@ -25,4 +25,5 @@ urlpatterns = [
     path('',views.homepage,name='homepage'),
     path('students/',include('students.urls')),
     path('teachers/',include('teachers.urls')),
+    path('problems/',include('problems.urls')),
 ]
