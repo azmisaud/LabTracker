@@ -1,10 +1,249 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Problem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/central.css' %}">
+    <link rel="stylesheet" href="{% static 'css/override.css' %}">
 </head>
 <body>
+
+    <header>
+        <div class="header-content">
+            <h1 class="logo">LabTracker</h1>
+            <div class="navbar-toggle" onclick="document.querySelector('.navbar').classList.toggle('active');">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <nav class="navbar">
+                <ul>
+                    <li>
+                        <a href="{% url 'teacher_dashboard' %}">Dashboard</a>
+                        <a href="{% url 'addProblem' %}">Add Problem</a>
+                        <a href="{% url 'check_student_details' %}">Student Report</a>
+                        <a href="{% url 'check_whole_class_weekly' %}">Weekly Report</a>
+                        <a href="{% url 'check_whole_class' %}">Whole Report</a>
+                        <a href="{% url 'teacher_logout' %}">Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+<div class="form-container">
+    <h2>Edit an Existing Problem</h2>
+
+    {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+    {% endif %}
+
+    <form id="editProblemForm" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <input type="hidden" name="problem_id" id="id_problem_id" value="{{ problem.id }}">
+        <div class="form-group">
+            <label for="id_course">Course:</label>
+            <div class="input-wrapper">
+                <select name="course" id="id_course" class="form-control">
+                    <option value="">Select Course</option>
+                    <option value="BCA" {% if form.course.value == 'BCA' %}selected{% endif %}>B.C.A</option>
+                    <option value="MCA" {% if form.course.value == 'MCA' %}selected{% endif %}>M.C.A</option>
+                    <option value="MSC" {% if form.course.value == 'MSC' %}selected{% endif %}>M.Sc(C.S & D.F)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="id_semester">Semester:</label>
+            <div class="input-wrapper">
+                <select name="semester" id="id_semester" class="form-control" {% if form.semester.value %}disabled{% endif %}>
+                    <option value="">Select Semester</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="id_week">Week:</label>
+            <div class="input-wrapper">
+                <select name="week" id="id_week" class="form-control" {% if form.week.value %}disabled{% endif %}>
+                    <option value="">Select Week</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="id_problemNumber">Problem Number:</label>
+            <div class="input-wrapper">
+                <select name="problemNumber" id="id_problemNumber" class="form-control" {% if form.problemNumber.value %}disabled{% endif %}>
+                    <option value="">Select Problem</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="button" class="btn" onclick="fetchProblemDetails()">Fetch Problem Details</button>
+
+        <br>
+
+        <div class="form-group">
+            <label for="id_description">Description:</label>
+            <div class="input-wrapper">
+                <textarea name="description" id="id_description" rows="4" class="form-control" required>{{ form.description.value }}</textarea>
+            </div>
+        </div>
+
+        <div class="image-preview" id="imagePreview">
+            {% if form.instance.image %}
+                <img src="{{ form.instance.image.url }}" alt="Current Image">
+            {% else %}
+                <p>No image uploaded</p>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_image">Upload New Image (Optional):</label>
+            <div class="input-wrapper">
+                <input type="file" name="image" id="id_image" class="form-control">
+            </div>
+        </div>
+        <button type="submit" class="btn">Update Problem</button>
+    </form>
+</div>
+
+<script>
+    // JavaScript to populate select elements dynamically
+
+    document.getElementById('id_course').addEventListener('change', function() {
+        const course = this.value;
+        fetch(`/problems/api/get_semesters/?course=${course}`)
+            .then(response => response.json())
+            .then(data => {
+                const semesterSelect = document.getElementById('id_semester');
+                semesterSelect.innerHTML = '<option value="">Select Semester</option>';
+                data.semesters.forEach(semester => {
+                    semesterSelect.innerHTML += `<option value="${semester}">${semester}</option>`;
+                });
+                semesterSelect.disabled = false;
+                document.getElementById('id_week').disabled = true;
+                document.getElementById('id_problemNumber').disabled = true;
+            })
+            .catch(error => console.error('Error fetching semesters:', error));
+    });
+
+    document.getElementById('id_semester').addEventListener('change', function() {
+        const course = document.getElementById('id_course').value;
+        const semester = this.value;
+        fetch(`/problems/api/get_weeks/?course=${course}&semester=${semester}`)
+            .then(response => response.json())
+            .then(data => {
+                const weekSelect = document.getElementById('id_week');
+                weekSelect.innerHTML = '<option value="">Select Week</option>';
+                data.weeks.forEach(week => {
+                    weekSelect.innerHTML += `<option value="${week}">${week}</option>`;
+                });
+                weekSelect.disabled = false;
+                document.getElementById('id_problemNumber').disabled = true;
+            })
+            .catch(error => console.error('Error fetching weeks:', error));
+    });
+
+    document.getElementById('id_week').addEventListener('change', function() {
+        const course = document.getElementById('id_course').value;
+        const semester = document.getElementById('id_semester').value;
+        const week = this.value;
+        fetch(`/problems/api/get_problems/?course=${course}&semester=${semester}&week=${week}`)
+            .then(response => response.json())
+            .then(data => {
+                const problemSelect = document.getElementById('id_problemNumber');
+                problemSelect.innerHTML = '<option value="">Select Problem</option>';
+                data.problems.forEach(problemNumber => {
+                    problemSelect.innerHTML += `<option value="${problemNumber}">${problemNumber}</option>`;
+                });
+                problemSelect.disabled = false;
+            })
+            .catch(error => console.error('Error fetching problems:', error));
+    });
+
+    function fetchProblemDetails() {
+        const course = document.getElementById('id_course').value;
+        const semester = document.getElementById('id_semester').value;
+        const week = document.getElementById('id_week').value;
+        const problemNumber = document.getElementById('id_problemNumber').value;
+
+        fetch(`/problems/api/get_problem_details/?course=${course}&semester=${semester}&week=${week}&problemNumber=${problemNumber}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('id_description').value = data.problem.description;
+
+                    const imagePreview = document.getElementById('imagePreview');
+                    if (data.problem.image) {
+                        let imagePath=data.problem.image.replace('problems/static/','');
+                        const imageUrl=`/static${imagePath}`
+                        imagePreview.innerHTML = `<img src="${imageUrl}" alt="Current Image">`;
+                    } else {
+                        imagePreview.innerHTML = `<p>No image uploaded</p>`;
+                    }
+                } else {
+                    alert('Problem not found!');
+                }
+            })
+            .catch(error => console.error('Error fetching problem details:', error));
+    }
+
+    // Initialize select elements based on the initial values
+    document.addEventListener('DOMContentLoaded', function() {
+        const course = document.getElementById('id_course').value;
+        if (course) {
+            // Fetch semesters if course is pre-selected
+            fetch(`/problems/api/get_semesters/?course=${course}`)
+                .then(response => response.json())
+                .then(data => {
+                    const semesterSelect = document.getElementById('id_semester');
+                    data.semesters.forEach(semester => {
+                        semesterSelect.innerHTML += `<option value="${semester}">${semester}</option>`;
+                    });
+                    semesterSelect.disabled = false;
+
+                    const semester = document.getElementById('id_semester').value;
+                    if (semester) {
+                        // Fetch weeks if semester is pre-selected
+                        fetch(`/problems/api/get_weeks/?course=${course}&semester=${semester}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const weekSelect = document.getElementById('id_week');
+                                data.weeks.forEach(week => {
+                                    weekSelect.innerHTML += `<option value="${week}">${week}</option>`;
+                                });
+                                weekSelect.disabled = false;
+
+                                const week = document.getElementById('id_week').value;
+                                if (week) {
+                                    // Fetch problems if week is pre-selected
+                                    fetch(`/problems/api/get_problems/?course=${course}&semester=${semester}&week=${week}`)
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            const problemSelect = document.getElementById('id_problemNumber');
+                                            data.problems.forEach(problemNumber => {
+                                                problemSelect.innerHTML += `<option value="${problemNumber}">${problemNumber}</option>`;
+                                            });
+                                            problemSelect.disabled = false;
+                                        });
+                                }
+                            });
+                    }
+                });
+        }
+    });
+</script>
 
 </body>
 </html>

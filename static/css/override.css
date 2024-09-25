@@ -1,0 +1,68 @@
+/* Responsive Navbar */
+.navbar-toggle {
+    display: none;
+    background-color: rgb(107, 0, 2);
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.navbar-toggle span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: white;
+    margin: 4px 0;
+}
+
+@media screen and (max-width: 1024px) {
+    .navbar {
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        right: 0;
+        border-radius: 10px;
+        display: none;
+        width: 300px;
+        padding: 15px 0;
+        z-index: 1000;
+        /*background-color: #ffffff; !* Ensure background color matches your design *!*/
+    }
+
+    .navbar.active {
+        display: flex;
+    }
+
+    .navbar ul {
+        display: flex;
+        flex-direction: column; /* Stack buttons vertically */
+        align-items: flex-end; /* Align buttons to the right */
+        gap: 10px; /* Space between buttons */
+        padding: 0; /* Remove default padding */
+        margin: 0; /* Remove default margin */
+        list-style: none; /* Remove bullet points */
+    }
+
+    .navbar-toggle {
+        display: block;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+    }
+
+    .navbar a {
+        display: block; /* Ensure each link is a block element */
+        padding: 10px 20px;
+        background-color: rgb(107, 0, 2);
+        border-radius: 8px;
+        border: 3px solid white;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        text-align: center; /* Center-align text within buttons */
+        color: white; /* Ensure text is readable */
+    }
+
+    .navbar a:hover {
+        background-color: rgb(47, 98, 86);
+        transform: translateX(-5px);
+    }
+}

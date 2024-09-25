@@ -75,3 +75,34 @@ def student_login(request):
         form = AuthenticationForm()
 
     return render(request, 'students/login.html', {'form': form})
+
+
+def student_logout(request):
+    """
+    Logs out the current student and redirects them to the login page.
+
+    This view function is responsible for logging out the currently authenticated student
+    by calling Django's built-in `logout` function, which clears the session data.
+    Once logged out, the user is redirected to the student login page.
+
+    Args:
+        request (HttpRequest): The incoming HTTP request object that triggers the logout.
+
+    Returns:
+        HttpResponseRedirect: A redirect to the 'student_login' view after the student is logged out.
+
+    Example Usage:
+        A student clicking the "logout" button will trigger this view. Upon execution:
+        - The student will be logged out, clearing their session and authentication data.
+        - The student will be redirected to the login page where they can log in again.
+
+    Notes:
+        - This function uses Django's `logout` function to handle the actual session clearing and user logout.
+        - No special permissions are required to access this view since it is typically triggered by authenticated users.
+    """
+
+    # Call Django's built-in logout function to clear the user's session and authentication data
+    logout(request)
+
+    # Redirect the user to the student login page after logout
+    return redirect('student_login')
