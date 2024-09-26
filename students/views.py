@@ -1,7 +1,11 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
+from LabTrackerAMU.decorators import student_required
+from problems.models import WeekCommit, ProblemCompletion, Problem
 from students.forms import StudentSignUpForm
 from django.contrib.auth import login as auth_login, logout
+from teachers.models import WeekLastDate
+
 
 def student_signup(request):
     """
@@ -70,7 +74,7 @@ def student_login(request):
         if form.is_valid():
             user = form.get_user()
             auth_login(request, user)
-            return redirect('student_login')
+            return redirect('student_dashboard')
     else:
         form = AuthenticationForm()
 
@@ -106,3 +110,106 @@ def student_logout(request):
 
     # Redirect the user to the student login page after logout
     return redirect('student_login')
+
+
+@student_required
+def student_dashboard(request):
+    """
+    Handles the student dashboard view. Provides an overview of the student's progress
+    by retrieving problems assigned to their course and semester, their completion status,
+    weekly commits, and deadlines. The overall progress is calculated as well as weekly
+    progress.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object which contains the logged-in student.
+
+    Returns:
+    HttpResponse: The rendered 'students/dashboard.html' template with the student's progress data.
+    """
+
+    # Retrieve the logged-in student and their course and semester information
+    student = request.user
+    course = student.course
+    semester = student.semester
+
+    # Fetch problems for the student's course and semester, ordered by week and problem number
+    problems = Problem.objects.filter(course=course, semester=semester).order_by('week', 'problemNumber')
+
+    # Fetch the student's completion records for the filtered problems
+    problem_completions = ProblemCompletion.objects.filter(student=student, problem__in=problems).order_by('problem')
+
+    # Fetch WeekCommit entries for the student, ordered by week number
+    week_commits = WeekCommit.objects.filter(student=student).order_by('week_number')
+
+    # Convert week commit data into a dictionary for easy access by week number
+    week_commit_data = {week_commit.week_number: week_commit for week_commit in week_commits}
+
+    # Fetch deadlines (last dates) for each week of the student's course and semester
+    week_last_dates = WeekLastDate.objects.filter(course=course, semester=semester)
+
+    # Store week deadlines in a dictionary for quick lookup by week number
+    week_last_date_data = {week_last.week: week_last.last_date for week_last in week_last_dates}
+
+    # Initialize dictionaries to track weekly and overall progress
+    weekly_progress = {}
+    overall_progress = {'total': len(problems), 'completed': 0}
+
+    # List to store the completion status of each problem for rendering purposes
+    completion_list = []
+
+    # Loop through each problem and calculate the student's progress
+    for prob in problems:
+        week = prob.week
+
+        # Initialize weekly progress if it hasn't been done for the current week
+        if week not in weekly_progress:
+            weekly_progress[week] = {
+                'total': 0,
+                'completed': 0,
+                'last_commit_time': None,
+                'last_commit_hash': None,
+                'last_date': week_last_date_data.get(week, 'No Deadline')  # Provide deadline if available
+            }
+
+        # Increment the total number of problems for the current week
+        weekly_progress[week]['total'] += 1
+
+        # Check if the current problem is completed by the student
+        completion = problem_completions.filter(problem=prob).first()
+        is_completed = completion and completion.is_completed
+
+        # Append the completion status for the current problem
+        completion_list.append({
+            'problem_id': prob.id,
+            'is_completed': is_completed
+        })
+
+        # If the problem is completed, update weekly and overall progress
+        if is_completed:
+            weekly_progress[week]['completed'] += 1
+            overall_progress['completed'] += 1
+
+        # If commit data is available for the week, update the last commit information
+        if week in week_commit_data:
+            week_commit = week_commit_data[week]
+            weekly_progress[week]['last_commit_time'] = week_commit.last_commit_time
+            weekly_progress[week]['last_commit_hash'] = week_commit.last_commit_hash
+
+    # Calculate the overall completion percentage (avoid division by zero)
+    overall_progress['percentage'] = (
+        (overall_progress['completed'] / overall_progress['total']) * 100
+        if overall_progress['total'] > 0
+        else 0
+    )
+
+    # Prepare the context for rendering the template
+    context = {
+        'student': student,
+        'weekly_progress': weekly_progress,  # Progress for each week
+        'overall_progress': overall_progress,  # Overall progress across all weeks
+        'problems': problems,  # List of problems for the course
+        'completion_list': completion_list,  # Completion status for each problem
+    }
+
+    # Render and return the student dashboard template with the context data
+    return render(request, 'students/dashboard.html', context)

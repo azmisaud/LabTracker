@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'students/css/student_dashboard.css' %}">
+</head>
+<body>
+{% block content %}
+<div class="dashboard-header">
+    <h1>Welcome {{ student.first_name }} {{ student.last_name }}</h1>
+    <div class="logout-button">
+        <a href="{% url 'student_logout' %}" class="btn btn-danger">Logout</a>
+    </div>
+</div>
+
+<div class="dashboard-container">
+    <!-- Left: Student Info Box -->
+    <div class="student-info-box">
+        <h3>Your Information</h3>
+        <p><strong>GitHub Username:</strong> {{ student.username }}</p>
+        <p><strong>Name:</strong> {{ student.first_name}} {{ student.last_name }}</p>
+        <p><strong>Faculty Number:</strong> {{ student.faculty_number }}</p>
+        <p><strong>Enrollment Number:</strong> {{ student.enrollment_number }}</p>
+        <p><strong>Course:</strong> {{ student.course }}</p>
+        <p><strong>Semester:</strong> {{ student.semester }}</p>
+
+        <!-- Download Index Button -->
+        <div class="download-index">
+            <button onclick="window.location.href='#'">Download Index</button>
+        </div>
+        <br>
+        <!-- Instructions Box -->
+        <div class="instructions">
+            <h3>Instructions</h3>
+            <ul>
+                <li>
+                    <strong>Create Week-Wise Directories:</strong>
+                    <p>Organize your repository with directories for each week. Name these directories as <code>Week1</code>, <code>Week2</code>, <code>Week3</code>, ... up to <code>Week14</code>.</p>
+                </li>
+                <li>
+                    <strong>Strict Naming Conventions:</strong>
+                    <p>When solving problems, use the appropriate file names. For example:</p>
+                    <ul>
+                        <li>If solving <em>Problem 1</em> of <em>Week 1</em>, the file should be named <code>Problem1.py</code> (assuming the solution is in Python) and placed in the <code>Week1</code> directory.</li>
+                        <li>If solving <em>Problem 3</em> of <em>Week 4</em>, the file should be named <code>Problem3.py</code> and placed in the <code>Week4</code> directory.</li>
+                    </ul>
+                    <p>Any deviation from these naming conventions may result in incorrect data display, even if your solutions are correctly uploaded to your GitHub repository.</p>
+                </li>
+                <li>
+                    <strong>Uploading Output Images for File Generation:</strong>
+                    <p>If you want to <strong>generate a file</strong>, you must upload the output image in one of the following formats: <code>.jpg</code>, <code>.jpeg</code>, or <code>.png</code>.</p>
+                    <p>Follow these rules:</p>
+                    <ul>
+                        <li>For an output image of <em>Problem 1</em> of <em>Week 1</em>, the image should be named <code>Problem1.jpg</code> (or with the appropriate extension) and placed in the <code>Week1</code> directory.</li>
+                        <li>For an output image of <em>Problem 5</em> of <em>Week 6</em>, the image should be named <code>Problem5.jpg</code> and placed in the <code>Week6</code> directory.</li>
+                    </ul>
+                    <p>Make sure the image is correctly named and placed in the correct directory to trigger the file generation process.</p>
+                </li>
+                <li>
+                    <strong>Avoid Frequent File Generation:</strong>
+                    <p>Please limit file generation to <strong>one file per hour</strong>. Generating multiple files in a short period may cause system errors, resulting in incorrect or incomplete files.</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Middle to Right: Weekly Problems and Progress -->
+    <div class="problems-progress">
+        <h3>Weekly Problems</h3>
+        {% for week, progress in weekly_progress.items %}
+        <div class="dropdown">
+            <button class="dropbtn">Week {{ week }} - Last Commit: {{ progress.last_commit_time|default:"Not Committed" }} - {{ progress.completed }} / {{ progress.total }} Completed , Deadline : {{ progress.last_date }}</button>
+            <div class="dropdown-content">
+                <ul>
+                    <button onclick="window.location.href='#'">Generate File</button>
+                    {% for problem in problems %}
+                    {% if problem.week == week %}
+                    <li>
+                        <span>{{ problem.problemNumber }}: </span>
+                        <p>{% filter linebreaksbr %}{{ problem.description }}{% endfilter %}</p>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+        <br>
+        <!-- Overall Progress Bar -->
+        <h3>Overall Progress</h3>
+        <div class="progress-bar">
+            <div class="progress" style="width: {{ overall_progress.percentage|floatformat:2 }}%;">
+                {{ overall_progress.completed }} / {{ overall_progress.total }} completed
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!-- JavaScript to handle dropdowns -->
+<script>
+document.querySelectorAll('.dropdown').forEach(dropdown => {
+    dropdown.querySelector('.dropbtn').addEventListener('click', () => {
+        dropdown.classList.toggle('open');
+    });
+});
+</script>
+</body>
+</html>

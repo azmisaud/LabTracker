@@ -1,0 +1,226 @@
+/* General Styling */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Helvetica Neue', sans-serif;
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: rgb(245, 245, 245);
+    color: rgb(60, 60, 60);
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* Header Styling */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dashboard-header h1 {
+    font-family: 'Montserrat', sans-serif;
+    color: rgb(107, 0, 2);
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.logout-button .btn {
+    color: white;
+    background-color: rgb(107, 0, 2);
+    padding: 10px 20px;
+    border-radius: 30px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 20px rgba(107, 0, 2, 0.2);
+}
+
+.logout-button .btn:hover {
+    background-color: rgb(47, 98, 86);
+    box-shadow: 0 10px 30px rgba(47, 98, 86, 0.3);
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 40px 20px;
+    gap: 40px;
+}
+
+/* Student Info Box */
+.student-info-box {
+    flex: 1;
+    min-width: 300px;
+    max-width: 550px;
+    height: auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 15px;
+    /*box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);*/
+    text-align: left;
+    margin-right: 30px;
+}
+
+.student-info-box h3 {
+    color: rgb(107, 0, 2);
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.student-info-box p {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+/* Weekly Problems and Progress */
+.problems-progress {
+    flex: 3;
+    min-width: 300px;
+    max-width: 850px;
+    background-color: rgb(245, 245, 245);
+    padding: 20px;
+    border-radius: 15px;
+    /*box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);*/
+    margin-left: 0;
+}
+
+.problems-progress h3 {
+    color: rgb(107, 0, 2);
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.instructions ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+/* Dropdown Styling */
+.dropdown {
+    margin-bottom: 20px;
+}
+
+.dropbtn {
+    width: 100%;
+    text-align: left;
+    background-color: rgb(107, 0, 2);
+    color: white;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.dropbtn:hover {
+    background-color: rgb(47, 98, 86);
+}
+
+.dropdown-content {
+    display: none;
+    width: 100%;
+    background-color: rgb(245, 245, 245);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 10px;
+    padding: 15px 20px;
+    transition: transform 0.3s ease-in-out;
+    transform: translateY(10px);
+}
+
+.dropdown.open .dropdown-content {
+    display: block;
+    transform: translateY(0);
+}
+
+/* Dropdown List Items */
+.dropdown-content ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.dropdown-content li {
+    padding: 10px 15px;
+    font-size: 14px;
+    color: rgb(60, 60, 60);
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-content li:hover {
+    background-color: rgb(240, 240, 240);
+}
+
+/* Generate File Button */
+.dropdown-content button,
+.download-index button {
+    display: block;
+    padding: 10px 15px;
+    background-color: rgb(107, 0, 2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 20px rgba(107, 0, 2, 0.2);
+}
+
+.dropdown-content button:hover,
+.download-index button:hover {
+    background-color: rgb(47, 98, 86);
+    box-shadow: 0 10px 30px rgba(47, 98, 86, 0.3);
+}
+
+/* Progress Bar Styling */
+.progress-bar {
+    width: 100%;
+    height: 30px;
+    background-color: rgb(240, 240, 240);
+    border-radius: 15px;
+    overflow: hidden;
+    margin-top: 20px;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.progress {
+    height: 100%;
+    background-color: rgb(47, 98, 86);
+    text-align: center;
+    color: white;
+    line-height: 30px;
+    font-weight: bold;
+    transition: width 0.4s ease;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .dashboard-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .student-info-box,
+    .problems-progress {
+        max-width: 100%;
+    }
+}
