@@ -142,3 +142,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL='students.Student'
 
 TEACHER_PASSWORD_BASE=os.getenv('TEACHER_PASSWORD_BASE')
+GITHUB_TOKEN=os.getenv('GITHUB_TOKEN')
