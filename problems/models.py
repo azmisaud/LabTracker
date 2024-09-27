@@ -44,7 +44,7 @@ class Problem(models.Model):
     week = models.IntegerField()
     problemNumber = models.CharField(max_length=50)
     description = models.TextField()
-    image = models.ImageField(upload_to='problems/static/images/', blank=True, null=True)
+    image = models.ImageField(upload_to='problems/images/', blank=True, null=True)
 
     class Meta:
         constraints = [

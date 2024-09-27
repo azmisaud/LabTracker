@@ -1,10 +1,25 @@
+from datetime import datetime
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
-from LabTrackerAMU.decorators import student_required
-from problems.models import WeekCommit, ProblemCompletion, Problem
-from students.forms import StudentSignUpForm
 from django.contrib.auth import login as auth_login, logout
+from django.views.decorators.csrf import csrf_exempt
+from docx.enum.table import WD_ROW_HEIGHT_RULE, WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL  # No WD_ROW_HEIGHT exists
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from LabTrackerAMU import settings
+from LabTrackerAMU.decorators import student_required
 from teachers.models import WeekLastDate
+from .forms import StudentSignUpForm
+from problems.models import Problem, ProblemCompletion, WeekCommit
+from django.http import HttpResponse, JsonResponse
+from docx import Document
+from io import BytesIO
+from docx.shared import Pt, Inches, Cm
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
+import requests
+import json
+from .models import Student
+
 
 
 def student_signup(request):
@@ -213,3 +228,173 @@ def student_dashboard(request):
 
     # Render and return the student dashboard template with the context data
     return render(request, 'students/dashboard.html', context)
+
+
+@student_required
+def generate_problem_doc(request):
+    """
+    Generates a downloadable Word document containing a structured list of problems for a student based on their course and semester.
+
+    The document includes:
+    - A title with the student's enrollment and faculty numbers in the footer.
+    - A table listing the problems, organized by week and problem number, along with their descriptions and optional images.
+    - Proper formatting for margins, alignment, and fonts.
+
+    Functionality:
+    1. Fetches all problems associated with the student's course and semester.
+    2. Creates a Word document using python-docx.
+    3. Sets margins and customizes the table layout.
+    4. Merges table cells where appropriate for weeks with multiple problems.
+    5. Handles images by inserting them in the corresponding table cell.
+    6. Generates and returns the document as a downloadable file.
+
+    Args:
+        request: The HTTP request object. Expects the user to be logged in as a student.
+
+    Returns:
+        HttpResponse: A downloadable Word document (.docx) containing the problem list.
+    """
+    student = request.user
+    course = student.course
+    semester = student.semester
+
+    # Fetch problems associated with the student's course and semester
+    problems = Problem.objects.filter(course=course, semester=semester).order_by('week', 'problemNumber')
+
+    # Initialize a Word document
+    doc = Document()
+
+    # Set margins
+    section = doc.sections[0]
+    section.top_margin = Inches(0.5)
+    section.bottom_margin = Inches(0.5)
+    section.left_margin = Inches(0.5)
+    section.right_margin = Inches(0.5)
+
+    # Add footer with student details
+    footer = section.footer
+    left_paragraph = footer.add_paragraph()
+    left_paragraph.text = f"{student.enrollment_number}         {student.first_name}   {student.last_name}             {student.faculty_number}"
+    left_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    # Add document title
+    title = doc.add_paragraph()
+    title_run = title.add_run('INDEX')
+    title_run.bold = True
+    title_run.font.size = Pt(24)
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    # Create table with a predefined layout
+    table = doc.add_table(rows=1, cols=5)
+    table.style = 'Table Grid'
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    table.autofit = False
+
+    # Set column widths
+    total_width = Cm(18).pt * 20
+    tbl = table._tbl
+    tblPr = tbl.tblPr
+    tblW = OxmlElement('w:tblW')
+    tblW.set(qn('w:w'), str(int(total_width)))
+    tblW.set(qn('w:type'), 'dxa')
+    tblPr.append(tblW)
+
+    column_widths = [Cm(0.5), Cm(0.5), Cm(14), Cm(0.5), Cm(2.5)]
+
+    # Apply column widths to the header row
+    for row in table.rows:
+        for idx, width in enumerate(column_widths):
+            row.cells[idx].width = width
+
+    # Set header row content
+    hdr_cells = table.rows[0].cells
+    hdr_cells[0].text = 'W\nE\nE\nK'
+    hdr_cells[1].text = 'P\nR\nO\nB\nL\nE\nM'
+    hdr_cells[2].text = 'PROBLEMS WITH DESCRIPTION'
+    hdr_cells[3].text = 'P\nA\nG\nE'
+    hdr_cells[4].text = 'SIGNATURE OF TEACHER WITH DATE'
+
+    # Style the header row
+    for cell in hdr_cells:
+        cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+        cell.paragraphs[0].runs[0].bold = True
+        cell.paragraphs[0].runs[0].font.size = Pt(14)
+
+    # Organize problems by week
+    problems_by_week = {}
+    for problem in problems:
+        if problem.week not in problems_by_week:
+            problems_by_week[problem.week] = []
+        problems_by_week[problem.week].append(problem)
+
+    # Add rows for each problem
+    current_row_index = 1
+    for week, problems_in_week in problems_by_week.items():
+        num_problems = len(problems_in_week)
+
+        for idx, problem in enumerate(problems_in_week):
+            row_cells = table.add_row().cells
+            row_cells[1].text = problem.problemNumber.replace('Problem ', '') + '#'
+            row_cells[1].paragraphs[0].runs[0].bold = True
+            row_cells[1].paragraphs[0].runs[0].font.size = Pt(11)
+            row_cells[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+            row_cells[1].vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+
+            # Add problem description
+            description_cell = row_cells[2]
+            description_cell.text = problem.description
+            for paragraph in description_cell.paragraphs:
+                for run in paragraph.runs:
+                    run.font.name = 'Comic Sans MS'
+                    run.font.size = Pt(11)
+            description_cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
+            description_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+
+            # Add problem image (with production URL handling)
+            if problem.image:
+                image_url = request.build_absolute_uri(problem.image.url)
+                image_path = f"{settings.MEDIA_ROOT}/{image_url.split('/')[-1]}"
+                docx_image = row_cells[2].add_paragraph().add_run().add_picture(image_path, width=Cm(7))
+
+            row_cells[3].text = ""
+            row_cells[4].text = ""
+
+        # Merge cells for weeks with multiple problems
+        if num_problems > 1:
+            week_cell = table.cell(current_row_index, 0)
+            week_cell.merge(table.cell(current_row_index + num_problems - 1, 0))
+            week_cell.text = str(week)
+            week_cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+            week_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+            week_cell.paragraphs[0].runs[0].bold = True
+            week_cell.paragraphs[0].runs[0].font.size = Pt(14)
+
+            signature_cell = table.cell(current_row_index, 4)
+            signature_cell.merge(table.cell(current_row_index + num_problems - 1, 4))
+            signature_cell.text = ""
+            signature_cell.paragraphs[0].alignment = WD_ALIGN_VERTICAL.CENTER
+            signature_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+        else:
+            table.cell(current_row_index, 0).text = str(week)
+            table.cell(current_row_index, 0).alignment = WD_ALIGN_PARAGRAPH.CENTER
+            table.cell(current_row_index, 0).vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+            table.cell(current_row_index, 0).paragraphs[0].runs[0].bold = True
+            table.cell(current_row_index, 0).paragraphs[0].runs[0].font.size = Pt(14)
+            table.cell(current_row_index, 4).text = ""
+            table.cell(current_row_index, 4).alignment = WD_ALIGN_PARAGRAPH.CENTER
+            table.cell(current_row_index, 4).vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+
+        current_row_index += num_problems
+
+    # Save document to file stream
+    file_stream = BytesIO()
+    doc.save(file_stream)
+    file_stream.seek(0)
+
+    # Return the Word document as a downloadable file
+    response = HttpResponse(file_stream,
+                            content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename="index.docx"'
+
+    return response
