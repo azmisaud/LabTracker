@@ -75,7 +75,7 @@
             <button class="dropbtn">Week {{ week }} - Last Commit: {{ progress.last_commit_time|default:"Not Committed" }} - {{ progress.completed }} / {{ progress.total }} Completed , Deadline : {{ progress.last_date }}</button>
             <div class="dropdown-content">
                 <ul>
-                    <button onclick="window.location.href='#'">Generate File</button>
+                    <button onclick="window.location.href='{% url 'generate_file' week %}'">Generate File</button>
                     {% for problem in problems %}
                     {% if problem.week == week %}
                     <li>

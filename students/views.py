@@ -3,8 +3,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import login as auth_login, logout
 from django.views.decorators.csrf import csrf_exempt
-from docx.enum.table import WD_ROW_HEIGHT_RULE, WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL  # No WD_ROW_HEIGHT exists
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.table import WD_ROW_HEIGHT_RULE, WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_PARAGRAPH_ALIGNMENT
 from LabTrackerAMU import settings
 from LabTrackerAMU.decorators import student_required
 from teachers.models import WeekLastDate
@@ -13,10 +13,11 @@ from problems.models import Problem, ProblemCompletion, WeekCommit
 from django.http import HttpResponse, JsonResponse
 from docx import Document
 from io import BytesIO
-from docx.shared import Pt, Inches, Cm
+from docx.shared import Pt, Inches, Cm, RGBColor
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 import requests
+from PIL import Image
 import json
 from .models import Student
 
@@ -429,15 +430,163 @@ def fetch_image(url):
         url (str): The URL of the image to be fetched.
 
     Returns:
-        BytesIO: A file-like object containing the image data, if the request is successful.
-        None: If there is an issue with the request or if the image cannot be fetched.
-
-    Raises:
-        None: All exceptions are caught and handled within the function.
+        tuple: A tuple containing:
+            - image_data (BytesIO): The image data as a BytesIO stream.
+            - image (PIL.Image): The image object from Pillow for processing.
     """
+
     try:
         response = requests.get(url)
         response.raise_for_status()
-        return BytesIO(response.content)
+        image_data = BytesIO(response.content)
+        image = Image.open(image_data)
+        return image_data, image
     except requests.exceptions.RequestException:
         return None
+
+@student_required
+def generate_file(request, week):
+    """
+    Generates a Microsoft Word document (.docx) containing problem details, solutions, and output images
+    for a given student, course, semester, and week. This document is then returned as a downloadable file.
+
+    Args:
+        request (HttpRequest): The HTTP request object, containing information about the logged-in student.
+        week (int): The week number for which the problems and solutions are to be retrieved.
+
+    Workflow:
+        1. Retrieves the logged-in student and their respective course, semester, and the requested week's problems.
+        2. Fetches problem details along with the student's completion status, solution URL, and output image.
+        3. Generates a .docx file containing:
+            - Problem descriptions
+            - Solutions (if available) or a placeholder text if not
+            - Output images (if available) or a placeholder message if not
+        4. Adds a footer indicating the generation time of the document.
+        5. Returns the document as an HTTP response for downloading.
+
+    Returns:
+        HttpResponse: A response containing the .docx file as an attachment to be downloaded.
+
+    Notes:
+        - If a problem's solution or output image is unavailable, a placeholder message is inserted.
+        - The generated document uses "Comic Sans MS" for the solution text, and bold formatting for problem titles.
+        - The margins of the document are customized for a more compact layout.
+
+    Example:
+        A student can download the document for Week 5 by visiting the corresponding URL, where the week parameter is provided.
+        The document will contain all problems for that week, including their descriptions, solutions, and output images.
+
+    Raises:
+        None: All exceptions are handled internally, and placeholders are used if data (solution or image) is missing.
+    """
+    student = request.user
+    course = student.course
+    semester = student.semester
+
+    # Fetching the problems for the specified week
+    problems = Problem.objects.filter(course=course, semester=semester, week=week).order_by('problemNumber')
+    problem_completions = ProblemCompletion.objects.filter(student=student, problem__in=problems)
+
+    buffer = BytesIO()
+    document = Document()
+
+    # Setting margins for the document
+    section = document.sections[0]
+    section.left_margin = Inches(0.5)
+    section.right_margin = Inches(0.5)
+    section.top_margin = Inches(0.75)
+    section.bottom_margin = Inches(0.75)
+
+    # Adding the week heading
+    heading = document.add_heading(level=1)
+    heading_run=heading.add_run(f"Week {week}")
+    heading_run.font.name='Arial Black'
+    heading_run.font.size=Pt(20)
+    heading_run.font.bold=True
+    heading_run.font.color.rgb=RGBColor(0x00,0x00,0x00)
+    heading.alignment = 1  # Center the heading
+
+    #Add spacing after the heading
+    heading_format=heading.paragraph_format
+    heading_format.space_after=Pt(20)
+
+    # Custom style for the solution text
+    styles = document.styles
+    comic_sans_style = styles.add_style('ComicSansStyle', 2)  # '2' stands for Paragraph style
+    font = comic_sans_style.font
+    font.name = 'Comic Sans MS'
+    font.size = Pt(11)
+    font.italic = True
+
+    # Iterating over problems and adding content to the document
+    for prob in problems:
+        completion = problem_completions.filter(problem=prob).first()
+        solution_url = completion.solution_url if completion else None
+        output_image_url = completion.output_image_url if completion else None
+
+        # Adding the problem description
+        p = document.add_paragraph()
+        run = p.add_run(f"{prob.problemNumber}: {prob.description}")
+        run.bold = True
+
+        # Adding the solution
+        if solution_url:
+            solution_content = fetch_url_content(solution_url)
+            document.add_heading("Solution: ", level=3)
+            k = document.add_paragraph()
+            runk = k.add_run(solution_content)
+            runk.style = 'ComicSansStyle'
+        else:
+            document.add_heading("Solution: ", level=3)
+            k = document.add_paragraph()
+            runk = k.add_run("No Solution Available")
+            runk.style = 'ComicSansStyle'
+
+        # Adding the output image
+        if output_image_url:
+            image_data,image = fetch_image(output_image_url)
+            if image_data and image:
+                document_width=section.page_width-section.left_margin-section.right_margin
+                document_width_in_pixels=int(document_width / Inches(1)) * image.info['dpi'][0] //96
+
+                image_width,image_height=image.size
+
+                document.add_heading("Output Image: ", level=3)
+
+                if image_width>document_width_in_pixels:
+                    aspect_ratio=image_height/image_width
+                    new_width=document_width
+                    new_height=new_width*aspect_ratio
+                    document.add_picture(image_data,width=document_width)
+                else:
+                    document.add_picture(image_data,width=Inches(image_width / 96))
+
+                last_paragraph=document.paragraphs[-1]
+                last_paragraph.alignment=1
+            else:
+                document.add_heading("Output Image: ", level=3)
+                document.add_paragraph("No Output Image Available")
+        else:
+            document.add_heading("Output Image: ", level=3)
+            document.add_paragraph("No Output Image Available")
+
+    # Footer with student's details
+
+    footer=section.footer
+    footer_paragraph=footer.paragraphs[0]
+    footer_paragraph.text=f"{student.first_name} {student.last_name} | {student.enrollment_number} | {student.faculty_number} | {student.course} | Semester:{student.semester}"
+    footer_paragraph.alignment=WD_PARAGRAPH_ALIGNMENT.CENTER
+
+    # Adding the generation time footer
+    document.add_paragraph()
+    generation_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    footer_text = f"Generation Time: {generation_time}"
+    document.add_paragraph(footer_text, style='Normal')
+
+    # Saving the document in the buffer and returning it as an HTTP response
+    document.save(buffer)
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = f'attachment; filename="Week{week}.docx"'
+
+    return response
