@@ -398,3 +398,46 @@ def generate_problem_doc(request):
     response['Content-Disposition'] = 'attachment; filename="index.docx"'
 
     return response
+
+def fetch_url_content(url):
+    """
+    Fetches the content of a given URL using an HTTP GET request.
+
+    Args:
+        url (str): The URL from which to fetch the content.
+
+    Returns:
+        str: The content of the URL if the request is successful,
+             or an error message if there is an issue with the request.
+
+    Raises:
+        None: All exceptions are caught and handled within the function.
+    """
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.text
+    except requests.exceptions.RequestException:
+        return 'Error fetching URL'
+
+
+def fetch_image(url):
+    """
+    Fetches an image from a given URL using an HTTP GET request.
+
+    Args:
+        url (str): The URL of the image to be fetched.
+
+    Returns:
+        BytesIO: A file-like object containing the image data, if the request is successful.
+        None: If there is an issue with the request or if the image cannot be fetched.
+
+    Raises:
+        None: All exceptions are caught and handled within the function.
+    """
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return BytesIO(response.content)
+    except requests.exceptions.RequestException:
+        return None
