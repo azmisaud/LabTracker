@@ -104,3 +104,56 @@ class Student(AbstractUser):
         url = f"https://api.github.com/repos/{self.username}/{repo_name}"
         response = requests.get(url)
         return response.status_code == 200
+
+
+class PasswordResetToken(models.Model):
+    """
+    Model to store password reset tokens associated with students.
+
+    This model generates a unique token for each password reset request and stores
+    the timestamp of its creation. The token is valid for a limited duration (5 minutes).
+    After that, it becomes invalid and can be cleaned up automatically.
+
+    Fields:
+    - student (ForeignKey): A foreign key linking to the Student model.
+    - token (UUIDField): A unique token generated using UUID4.
+    - created_at (DateTimeField): The timestamp of when the token was created. Automatically set when the object is created.
+
+    Methods:
+    - is_valid(): Returns whether the token is still valid (less than 5 minutes old).
+    - cleanup_expired_tokens(): Class method to delete expired tokens (older than 6 minutes).
+    - save(): Overrides the default save method to automatically clean up expired tokens after saving a new one.
+    """
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_valid(self):
+        """
+        Check if the token is still valid.
+
+        Returns:
+        - bool: True if the token is less than 5 minutes old, False otherwise.
+        """
+        return (timezone.now() - self.created_at).total_seconds() < 300
+
+    @classmethod
+    def cleanup_expired_tokens(cls):
+        """
+        Remove tokens that have expired (older than 6 minutes).
+
+        This class method is called to clean up any tokens that have been created
+        more than 6 minutes ago.
+        """
+        expiration_time = timezone.now() - timezone.timedelta(minutes=6)
+        cls.objects.filter(created_at__lte=expiration_time).delete()
+
+    def save(self, *args, **kwargs):
+        """
+        Override the save method to clean up expired tokens after saving.
+
+        Calls the cleanup_expired_tokens class method after the new token is saved,
+        ensuring that only valid tokens remain in the database.
+        """
+        super().save(*args, **kwargs)
+        self.__class__.cleanup_expired_tokens()

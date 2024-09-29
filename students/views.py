@@ -3,12 +3,12 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import login as auth_login, logout
 from django.views.decorators.csrf import csrf_exempt
-from docx.enum.table import WD_ROW_HEIGHT_RULE, WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
+from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_PARAGRAPH_ALIGNMENT
 from LabTrackerAMU import settings
 from LabTrackerAMU.decorators import student_required
 from teachers.models import WeekLastDate
-from .forms import StudentSignUpForm
+from .forms import StudentSignUpForm, EnrollmentFacultyForm
 from problems.models import Problem, ProblemCompletion, WeekCommit
 from django.http import HttpResponse, JsonResponse
 from docx import Document
@@ -19,8 +19,7 @@ from docx.oxml import OxmlElement
 import requests
 from PIL import Image
 import json
-from .models import Student
-
+from .models import Student, PasswordResetToken
 
 
 def student_signup(request):
@@ -590,3 +589,62 @@ def generate_file(request, week):
     response['Content-Disposition'] = f'attachment; filename="Week{week}.docx"'
 
     return response
+
+
+@csrf_exempt
+def forgot_password(request):
+    """
+    Handle the forgot password process.
+
+    This view function handles a POST request where a student provides their
+    enrollment number and faculty number. If the provided data is valid and matches
+    a student in the database, it generates a password reset token for that student.
+    The student must then enter their date of birth to complete the process.
+
+    Parameters:
+    - request (HttpRequest): The HTTP request object. Expects JSON data in the body
+      with the enrollment number and faculty number.
+
+    Returns:
+    - JsonResponse: A JSON response containing either:
+      - 'status' of 'success' and a 'message' prompting for further information along
+        with the generated token, or
+      - 'status' of 'error' with an appropriate error message.
+    """
+    if request.method == 'POST':
+        # Load and parse JSON data from the request body
+        data = json.loads(request.body)
+
+        # Validate the provided data using the form
+        form = EnrollmentFacultyForm(data)
+        if form.is_valid():
+            # Extract cleaned data (enrollment number and faculty number) from the form
+            enrollment_number = form.cleaned_data['enrollment_number']
+            faculty_number = form.cleaned_data['faculty_number']
+            print(enrollment_number, faculty_number)  # Debugging: Print the enrollment and faculty numbers
+
+            try:
+                # Attempt to find the student matching the provided enrollment and faculty numbers
+                student = Student.objects.get(enrollment_number=enrollment_number, faculty_number=faculty_number)
+
+                # If student is found, create a password reset token
+                token = PasswordResetToken.objects.create(student=student)
+
+                # Return success response with token
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Please enter your date of birth',
+                    'token': str(token.token)
+                })
+            except Student.DoesNotExist:
+                # Return error response if no student is found
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Incorrect enrollment number or faculty number'
+                })
+
+        # Return error response if form data is invalid
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Invalid form data.'
+        })

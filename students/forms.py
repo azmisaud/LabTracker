@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm
 from .models import Student
 import requests
 
@@ -80,3 +80,51 @@ class StudentSignUpForm(UserCreationForm):
                 self.add_error('username', f"GitHub repository '{repo_name}' does not exist.")
 
         return cleaned_data
+
+
+class EnrollmentFacultyForm(forms.Form):
+    """
+    Form to capture enrollment number and faculty number for student authentication.
+
+    This form is used when students need to verify their identity by providing their
+    enrollment number and faculty number, typically for password reset or other verification processes.
+
+    Fields:
+    - enrollment_number (CharField): A required field to input the student's enrollment number.
+      Max length is 11 characters.
+    - faculty_number (CharField): A required field to input the student's faculty number.
+      Max length is 15 characters.
+    """
+    enrollment_number = forms.CharField(max_length=11, required=True)
+    faculty_number = forms.CharField(max_length=15, required=True)
+
+
+class DateOfBirthForm(forms.Form):
+    """
+    Form to capture the student's date of birth for additional verification.
+
+    This form is typically used as a secondary layer of verification, where the student
+    provides their date of birth. It uses an HTML5 date input field.
+
+    Fields:
+    - date_of_birth (DateField): A required field where students enter their date of birth.
+      The widget is an HTML5 date input for better UX.
+    """
+    date_of_birth = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+
+
+class PasswordResetForm(forms.Form):
+    """
+    Form to capture and validate the new password during a password reset process.
+
+    This form requires the student to input the new password and confirm it to ensure
+    the new password is entered correctly.
+
+    Fields:
+    - new_password (CharField): A required field for the student's new password. The input is
+      hidden using a PasswordInput widget.
+    - confirm_password (CharField): A required field to confirm the new password, also hidden
+      with a PasswordInput widget.
+    """
+    new_password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
