@@ -8,7 +8,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_PARAGRAPH_ALIGNMENT
 from LabTrackerAMU import settings
 from LabTrackerAMU.decorators import student_required
 from teachers.models import WeekLastDate
-from .forms import StudentSignUpForm, EnrollmentFacultyForm
+from .forms import StudentSignUpForm, EnrollmentFacultyForm, DateOfBirthForm, PasswordResetForm
 from problems.models import Problem, ProblemCompletion, WeekCommit
 from django.http import HttpResponse, JsonResponse
 from docx import Document
@@ -648,3 +648,189 @@ def forgot_password(request):
             'status': 'error',
             'message': 'Invalid form data.'
         })
+
+@csrf_exempt
+def verify_date_of_birth(request):
+    """
+    Handle the verification of a student's date of birth for password reset.
+
+    This view is part of the password reset process. It verifies the student's date of birth,
+    which is sent along with a token that uniquely identifies the reset request. If the
+    date of birth and the token are valid, the user is allowed to proceed with the password reset.
+
+    Request Type:
+    - POST: The function only processes POST requests. Other request types will result in an error response.
+
+    Request Payload:
+    - JSON object containing the following:
+      - token (str): A unique token for the password reset request.
+      - date_of_birth (str): The student's date of birth in `YYYY-MM-DD` format.
+
+    Process:
+    1. The function first attempts to parse the incoming JSON data. If the data is invalid, it returns an error.
+    2. The `DateOfBirthForm` is used to validate the date of birth input.
+    3. The token provided in the request is retrieved from the `PasswordResetToken` model.
+    4. If the token is valid and the date of birth matches the student's record, a success message is returned.
+       Otherwise, appropriate error messages are sent based on the issue (invalid date of birth, expired token, etc.).
+
+    Returns:
+    - JsonResponse: Returns a JSON response with either:
+      - 'status': 'success', 'message': 'Valid date of birth, proceed to reset the password.'
+      - 'status': 'error', 'message': 'Invalid date of birth', 'Invalid token', 'Time Limit Exceeded', etc.
+
+    Errors Handled:
+    - Invalid JSON structure in the request.
+    - Invalid or expired token.
+    - Invalid date of birth.
+
+    Example JSON Response:
+    {
+        'status': 'success',
+        'message': 'Valid date of birth, proceed to reset the password.'
+    }
+    """
+    if request.method == 'POST':
+        try:
+            # Parse JSON data from the request body
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid date of birth'})
+
+        form = DateOfBirthForm(data)
+        token = data.get('token')
+
+        if form.is_valid():
+            date_of_birth = form.cleaned_data['date_of_birth']
+            try:
+                # Attempt to retrieve the token from the PasswordResetToken model
+                token = PasswordResetToken.objects.get(token=token)
+
+                # Check if the token is still valid (not expired)
+                if not token.is_valid():
+                    return JsonResponse({'status': 'error', 'message': 'Time Limit Exceeded'})
+
+                student = token.student
+
+                # Verify the date of birth
+                if student.date_of_birth == date_of_birth:
+                    return JsonResponse({'status': 'success', 'message': 'Valid date of birth, proceed to reset the password.'})
+                else:
+                    return JsonResponse({'status': 'error', 'message': 'Invalid date of birth'})
+            except PasswordResetToken.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'Invalid token or Time Limit Exceeded'})
+
+        # Handle invalid form data
+        return JsonResponse({'status': 'error', 'message': 'Invalid form data.'})
+
+    # Handle non-POST request methods
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+@csrf_exempt
+def reset_password(request):
+    """
+    Handle the password reset process for students.
+
+    This view is part of the password reset process. It allows students to reset their password
+    by providing a valid token and new password. The token must still be valid (i.e., not expired)
+    and the new password must match the confirmation password.
+
+    Request Type:
+    - POST: This view accepts only POST requests to process the password reset.
+
+    Request Payload:
+    - JSON object containing the following:
+      - token (str): A unique token generated during the password reset request.
+      - new_password (str): The student's new password.
+      - confirm_password (str): Confirmation of the new password to ensure they match.
+
+    Process:
+    1. The function first attempts to parse the incoming JSON data.
+    2. The `PasswordResetForm` is used to validate the input fields (new password and confirmation).
+    3. If valid, it checks if the provided token exists and is still valid.
+    4. If the token is valid and not expired, the student's password is reset and saved, and the token is deleted.
+    5. If any validation fails (invalid token, mismatched passwords, or invalid form data), an appropriate error message is returned.
+
+    Returns:
+    - JsonResponse: A JSON response with one of the following:
+      - 'status': 'success', 'message': 'Password Reset Successful'
+      - 'status': 'error', 'message': Specific error messages, such as:
+        - 'Invalid Token'
+        - 'Passwords do not match'
+        - 'Invalid form data'
+        - 'Time Limit Exceeded'
+
+    Example JSON Response:
+    {
+        'status': 'success',
+        'message': 'Password Reset Successful'
+    }
+
+    Errors Handled:
+    - Invalid or expired token.
+    - Password mismatch between `new_password` and `confirm_password`.
+    - Invalid form data (e.g., missing fields).
+    """
+    if request.method == 'POST':
+        # Parse the incoming JSON data
+        data = json.loads(request.body)
+
+        # Create an instance of PasswordResetForm to validate the data
+        form = PasswordResetForm(data)
+        token = data.get('token')
+
+        if form.is_valid():
+            # Extract and compare the passwords
+            new_password = form.cleaned_data['new_password']
+            confirm_password = form.cleaned_data['confirm_password']
+
+            if new_password == confirm_password:
+                try:
+                    # Retrieve the password reset token
+                    token2 = PasswordResetToken.objects.get(token=token)
+
+                    # Check if the token is still valid
+                    if not token2.is_valid():
+                        return JsonResponse({'status': 'error', 'message': 'Time Limit Exceeded'})
+
+                    # Update the student's password
+                    student = token2.student
+                    student.set_password(new_password)
+                    student.save()
+
+                    # Delete the used token to prevent reuse
+                    token2.delete()
+
+                    return JsonResponse({'status': 'success', 'message': 'Password Reset Successful'})
+
+                except PasswordResetToken.DoesNotExist:
+                    return JsonResponse({'status': 'error', 'message': 'Invalid Token'})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Passwords do not match'})
+        # Handle invalid form data
+        return JsonResponse({'status': 'error', 'message': 'Invalid form data.'})
+
+    # Return an error for any request method other than POST
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+def password_reset(request):
+    """
+    Render the password reset page for students.
+
+    This view serves the HTML page where students can initiate the password reset process by
+    providing their enrollment number and faculty number. It does not handle any POST data or
+    perform any logic related to resetting passwords, but simply renders the form.
+
+    Template:
+    - `students/forgotPassword.html`: This HTML template contains the password reset form for students.
+
+    Request Type:
+    - GET: This view accepts only GET requests, rendering the password reset page.
+
+    Returns:
+    - HttpResponse: Renders the 'forgotPassword.html' template.
+
+    Example Usage:
+    - A student navigates to the password reset page by clicking a "Forgot Password" link, and
+      this view renders the form where they can submit their enrollment and faculty numbers.
+    """
+    return render(request, 'students/forgotPassword.html')
