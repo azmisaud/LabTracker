@@ -98,28 +98,35 @@ Welcome to **Lab Tracker**, a Django-based platform designed to automate and str
 ### Homepage
 ![Homepage](static/images/homepage.jpeg)
 
-### Student Signup
+### STUDENT
+#### Signup
 ![Student Signup](static/images/student_signup.jpeg)
 
-### Student Login
+#### Login
 ![Student Login](static/images/student_login.jpeg)
 
-### Student Dashboard
+#### Dashboard
 ![Student Dashboard](static/images/student_dashboard.png)
 
-### Student Forgot Password
+#### Forgot Password
 
-#### Step1
+##### Step1
 ![First Step](static/images/reset_password_step_1.png)
 
-#### Step2
+##### Step2
 ![Second Step](static/images/reset_password_step_2.png)
 
-#### Step3
+##### Step3
 ![Third Step](static/images/reset_password_step_3.png)
 
-### Teacher Login
+### Teacher
+
+#### Login
 ![Teacher Login](static/images/teacher_login.jpeg)
+
+#### Set Week Last Date
+![Set Week Last Date](static/images/set_last_date.png)
+
 ## 🎯 Roadmap
 
 - Add OAuth support for GitHub login.
