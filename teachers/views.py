@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.conf import settings
-from .forms import TeacherLoginForm
-from .models import Teacher
+from .forms import TeacherLoginForm, WeekLastDateForm
+from .models import Teacher, TeacherActivity
 from LabTrackerAMU.decorators import teacher_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
@@ -192,3 +192,59 @@ def get_weeks(request):
     # Return the list of weeks as a JSON response.
     # The 'safe=False' argument allows a non-dict object (a list) to be serialized and returned.
     return JsonResponse(list(week), safe=False)
+
+@teacher_required
+def week_last_date(request):
+    """
+    Manage the setting of the last date for a specific week by a teacher.
+
+    This view allows a teacher to set the last date for a particular week in their course.
+    The teacher must be logged in to access this functionality. If the request method is
+    POST, it processes the submitted form data. If the form is valid, it saves the last date
+    and records this action in the TeacherActivity log.
+
+    Decorators:
+    - @teacher_required: Ensures that only authenticated teachers can access this view.
+
+    Request Types:
+    - GET: Renders the form for setting the last date.
+    - POST: Processes the submitted form data to set the last date.
+
+    Parameters:
+    - request (HttpRequest): The HTTP request object containing metadata about the request.
+
+    Returns:
+    - HttpResponse: Renders the 'teachers/week_last_date.html' template with the form for
+      GET requests or redirects to the same page with a success message for POST requests.
+
+    Example Usage:
+    - A teacher accesses the "Set Last Date" page, fills in the last date for a specific week,
+      and submits the form. Upon successful submission, a confirmation message is displayed.
+    """
+    teacher_id = request.session.get('teacher_id')
+
+    if not teacher_id:
+        return redirect('teacher_login')
+
+    teacher = Teacher.objects.get(id=teacher_id)
+
+    if request.method == 'POST':
+        form = WeekLastDateForm(request.POST)
+        if form.is_valid():
+            week_date = form.save()
+
+            TeacherActivity.objects.create(
+                teacher=teacher,
+                action='Set Last Date',
+                course=week_date.course,
+                semester=week_date.semester,
+                week=week_date.week,
+                description=week_date.last_date
+            )
+
+            messages.success(request, 'Last date set successfully')
+            return redirect('week_last_date')
+    else:
+        form = WeekLastDateForm()
+
+    return render(request, 'teachers/week_last_date.html', {'form': form})
