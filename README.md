@@ -127,6 +127,10 @@ Welcome to **Lab Tracker**, a Django-based platform designed to automate and str
 #### Set Week Last Date
 ![Set Week Last Date](static/images/set_last_date.png)
 
+#### Check Student Details
+![Check Student Details 1](static/images/check_student_details_1.png)
+![Check Student Details 2](static/images/check_student_details_2.png)
+
 ## 🎯 Roadmap
 
 - Add OAuth support for GitHub login.

@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Check Student Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/central.css' %}">
+    <link rel="stylesheet" href="{% static 'css/override.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.24/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1 class="logo">LabTracker</h1>
+            <div class="navbar-toggle" onclick="document.querySelector('.navbar').classList.toggle('active');">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <nav class="navbar">
+                <ul>
+                    <li>
+                        <a href="#">Dashboard</a>
+                        <a href="#">Add Problem</a>
+                        <a href="#">Edit Problem</a>
+                        <a href="#">Weekly Report</a>
+                        <a href="#">Whole Report</a>
+                        <a href="#">Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="form-container">
+        <h2 class="form-header">Check Student Details</h2>
+
+        <div class="form-section">
+            <div class="form-group">
+                <label for="course">Course:</label>
+                <div class="input-wrapper">
+                    <select id="course" name="course">
+                        <option value="">Select Course</option>
+                        <option value="BCA">B.C.A</option>
+                        <option value="MCA">M.C.A</option>
+                        <option value="MSC">M.Sc(C.S & D.F)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="semester">Semester:</label>
+                <div class="input-wrapper">
+                    <select id="semester" name="semester">
+                        <option value="">Select Semester</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="faculty_number">Faculty Number:</label>
+                <div class="input-wrapper">
+                    <select id="faculty_number" name="faculty_number">
+                        <option value="">Select Faculty Number</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="check_button">Check</button>
+        </div>
+
+        <div class="student-details" style="display: none;">
+            <h2>Student Details</h2>
+            <div class="details-row">
+                <div>
+                    <p><strong>Name : </strong><span id="name_display"></span></p>
+                    <p><strong>Enrollment Number : </strong> <span id="enrollment_number"></span></p>
+                    <p><strong>Faculty Number : </strong> <span id="faculty_number_display"></span></p>
+                    <p><strong>Course : </strong><span id="course_display"></span></p>
+                    <p><strong>Semester : </strong><span id="semester_display"></span></p>
+                    <p><strong>Problems Solved Overall:</strong> <span id="problems_solved_overall"></span></p>
+                </div>
+                <div>
+                    <!-- Table to display weekly progress -->
+                    <table id="weekly_progress" border="1">
+                        <thead>
+                            <tr>
+                                <th>Week</th>
+                                <th>Problems Solved</th>
+                                <th>Last Commit Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be inserted by JavaScript -->
+                        </tbody>
+                    </table>
+                    <button id="download_pdf">Download as PDF</button>
+                </div>
+            </div>
+        </div>
+
+        <button id="check_another" style="display: none;">Check Another Student</button>
+    </div>
+
+    <script src="{% static 'teachers/js/check_student.js' %}"></script>
+</body>
+</html>

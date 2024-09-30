@@ -2,12 +2,13 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.conf import settings
 from .forms import TeacherLoginForm, WeekLastDateForm
-from .models import Teacher, TeacherActivity
+from .models import Teacher, TeacherActivity, WeekLastDate
 from LabTrackerAMU.decorators import teacher_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from students.models import Student
-from problems.models import Problem
+from problems.models import Problem, ProblemCompletion, WeekCommit
+
 
 def teacher_login(request):
     """
@@ -248,3 +249,134 @@ def week_last_date(request):
         form = WeekLastDateForm()
 
     return render(request, 'teachers/week_last_date.html', {'form': form})
+
+@teacher_required
+@require_GET
+def fetch_student_details(request):
+    """
+    Fetch and return detailed student information, including progress on problems and commits.
+
+    This view is designed to be accessed by teachers to retrieve specific details of a student's
+    progress. It provides an overview of the student's course and semester information, the number
+    of problems solved, commit history for each week, and the status of commits (whether they were
+    on time or late).
+
+    Decorators:
+    - @teacher_required: Ensures that only authenticated teachers can access this view.
+    - @require_GET: Restricts the view to accept only GET requests.
+
+    Parameters:
+    - request (HttpRequest): The HTTP request object containing the GET parameters.
+
+    GET Parameters:
+    - faculty_number: The student's faculty number, used to identify the student.
+
+    Returns:
+    - JsonResponse: A JSON object containing the student's details, including:
+        - name (str): The student's first and last name.
+        - enrollment_number (str): The student's enrollment number.
+        - faculty_number (str): The student's faculty number.
+        - course (str): The student's course.
+        - semester (str): The student's current semester.
+        - available_weeks (list): A list of weeks for which problems are available.
+        - problem_solved_overall (int): Total number of problems solved by the student.
+        - problems_solved_weekly (list): A list of problems solved per week.
+        - last_commit_times (list): A list of the last commit times and commit hashes for each week.
+        - total_problems (list): A list of total problems available per week.
+        - statuses (list): A list of commit statuses, indicating whether the submission was on time or late.
+
+    Raises:
+    - JsonResponse: Returns a 404 status with an error message if the student with the provided
+      faculty number does not exist.
+
+    Example Usage:
+    - A teacher submits a GET request with the 'faculty_number' as a query parameter, and the view
+      returns a JSON response with detailed information about the student's problem-solving progress
+      and commit history.
+    """
+    faculty_number = request.GET.get('faculty_number')
+    try:
+        student = Student.objects.get(faculty_number=faculty_number)
+    except Student.DoesNotExist:
+        return JsonResponse({'error': 'Student not found'}, status=404)
+
+    # Fetch total problems solved by the student across all weeks
+    problem_solved_overall = ProblemCompletion.objects.filter(student=student, is_completed=True).count()
+
+    # Get all distinct weeks available for the student's course and semester
+    available_weeks = list(Problem.objects.filter(course=student.course, semester=student.semester)
+                           .values_list('week', flat=True).distinct())
+    available_weeks.sort()
+
+    # Initialize variables to hold weekly data
+    problems_solved_weekly = []
+    total_problems = []
+    last_commit_times = []
+    statuses = []
+
+    # Iterate over each available week to gather data
+    for week_number in available_weeks:
+        # Get total problems for the week
+        total_problems_count = Problem.objects.filter(course=student.course, semester=student.semester, week=week_number).count()
+        total_problems.append(total_problems_count)
+
+        # Count problems solved by the student in the week
+        week_solved = ProblemCompletion.objects.filter(student=student, problem__week=week_number, is_completed=True).count()
+        problems_solved_weekly.append(week_solved)
+
+        # Get the last commit for the week (if exists)
+        week_commit = WeekCommit.objects.filter(student=student, week_number=week_number).first()
+        if week_commit:
+            last_commit_times.append({
+                'last_commit_time': week_commit.last_commit_time,
+                'last_commit_hash': week_commit.last_commit_hash
+            })
+        else:
+            last_commit_times.append("Not Committed")
+
+        # Determine whether the commit was on time or late
+        week_last = WeekLastDate.objects.filter(course=student.course, semester=student.semester, week=week_number).first()
+        if week_commit and week_last:
+            if week_commit.last_commit_time.date() > week_last.last_date:
+                statuses.append("Late")
+            else:
+                statuses.append("On Time")
+        else:
+            statuses.append("-----")
+
+    # Prepare the student details to be returned in the response
+    student_details = {
+        'name': f"{student.first_name} {student.last_name}",
+        'enrollment_number': student.enrollment_number,
+        'faculty_number': student.faculty_number,
+        'course': student.course,
+        'semester': student.semester,
+        'available_weeks': available_weeks,
+        'problem_solved_overall': problem_solved_overall,
+        'problems_solved_weekly': problems_solved_weekly,
+        'last_commit_times': last_commit_times,
+        'total_problems': total_problems,
+        'statuses': statuses
+    }
+
+    return JsonResponse(student_details)
+
+@teacher_required
+def check_student_details(request):
+    """
+    Render the 'check_student_details' template for teachers to view student details.
+
+    This view provides a simple interface for teachers to access a page where they can input or
+    search for student details. The form on the page likely triggers other actions to fetch or display
+    student information.
+
+    Decorators:
+    - @teacher_required: Ensures that only authenticated teachers can access this view.
+
+    Parameters:
+    - request (HttpRequest): The HTTP request object.
+
+    Returns:
+    - HttpResponse: Renders the 'check_student_details.html' template for the teacher.
+    """
+    return render(request, 'teachers/check_student_details.html')

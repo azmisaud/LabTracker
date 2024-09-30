@@ -9,5 +9,7 @@ urlpatterns = [
     path('get-faculty-numbers/', views.get_faculty_numbers, name='get_faculty_numbers'),
     path('get-week/', views.get_weeks, name='get_weeks'),
     path('set-last-date/', views.week_last_date, name='week_last_date'),
+    path('fetch-student-details/', views.fetch_student_details, name='fetch_student_details'),
+    path('check-student-details/', views.check_student_details, name='check_student_details'),
 
 ]
