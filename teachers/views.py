@@ -9,7 +9,9 @@ from django.views.decorators.http import require_GET, require_POST
 from django.views.decorators.csrf import csrf_exempt
 from students.models import Student
 from problems.models import Problem, ProblemCompletion, WeekCommit
-
+from .utils import update_student_data
+from datetime import timedelta
+from django.utils import timezone
 
 def teacher_login(request):
     """
@@ -718,3 +720,99 @@ def check_whole_class(request):
     and the system will display a report summarizing the class's progress.
     """
     return render(request, 'teachers/check_whole_class.html')
+
+
+@teacher_required
+@csrf_exempt
+@require_POST
+def trigger_update(request):
+    """
+    Triggers the update of student problem completion and commit data for a specific course and semester.
+
+    This view allows a teacher to initiate an update for student data based on their GitHub repositories.
+    The update is restricted to once per hour to avoid excessive API calls or accidental re-triggering.
+
+    Restrictions:
+    - A teacher must be logged in and have their `teacher_id` stored in the session.
+    - The update process can only be triggered if it has been at least one hour since the last update.
+
+    Parameters:
+    - `course` (POST): The course for which the data update is triggered.
+    - `semester` (POST): The semester for which the data update is triggered.
+
+    Behavior:
+    - The function checks the timestamp of the last update (if any) and compares it to the current time.
+    - If less than an hour has passed since the last update, the function returns an error response, disabling the button.
+    - If more than an hour has passed, the function triggers the `update_student_data()` process and logs the activity
+      in the `TeacherActivity` model.
+
+    Response:
+    - On success, returns a JSON response with the message 'Data updated successfully'.
+    - On failure (if the teacher is not logged in or if the update has been triggered within the last hour),
+      it returns an error response with relevant details.
+
+    Example usage:
+    ```
+    POST /trigger_update/
+    {
+        "course": "CS101",
+        "semester": "Fall2024"
+    }
+    ```
+    Example response:
+    ```
+    {
+        "success": "Data updated successfully"
+    }
+    ```
+
+    Error response (if triggered within the last hour):
+    ```
+    {
+        "error": "Button is disabled for 1 hour because [Teacher Name] updated for [Course], Semester [Semester]"
+    }
+    ```
+
+    Error response (if teacher is not logged in):
+    ```
+    {
+        "error": "Teacher not logged in"
+    }
+    ```
+
+    External Dependencies:
+    - This view relies on the `update_student_data()` function to handle the actual update process.
+    - `TeacherActivity` model is used to log the teacher's actions and prevent multiple triggers within a short period.
+
+    Notes:
+    - CSRF protection is disabled due to the use of `@csrf_exempt`.
+    """
+    teacher_id = request.session.get('teacher_id')
+
+    if not teacher_id:
+        return JsonResponse({'error': 'Teacher not logged in'}, status=404)
+
+    last_update = TeacherActivity.objects.filter(action='Updated the data').order_by('-timestamp').first()
+
+    # Check if the last update was within the past hour
+    if last_update and (timezone.now() - last_update.timestamp) < timedelta(hours=1):
+        return JsonResponse({
+            'error': f'Button is disabled for 1 hour because {last_update.teacher} updated for {last_update.course}, Semester {last_update.semester}'
+        })
+
+    teacher = Teacher.objects.get(id=teacher_id)
+    course = request.POST.get('course')
+    semester = request.POST.get('semester')
+
+    # Call the function to update student data based on the selected course and semester
+    update_student_data(course, semester)
+
+    # Log the teacher's activity
+    TeacherActivity.objects.create(
+        teacher=teacher,
+        action='Updated the data',
+        course=course,
+        semester=semester,
+    )
+
+    return JsonResponse({'success': 'Data updated successfully'})

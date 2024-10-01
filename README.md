@@ -135,6 +135,10 @@ Welcome to **Lab Tracker**, a Django-based platform designed to automate and str
 ![Check Whole Class Weekly 1](static/images/check_whole_class_weekly_1.png)
 ![Check Whole Class Weekly 2](static/images/check_whole_class_weekly_2.png)
 
+#### Whole Report of the Class
+![Check Whole Class Report 1](static/images/report_of_whole_class_1.png)
+![Check Whole Class Report 2](static/images/report_of_whole_class_2.jpeg)
+
 ## 🎯 Roadmap
 
 - Add OAuth support for GitHub login.
