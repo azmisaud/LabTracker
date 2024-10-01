@@ -5,7 +5,8 @@ from .forms import TeacherLoginForm, WeekLastDateForm
 from .models import Teacher, TeacherActivity, WeekLastDate
 from LabTrackerAMU.decorators import teacher_required
 from django.http import JsonResponse
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.csrf import csrf_exempt
 from students.models import Student
 from problems.models import Problem, ProblemCompletion, WeekCommit
 
@@ -380,3 +381,187 @@ def check_student_details(request):
     - HttpResponse: Renders the 'check_student_details.html' template for the teacher.
     """
     return render(request, 'teachers/check_student_details.html')
+
+@teacher_required
+@csrf_exempt
+@require_POST
+def log_activity(request):
+    """
+    Log a teacher's activity related to course and semester actions.
+
+    This view handles logging specific actions performed by a teacher, such as setting deadlines,
+    or other course-related activities. The action details are posted via a form and stored in the
+    TeacherActivity model.
+
+    Decorators:
+    - @teacher_required: Ensures that only authenticated teachers can access this view.
+    - @csrf_exempt: Allows the view to be accessed without CSRF token validation.
+    - @require_POST: Ensures that only POST requests are allowed.
+
+    Parameters:
+    - request (HttpRequest): The HTTP request object, expected to contain POST data including:
+      - action (str): The action performed by the teacher (e.g., 'Set Last Date').
+      - course (str): The course related to the action.
+      - semester (str): The semester related to the action.
+      - week (str): The specific week of the semester related to the action.
+
+    Returns:
+    - JsonResponse: A success message in JSON format upon successful logging of the activity.
+      Returns an error message if the teacher is not logged in.
+    """
+    teacher_id = request.session.get('teacher_id')
+
+    if not teacher_id:
+        return JsonResponse({'error': 'Teacher not logged in'}, status=404)
+
+    teacher = Teacher.objects.get(id=teacher_id)
+    action = request.POST.get('action')
+    course = request.POST.get('course')
+    semester = request.POST.get('semester')
+    week = request.POST.get('week')
+
+    TeacherActivity.objects.create(
+        teacher=teacher,
+        action=action,
+        course=course,
+        semester=semester,
+        week=week
+    )
+
+    return JsonResponse({'success': 'Activity logged successfully'})
+
+
+@teacher_required
+@require_GET
+def fetch_whole_class_weekly(request):
+    """
+    Retrieve weekly progress data for an entire class.
+
+    This view fetches detailed weekly reports for all students in a particular course and semester.
+    It returns data on each student's weekly problem-solving progress, last commit time, and whether
+    their submission was on time or late, based on the last commit date and the set week deadline.
+
+    Decorators:
+    - @teacher_required: Ensures that only authenticated teachers can access this view.
+    - @require_GET: Restricts access to GET requests only.
+
+    Parameters:
+    - request (HttpRequest): The HTTP request object, expected to contain GET parameters:
+        - 'course' (str): The course identifier.
+        - 'semester' (str): The semester identifier.
+        - 'week' (str): The specific week for which the report is being fetched.
+
+    Returns:
+    - JsonResponse: A JSON array containing student report data, with each entry having:
+        - 'enrollment_number' (str): The student's enrollment number.
+        - 'faculty_number' (str): The student's faculty number.
+        - 'full_name' (str): The student's full name.
+        - 'last_commit_time' (str or datetime): The time of the student's last commit for the given week.
+        - 'problems_solved' (int): The number of problems the student solved in the given week.
+        - 'total_problems' (int): The total number of problems assigned in the week.
+        - 'status' (str): The submission status, either 'On Time', 'Late', or 'No Commits'.
+
+    Process:
+    - Fetches all students enrolled in the given course and semester.
+    - Retrieves the set last date for submissions for the specified week.
+    - For each student, it checks their problem-solving progress for the week, last commit time, and
+      whether their submission was made on time or late.
+    - Returns the data in JSON format to be consumed by the frontend or other systems.
+
+    Example Response:
+    [
+        {
+            'enrollment_number': '1234567890',
+            'faculty_number': 'FAC123',
+            'full_name': 'John Doe',
+            'last_commit_time': '2024-09-20 10:30:00',
+            'problems_solved': 3,
+            'total_problems': 5,
+            'status': 'On Time'
+        },
+        ...
+    ]
+    """
+    course = request.GET.get('course')
+    semester = request.GET.get('semester')
+    week = request.GET.get('week')
+
+    all_student = Student.objects.filter(course=course, semester=semester).order_by('faculty_number')
+
+    # Fetch last date for the week
+    week_last_date_2 = WeekLastDate.objects.filter(course=course, semester=semester, week=week).first()
+    last_date = week_last_date_2.last_date if week_last_date_2 else None
+
+    # Total problems for the week
+    total_problems_in_week = Problem.objects.filter(course=course, semester=semester, week=week).count()
+
+    report_data = []
+
+    # Loop through each student to gather progress data
+    for student in all_student:
+        week_commit = WeekCommit.objects.filter(student=student, week_number=week).first()
+
+        problems_solved = ProblemCompletion.objects.filter(student=student, problem__week=week,
+                                                           is_completed=True).count()
+
+        # Determine submission status based on the last commit time and deadline
+        if last_date:
+            if week_commit:
+                last_commit_time = week_commit.last_commit_time
+                if last_commit_time.date() > last_date:
+                    commit_status = "Late"
+                else:
+                    commit_status = "On Time"
+            else:
+                last_commit_time = "No Commits"
+                commit_status = "----"
+        else:
+            if week_commit:
+                last_commit_time = week_commit.last_commit_time
+                commit_status = "-----"
+            else:
+                last_commit_time = "No Commits"
+                commit_status = "-----"
+
+        # Append student data to the report
+        report_data.append({
+            'enrollment_number': student.enrollment_number,
+            'faculty_number': student.faculty_number,
+            'full_name': f"{student.first_name} {student.last_name}",
+            'last_commit_time': last_commit_time,
+            'problems_solved': problems_solved,
+            'total_problems': total_problems_in_week,
+            'status': commit_status
+        })
+
+    return JsonResponse(report_data, safe=False)
+
+@teacher_required
+def check_whole_class_weekly(request):
+    """
+    Render the page for checking the weekly progress of the whole class.
+
+    This view is responsible for rendering a template where teachers can view the weekly progress
+    of all students in a class. The progress includes details such as the number of problems solved,
+    last commit time, and submission status (on time or late).
+
+    Decorators:
+    - @teacher_required: Ensures that only authenticated teachers can access this view.
+
+    Parameters:
+    - request (HttpRequest): The HTTP request object that contains session data and is used to render the page.
+
+    Returns:
+    - HttpResponse: A response that renders the 'check_weekly_class.html' template, which allows the teacher
+      to check class progress. The actual student data is fetched separately using the appropriate API endpoint.
+
+    This view does not handle any data processing itself but serves as a front-end entry point for the
+    teacher to interact with the system and fetch detailed reports using JavaScript or other mechanisms
+    from the frontend.
+
+    Example:
+    When a teacher visits this page, they can select the course, semester, and week they want to view.
+    The page will then display the weekly report, which will likely be fetched via AJAX or similar methods
+    using endpoints such as `fetch_whole_class_weekly`.
+    """
+    return render(request, 'teachers/check_weekly_class.html')
