@@ -14,5 +14,7 @@ urlpatterns = [
     path('log_activity/', views.log_activity, name='log_activity'),
     path('fetch-whole-class-weekly/', views.fetch_whole_class_weekly, name='fetch_whole_class_weekly'),
     path('check-whole-class-weekly/', views.check_whole_class_weekly, name='check_whole_class_weekly'),
+    path('fetch-whole-class/', views.fetch_whole_class, name='fetch_whole_class'),
+    path('check-whole-class/', views.check_whole_class, name='check_whole_class'),
 
 ]
