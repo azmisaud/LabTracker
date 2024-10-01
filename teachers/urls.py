@@ -16,5 +16,6 @@ urlpatterns = [
     path('check-whole-class-weekly/', views.check_whole_class_weekly, name='check_whole_class_weekly'),
     path('fetch-whole-class/', views.fetch_whole_class, name='fetch_whole_class'),
     path('check-whole-class/', views.check_whole_class, name='check_whole_class'),
+    path('trigger-update/', views.trigger_update, name='trigger_update'),
 
 ]
