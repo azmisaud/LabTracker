@@ -816,3 +816,77 @@ def trigger_update(request):
     )
 
     return JsonResponse({'success': 'Data updated successfully'})
+
+@teacher_required
+@require_GET
+def delete_old_students(request):
+    """
+    View for deleting students who have been inactive for over 150 days.
+    The view can only be accessed by teachers and performs a number of checks
+    before proceeding with the deletion.
+
+    Process:
+    1. Verify that the teacher is logged in by checking the session data.
+    2. Check whether a new semester has been started in the past 150 days.
+    3. If no recent semester has started, identify students who have been on
+       the platform for more than 150 days, excluding any 'dummy' students and superusers.
+    4. Delete the eligible students and log the action as a new semester started.
+
+    Parameters:
+        request (HttpRequest): The incoming request object, must be a GET request.
+
+    Returns:
+        JsonResponse: A JSON response indicating the result of the operation:
+        - Error if no teacher is logged in.
+        - Error if a new semester has been started within the last 150 days.
+        - Error if no students are found who are eligible for deletion.
+        - Success message with the number of students deleted.
+
+    Decorators:
+        @teacher_required: Ensures the view is only accessible to logged-in teachers.
+        @require_GET: Restricts the view to only accept GET requests.
+    """
+    # Get the teacher ID from session
+    teacher_id = request.session.get('teacher_id')
+
+    if not teacher_id:
+        # Return an error if the teacher is not logged in
+        return JsonResponse({'error': 'Teacher not logged in'}, status=404)
+
+    # Get the teacher object based on session ID
+    teacher = Teacher.objects.get(id=teacher_id)
+
+    # Define the cutoff date (150 days from the current time)
+    cutoff_date = timezone.now() - timedelta(days=150)
+
+    # Check if a new semester has been started in the last 150 days
+    recent_activity_exists = TeacherActivity.objects.filter(
+        action='Started a New Semester',
+        timestamp__gte=cutoff_date
+    ).exists()
+
+    if recent_activity_exists:
+        # Return an error if a new semester was started recently
+        return JsonResponse({'error': 'A new semester has been started recently.'})
+
+    # Find students who have been on the platform for more than 150 days
+    # Exclude superuser and staff accounts from deletion
+    students_to_delete = Student.objects.filter(
+        date_joined__lte=cutoff_date
+    ).exclude(is_superuser=True,is_staff=True)
+
+    if not students_to_delete.exists():
+        # Return an error if no eligible students are found for deletion
+        return JsonResponse({'error': 'No students have completed 150 days on the platform.'})
+
+    # Perform the deletion and capture the number of students deleted
+    num_deleted, _ = students_to_delete.delete()
+
+    # Log the activity of starting a new semester
+    TeacherActivity.objects.create(
+        teacher=teacher,
+        action='Started a New Semester',
+    )
+
+    # Return a success response with the number of deleted students
+    return JsonResponse({'success': f'{num_deleted} students deleted successfully'})
