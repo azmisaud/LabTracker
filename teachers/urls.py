@@ -17,5 +17,7 @@ urlpatterns = [
     path('fetch-whole-class/', views.fetch_whole_class, name='fetch_whole_class'),
     path('check-whole-class/', views.check_whole_class, name='check_whole_class'),
     path('trigger-update/', views.trigger_update, name='trigger_update'),
+    path('start-new/', views.delete_old_students, name='start_a_new_semester'),
+    path('your-activities/', views.your_activity, name='your_activities'),
 
 ]

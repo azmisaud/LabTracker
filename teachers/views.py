@@ -12,6 +12,7 @@ from problems.models import Problem, ProblemCompletion, WeekCommit
 from .utils import update_student_data
 from datetime import timedelta
 from django.utils import timezone
+from django.core.paginator import Paginator
 
 def teacher_login(request):
     """
@@ -890,3 +891,93 @@ def delete_old_students(request):
 
     # Return a success response with the number of deleted students
     return JsonResponse({'success': f'{num_deleted} students deleted successfully'})
+
+@teacher_required
+def your_activity(request):
+    """
+    View for displaying a teacher's recent activities in a paginated format.
+    The activities include actions such as adding or editing problems, viewing or downloading
+    class reports, starting a new semester, and updating course data.
+
+    Process:
+    1. Check if the teacher is logged in by verifying the session data.
+    2. Retrieve all activities performed by the logged-in teacher, sorted in reverse chronological order.
+    3. Format each activity for readability, displaying details such as the course, semester, week, and action performed.
+    4. Paginate the activities with 15 activities per page.
+    5. Render the activity list in the 'teachers/your_activity.html' template.
+
+    Parameters:
+        request (HttpRequest): The incoming request object.
+
+    Returns:
+        JsonResponse: If the teacher is not logged in, an error is returned in JSON format.
+        HttpResponse: Renders the 'teachers/your_activity.html' template with the teacher's activities.
+
+    Decorators:
+        @teacher_required: Ensures the view is only accessible to logged-in teachers.
+    """
+
+    # Get the teacher ID from the session
+    teacher_id = request.session.get('teacher_id')
+
+    if not teacher_id:
+        # Return an error if the teacher is not logged in
+        return JsonResponse({'error': 'Teacher not logged in'})
+
+    # Get the teacher object based on the session ID
+    teacher = Teacher.objects.get(id=teacher_id)
+
+    # Retrieve all activities of the teacher, sorted by timestamp (most recent first)
+    all_activity = TeacherActivity.objects.filter(teacher=teacher).order_by('-timestamp')
+
+    def format_activity2(activity):
+        """
+        Helper function to format a single activity into a readable string.
+
+        Parameters:
+            activity (TeacherActivity): The activity object to format.
+
+        Returns:
+            str: A formatted string describing the activity, including the timestamp, action, course, semester, and description.
+        """
+        # Format the timestamp in a readable format
+        timestamp = format(timezone.localtime(activity.timestamp), 'd F Y, H:i')
+
+        # Check the action type and format accordingly
+        if activity.action == 'Added Problem':
+            return f"{timestamp} : You added a problem in {activity.course}, Sem {activity.semester} in Week {activity.week} <br> Problem Description : {activity.description}"
+        elif activity.action == 'Edited Problem':
+            return f"{timestamp} : You edited a problem in {activity.course}, Sem {activity.semester} in Week {activity.week} <br> Problem Description : {activity.description}"
+        elif activity.action == 'Viewed Class Report':
+            return f"{timestamp} : You viewed the class report of {activity.course}, Sem {activity.semester}"
+        elif activity.action == 'Downloaded Class Report':
+            return f"{timestamp} : You downloaded the class report of {activity.course}, Sem {activity.semester}"
+        elif activity.action == 'Started a New Semester':
+            return f"{timestamp} : You started a new Semester"
+        elif activity.action == 'Updated the data':
+            return f"{timestamp} : You updated the data for {activity.course}, Sem {activity.semester}"
+        elif activity.action == 'Viewed Weekly Class Report':
+            return f"{timestamp} : You viewed the weekly report of {activity.course}, Sem {activity.semester}, Week {activity.week}"
+        elif activity.action == 'Downloaded Weekly Class Report':
+            return f"{timestamp} : You downloaded the weekly report of {activity.course}, Sem {activity.semester}, Week {activity.week}"
+        elif activity.action == 'Set Last Date':
+            return f"{timestamp} : You have set the last date for {activity.course}, Sem {activity.semester}, Week {activity.week} as {activity.description}"
+        else:
+            return "Unknown activity"
+
+    # Format each activity into a readable string
+    format_activity = [format_activity2(activity) for activity in all_activity]
+
+    # Paginate the activity list, with 15 activities per page
+    paginator = Paginator(format_activity, 15)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Prepare the context for the template
+    context = {
+        'teacher': teacher,
+        'page_obj': page_obj
+    }
+
+    # Render the activity page
+    return render(request, 'teachers/your_activity.html', context)
