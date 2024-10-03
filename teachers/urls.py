@@ -19,5 +19,6 @@ urlpatterns = [
     path('trigger-update/', views.trigger_update, name='trigger_update'),
     path('start-new/', views.delete_old_students, name='start_a_new_semester'),
     path('your-activities/', views.your_activity, name='your_activities'),
+    path('other-activities/', views.other_activity, name='other_activities'),
 
 ]
