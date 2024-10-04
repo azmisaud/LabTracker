@@ -1071,3 +1071,117 @@ def other_activity(request):
 
     # Render the activity page for other teachers' activities
     return render(request, 'teachers/other_activity.html', context)
+
+
+@teacher_required
+def fetch_graph_data(request):
+    """
+    Fetches data for generating graph statistics on problem-solving performance of students
+    for a selected week, grouped by course and semester. The data includes counts of problems
+    solved on time, late, unsolved, and whether students committed their work within the required timeframe.
+
+    Process:
+    1. Retrieve the selected week from the request parameters (defaults to Week 1 if not specified).
+    2. Get distinct combinations of courses and semesters from non-superuser and non-staff students.
+    3. For each course-semester combination, retrieve students, problems, and relevant data for the selected week.
+    4. Classify students into categories based on whether they solved problems on time or late,
+       and whether they committed their work before the deadline or not.
+    5. Compile the result for each course and semester and return it as JSON data for graph rendering.
+
+    Parameters:
+        request (HttpRequest): The incoming request object, containing the 'week' parameter.
+
+    Returns:
+        JsonResponse: A list of dictionaries, each containing the course, semester, and counts of
+        late/on-time solved/unsolved problems and students who did not commit.
+
+    Decorators:
+        @teacher_required: Ensures the view is only accessible to logged-in teachers.
+    """
+
+    # Retrieve the selected week from the query parameters, defaulting to week 1 if not provided
+    selected_week = int(request.GET.get('week', 1))
+
+    # Get distinct course-semester combinations of non-superuser, non-staff students
+    course_semester_combinations = Student.objects.filter(is_superuser=False, is_staff=False).values('course',
+                                                                                                     'semester').distinct()
+
+    # Initialize an empty list to hold the graph data
+    graph_data = []
+
+    # Loop over each course-semester combination to collect data
+    for combination in course_semester_combinations:
+        course = combination['course']
+        semester = combination['semester']
+
+        # Check if problems exist for the selected week for this course and semester
+        if not Problem.objects.filter(course=course, semester=semester, week=selected_week).exists():
+            continue  # Skip this combination if no problems are found
+
+        # Retrieve all students for the current course and semester
+        students = Student.objects.filter(course=course, semester=semester)
+
+        # Count the total number of problems for the current course, semester, and week
+        total_problems = Problem.objects.filter(course=course, semester=semester, week=selected_week).count()
+
+        # Initialize counters for different categories
+        late_solved = 0
+        late_unsolved = 0
+        on_time_solved = 0
+        on_time_unsolved = 0
+        not_committed = 0
+
+        # Iterate through each student to classify their activity
+        for student in students:
+            # Count the number of solved problems for the student in the selected week
+            solved_problems = ProblemCompletion.objects.filter(
+                student=student,
+                problem__course=course,
+                problem__semester=semester,
+                problem__week=selected_week,
+                is_completed=True
+            ).count()
+
+            # Retrieve the student's last commit for the selected week
+            last_commit = WeekCommit.objects.filter(student=student, week_number=selected_week).first()
+
+            # Retrieve the last date allowed for the selected week
+            week_last = WeekLastDate.objects.filter(course=course, semester=semester, week=selected_week).first()
+
+            if last_commit:
+                if week_last:
+                    # Compare the commit date with the last allowed date
+                    if last_commit.last_commit_time.date() > week_last.last_date:
+                        # Classify the student based on whether they solved all problems or not
+                        if solved_problems == total_problems:
+                            late_solved += 1
+                        else:
+                            late_unsolved += 1
+                    else:
+                        if solved_problems == total_problems:
+                            on_time_solved += 1
+                        else:
+                            on_time_unsolved += 1
+                else:
+                    # If no last date is available, assume it's on time
+                    if solved_problems == total_problems:
+                        on_time_solved += 1
+                    else:
+                        on_time_unsolved += 1
+            else:
+                # If no commit is made, classify the student as not committed
+                not_committed += 1
+
+        # Append the collected data for this course-semester combination to the graph data list
+        graph_data.append({
+            'course': course,
+            'semester': semester,
+            'late_solved': late_solved,
+            'late_unsolved': late_unsolved,
+            'on_time_solved': on_time_solved,
+            'on_time_unsolved': on_time_unsolved,
+            'not_committed': not_committed
+        })
+
+    # Return the graph data as a JSON response
+    return JsonResponse(graph_data, safe=False)
