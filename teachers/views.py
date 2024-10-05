@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.conf import settings
 from .forms import TeacherLoginForm, WeekLastDateForm
@@ -1185,3 +1185,59 @@ def fetch_graph_data(request):
 
     # Return the graph data as a JSON response
     return JsonResponse(graph_data, safe=False)
+
+@teacher_required
+def teacher_dashboard(request):
+    """
+    Displays the teacher dashboard with the most recent activities of the logged-in teacher
+    and other teachers, including actions like adding/editing problems, viewing reports, etc.
+
+    Process:
+    1. Retrieve the current teacher's activities and other teachers' activities.
+    2. Format the activities for display, highlighting whether they belong to the current teacher or not.
+    3. Render the dashboard template with the formatted activities.
+
+    Parameters:
+        request (HttpRequest): The incoming request object.
+
+    Returns:
+        HttpResponse: Renders the 'teachers/dashboard.html' template with activity data.
+    """
+
+    teacher_id = request.session.get('teacher_id')
+    teacher = get_object_or_404(Teacher, id=teacher_id)
+
+    # Fetch the latest 4 activities of the logged-in teacher and other teachers
+    your_activities = TeacherActivity.objects.filter(teacher=teacher).order_by('-timestamp')[:4]
+    other_teacher_activities = TeacherActivity.objects.exclude(teacher=teacher).order_by('-timestamp')[:4]
+
+    # Helper function to format activities for display
+    def format_activity(activity, is_your_activity=False):
+        timestamp = format(timezone.localtime(activity.timestamp), 'd F Y, H:i')
+        teacher_name = "You" if is_your_activity else activity.teacher.name
+
+        action_messages = {
+            'Added Problem': f"{teacher_name} added a problem in {activity.course}, Sem {activity.semester} in Week {activity.week} <br> Problem Description: {activity.description}",
+            'Edited Problem': f"{teacher_name} edited a problem in {activity.course}, Sem {activity.semester} in Week {activity.week} <br> Problem Description: {activity.description}",
+            'Viewed Class Report': f"{teacher_name} viewed the class report of {activity.course}, Sem {activity.semester}",
+            'Downloaded Class Report': f"{teacher_name} downloaded the class report of {activity.course}, Sem {activity.semester}",
+            'Started a New Semester': f"{teacher_name} started a new Semester",
+            'Updated the data': f"{teacher_name} updated the data for {activity.course}, Sem {activity.semester}",
+            'Viewed Weekly Class Report': f"{teacher_name} viewed the weekly report of {activity.course}, Sem {activity.semester}, Week {activity.week}",
+            'Downloaded Weekly Class Report': f"{teacher_name} downloaded the weekly report of {activity.course}, Sem {activity.semester}, Week {activity.week}",
+            'Set Last Date': f"{teacher_name} set the last date for {activity.course}, Sem {activity.semester}, Week {activity.week} as {activity.description}"
+        }
+
+        return action_messages.get(activity.action, "Unknown activity")
+
+    # Format activities for display
+    formatted_your_activities = [format_activity(activity, is_your_activity=True) for activity in your_activities]
+    formatted_other_teacher_activities = [format_activity(activity) for activity in other_teacher_activities]
+
+    context = {
+        'teacher': teacher,
+        'your_activities': formatted_your_activities,
+        'other_teacher_activities': formatted_other_teacher_activities
+    }
+
+    return render(request, 'teachers/dashboard.html', context)
