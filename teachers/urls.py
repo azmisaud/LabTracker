@@ -20,5 +20,7 @@ urlpatterns = [
     path('start-new/', views.delete_old_students, name='start_a_new_semester'),
     path('your-activities/', views.your_activity, name='your_activities'),
     path('other-activities/', views.other_activity, name='other_activities'),
+    path('fetch-graph-data/', views.fetch_graph_data, name='fetch_graph_data'),
+    path('dashboard/', views.teacher_dashboard, name='teacher_dashboard'),
 
 ]

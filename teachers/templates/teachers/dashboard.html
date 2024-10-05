@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'teachers/css/teacher_dashboard.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1 class="logo">LabTracker</h1>
+            <!-- Navbar Toggle Button -->
+            <div class="navbar-toggle" onclick="document.querySelector('.navbar').classList.toggle('active');">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <nav class="navbar">
+                <ul>
+                    <li>
+                        <a href="{% url 'addProblem' %}">Add a Problem</a>
+                        <a href="{% url 'create_problem' %}">Edit a Problem</a>
+                        <a href="{% url 'week_last_date' %}">Set Date</a>
+                        <a href="{% url 'check_student_details' %}">Student Report</a>
+                        <a href="{% url 'check_whole_class_weekly' %}">Weekly Report</a>
+                        <a href="{% url 'check_whole_class' %}">Whole Report</a>
+                        <a href="{% url 'teacher_logout' %}">Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="dashboard-layout">
+        <!-- Left Container -->
+
+
+        <!-- Middle Container -->
+        <div class="middle-container">
+            <section class="welcome-section">
+                <h2>Welcome, {{ teacher.name }}</h2>
+                <p>Use the links above to manage problems and students, and download reports.</p>
+
+                <!-- Additional Instructions -->
+                <div class="instructions-section">
+                    <h3>Instructions for Teachers</h3>
+                    <ul>
+                        <li><strong>Add a Problem:</strong> Click on the "Add Problem" button and enter the required details including course, semester, week, problem number, description, and an optional image.</li>
+                        <li><strong>Edit a Problem:</strong> Click on the "Edit Problem" button, provide the course, semester, week, and problem number, fetch the problem details, and make necessary edits.</li>
+                        <li><strong>Download a Specific Student Report:</strong> To review a particular student's report, click on the "Review Specific Student" button and enter the course, semester, and faculty number.</li>
+                        <li><strong>Download Weekly Class Reports:</strong> To download weekly reports for the entire class, click on the "Download Weekly Report" button and select the course and semester.</li>
+                        <li><strong>Download Complete Class Report:</strong> Click on the "Download Whole Report" button, enter the course and semester details to download a complete report for the class.</li>
+                        <li><strong>Update Student Data:</strong> Use the "Update Student Data" button to manually update student details from GitHub after entering the course and semester. Due to GitHub’s API rate limitations, this button will be disabled for all teachers for one hour after the update.</li>
+                        <li><strong>Start a New Semester:</strong> Use caution when selecting this option, as it will permanently remove students who have been on the platform for over 150 days.</li>
+                        <li><strong>Review Recent Activities:</strong> Before performing any actions, check recent activities by other teachers to stay informed and avoid conflicts.</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <div class="left-container">
+                <div class="button-group">
+                    <button id="update-data-btn">Update Student Data</button>
+                    <form id="update-data-form" class="update-form" style="display: none;">
+                        <div class="form-group">
+                            <label for="course">Course:</label>
+                            <div class="input-wrapper">
+                                <select id="course" name="course">
+                                    <option value="">Select Course</option>
+                                    <option value="BCA">B.C.A</option>
+                                    <option value="MCA">M.C.A</option>
+                                    <option value="MSC">M.Sc(C.S & D.F)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="semester">Semester:</label>
+                            <div class="input-wrapper">
+                                <select id="semester" name="semester">
+                                    <option value="">Select Semester</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit">Submit</button>
+                    </form>
+                    <button id="start-new-semester-btn">Start a New Semester</button>
+                </div>
+            </div>
+        <!-- Right Container -->
+        <div class="right-container">
+            <div class="activities-container">
+                <h3>Recent Activities by Others</h3>
+                {% if other_teacher_activities %}
+                    <ul>
+                        {% for activity in other_teacher_activities %}
+                        <li>{{ activity|safe }}</li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'other_activities' %}">View More</a>
+                {% else %}
+                    <ul>
+                        <li>NO RECENT ACTIVITIES</li>
+                    </ul>
+                {% endif %}
+            </div>
+            <div class="activities-container">
+                <h3>Your Recent Activities</h3>
+                {% if your_activities %}
+                    <ul>
+                        {% for activity in your_activities %}
+                        <li>{{ activity|safe }}</li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'your_activities' %}">View More</a>
+                {% else %}
+                    <ul>
+                        <li>NO RECENT ACTIVITIES</li>
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="graph-container">
+            <div class="week-selection-container">
+                <div class="form-group">
+                    <label for="week-select"><strong>Select Week:</strong> </label>
+                    <select id="week-select">
+                        <option value="1">Week 1</option>
+                        <option value="2">Week 2</option>
+                        <option value="3">Week 3</option>
+                        <option value="4">Week 4</option>
+                        <option value="5">Week 5</option>
+                        <option value="6">Week 6</option>
+                        <option value="7">Week 7</option>
+                        <option value="8">Week 8</option>
+                        <option value="9">Week 9</option>
+                        <option value="10">Week 10</option>
+                        <option value="11">Week 11</option>
+                        <option value="12">Week 12</option>
+                        <option value="13">Week 13</option>
+                        <option value="14">Week 14</option>
+                    </select>
+                </div>
+            </div>
+            <div class="graphs-section" id="graphs">
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'teachers/js/teacher_dashboard.js' %}"></script>
+</body>
+</html>
