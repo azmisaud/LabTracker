@@ -7,11 +7,34 @@
     <title>Student Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/central.css' %}"> <!-- Include your CSS file -->
-</head>
+    <link rel="stylesheet" href="{% static 'css/central.css' %}"> 
+    <link rel="stylesheet" href="{% static 'css/friends.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
 <body>
     <header>
-        <div class="header-content">
+
+        <div class="bg-slate-900 py-5 text-white sm:py-8">
+            <nav class="container flex items-center justify-between">
+                <div class="text-red font-bold text-xl">
+                    <button>
+                        <span><a href="{% url 'homepage' %}">LAB TRACKER</a></span>
+                    </button>
+                </div>
+                <div class="flex items-center gap-5">
+                    <ul class="hidden sm:flex items-center justify-end gap-5">
+                        <li>
+                            <a href="{% url 'student_signup' %}" class="button-resources">
+                                Sign Up
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    
+                </div>
+            </nav>
+        </div>
+        <!-- <div class="header-content">
             <h1 class="logo">LabTracker</h1>
             <nav class="navbar">
                 <ul>
@@ -23,7 +46,7 @@
                     </li>
                 </ul>
             </nav>
-        </div>
+        </div> -->
     </header>
     <div class="form-container">
         <h2>Student Login</h2>
