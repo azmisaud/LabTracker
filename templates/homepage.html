@@ -5,34 +5,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lab Tracker - Department of Computer Science, AMU</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/homepage.css' %}">
+    <link rel="stylesheet" href="{% static 'css/friends.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
 </head>
 <body>
     <header>
-        <div class="header-content">
-            <h1 class="logo">LabTracker</h1>
-            <nav class="navbar">
-                <ul>
-                    <li class="dropdown">
-                        <a href="#" class="dropbtn">Student</a>
-                        <div class="dropdown-content">
-                            <a href="{% url 'student_signup' %}">Sign Up</a>
-                            <a href="{% url 'student_login' %}">Login</a>
+            <div class="bg-slate-900 py-5 text-white sm:py-8">
+                <nav class="container flex items-center justify-between">
+                    <div class="text-red font-bold text-xl">
+                        <button>
+                            <span>LAB TRACKER</span>
+                        </button>
+                    </div>
+        
+                    <div class="flex items-center gap-5">
+                        <!-- Student Dropdown -->
+                        <div class="relative flex items-center">
+                            <button class="dropdown-button text-gray-400 hover:text-white" aria-label="Open Student Dropdown">
+                                <span>Student</span>
+                            </button>
+                            <div class="dropdown-menu pointer-events-none invisible absolute left-0 top-full z-[999] mt-2 w-48 min-w-[100px] rounded-md bg-slate-800 py-2 opacity-0 shadow-xl transition-all duration-100">
+                                <div class="space-y-1">
+                                    <a href="{% url 'student_signup' %}" 
+                                       class="block px-4 py-2 rounded-md text-white transition-colors bg-slate-800 mx-2"  
+                                       onmouseover="this.style.backgroundColor='#063'; this.style.color='white';" 
+                                       onmouseout="this.style.backgroundColor=''; this.style.color='gray';">
+                                        Sign Up
+                                    </a>
+                                    <a href="{% url 'student_login' %}" 
+                                       class="block px-4 py-2 rounded-md text-white transition-colors bg-slate-800 mx-2"  
+                                       onmouseover="this.style.backgroundColor='#063'; this.style.color='white';" 
+                                       onmouseout="this.style.backgroundColor=''; this.style.color='gray';">
+                                        Login
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropbtn">Teacher</a>
-                        <div class="dropdown-content">
-                            <a href="{% url 'teacher_login' %}">Login</a>
+        
+                        <!-- Teacher Dropdown -->
+                        <div class="relative flex items-center">
+                            <button class="dropdown-button text-gray-400 hover:text-white" aria-label="Open Teacher Dropdown">
+                                <span>Teacher</span>
+                            </button>
+                            <div class="dropdown-menu pointer-events-none invisible absolute left-0 top-full z-[999] mt-2 w-48 min-w-[100px] rounded-md bg-slate-800 py-2 opacity-0 shadow-xl transition-all duration-100">
+                                <div class="space-y-1">
+                                    <a href="{% url 'teacher_login' %}" 
+                                       class="block px-4 py-2 rounded-md text-white transition-colors bg-slate-800 mx-2"  
+                                       onmouseover="this.style.backgroundColor='#063'; this.style.color='white';" 
+                                       onmouseout="this.style.backgroundColor=''; this.style.color='gray';">
+                                        Login
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                    </li>
-                    <li class="dropdown">
-                        <a href="https://www.amu.ac.in/department/computer-science">Resources</a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
+        
+                        <!-- Resources Link -->
+                        <ul class="hidden sm:flex items-center justify-end gap-5">
+                            <li>
+                                <a href="https://www.amu.ac.in/department/computer-science"
+                                   class="flex h-8 w-28 items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-white"
+                                   style="background-color: rgb(107, 0, 2);">
+                                   Resources
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
     </header>
     <div class="overlay">
         <div class="background-logo">
@@ -52,4 +95,30 @@
         </section>
     </div>
 </body>
+<script>
+
+    const dropdownButtons = document.querySelectorAll('.dropdown-button');
+
+    dropdownButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const menu = this.nextElementSibling;
+
+            document.querySelectorAll('.dropdown-menu').forEach(m => {
+                if (m !== menu) {
+                    m.classList.add('invisible', 'pointer-events-none', 'opacity-0');
+                }
+            });
+            menu.classList.toggle('invisible');
+            menu.classList.toggle('pointer-events-none');
+            menu.classList.toggle('opacity-0');
+        });
+    });
+    window.addEventListener('click', (e) => {
+        if (!e.target.closest('.dropdown-button')) {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                menu.classList.add('invisible', 'pointer-events-none', 'opacity-0');
+            });
+        }
+    });
+</script>
 </html>
