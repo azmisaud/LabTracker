@@ -117,3 +117,28 @@
 .w-48 {
 width: 8rem;
 }
+
+.px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.h-8 {
+    height: 2.5rem;
+}
+
+.button-resources {
+    background-color: rgb(107, 0, 2);
+    color: white;
+    padding: 0.5rem 1rem; 
+    border-radius: 9999px; 
+    text-align: center;
+    display: inline-flex; 
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease; 
+}
+
+.button-resources:hover {
+    background-color: #063;
+}
