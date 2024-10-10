@@ -33,7 +33,7 @@ body {
 /* Logo Styling - Identical to Homepage */
 .logo {
     font-size: 28px; /* Slightly larger for emphasis */
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
     font-weight: 800; /* Extra bold for a strong visual impact */
     color: rgb(107, 0, 2); /* Maroon */
     letter-spacing: 1.5px; /* Letter spacing for a refined look */
@@ -56,7 +56,7 @@ body {
 .navbar a {
     text-decoration: none;
     color: white;
-    font-family: 'Garamond', sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
     font-weight: 400;
     font-size: 15px; /* Slightly larger font size */
     background-color: rgb(107, 0, 2); /* Maroon buttons */
