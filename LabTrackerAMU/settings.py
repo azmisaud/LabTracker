@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "students.apps.StudentsConfig",
     "teachers.apps.TeachersConfig",
-    "problems.apps.ProblemsConfig"
+    "problems.apps.ProblemsConfig",
+    "faculty.apps.FacultyConfig",
 ]
 
 MIDDLEWARE = [
@@ -144,3 +145,8 @@ AUTH_USER_MODEL='students.Student'
 TEACHER_PASSWORD_BASE=os.getenv('TEACHER_PASSWORD_BASE')
 GITHUB_TOKEN=os.getenv('GITHUB_TOKEN')
 GITHUB_TOKEN2=os.getenv('GITHUB_TOKEN2')
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Default for students
+    'faculty.backends.FacultyBackend',  # Add your custom backend for faculty
+]

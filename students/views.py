@@ -7,7 +7,7 @@ from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_PARAGRAPH_ALIGNMENT
 from LabTrackerAMU import settings
 from LabTrackerAMU.decorators import student_required
-from teachers.models import WeekLastDate
+from faculty.models import LastDateOfWeek
 from .forms import StudentSignUpForm, EnrollmentFacultyForm, DateOfBirthForm, PasswordResetForm
 from problems.models import Problem, ProblemCompletion, WeekCommit
 from django.http import HttpResponse, JsonResponse
@@ -95,7 +95,7 @@ def student_login(request):
 
     return render(request, 'students/login.html', {'form': form})
 
-
+@student_required
 def student_logout(request):
     """
     Logs out the current student and redirects them to the login page.
@@ -160,7 +160,7 @@ def student_dashboard(request):
     week_commit_data = {week_commit.week_number: week_commit for week_commit in week_commits}
 
     # Fetch deadlines (last dates) for each week of the student's course and semester
-    week_last_dates = WeekLastDate.objects.filter(course=course, semester=semester)
+    week_last_dates = LastDateOfWeek.objects.filter(course=course, semester=semester)
 
     # Store week deadlines in a dictionary for quick lookup by week number
     week_last_date_data = {week_last.week: week_last.last_date for week_last in week_last_dates}

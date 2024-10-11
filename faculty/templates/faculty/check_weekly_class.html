@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Report of Weekly Class</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/central.css' %}">
+    <link rel="stylesheet" href="{% static 'css/override.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1 class="logo">LabTracker</h1>
+            <div class="navbar-toggle" onclick="document.querySelector('.navbar').classList.toggle('active');">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <nav class="navbar">
+                <ul>
+                    <li>
+                        <a href="#">Dashboard</a>
+                        <a href="#">Add Problem</a>
+                        <a href="#">Edit Problem</a>
+                        <a href="#">Set Last Date</a>
+                        <a href="#">Student Report</a>
+                        <a href="#">Whole Report</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="form-container">
+        <h2 class="form-header">Check Whole Class Weekly</h2>
+        <div class="form-section">
+            <div class="form-group">
+                <label for="course">Course: </label>
+                <div class="input-wrapper">
+                    <select id="course" name="course">
+                        <option value="">Select Course</option>
+                        <option value="BCA">B.C.A</option>
+                        <option value="MCA">M.C.A</option>
+                        <option value="MSC">M.Sc(C.S & D.F)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="semester">Semester:</label>
+                <div class="input-wrapper">
+                    <select id="semester" name="semester">
+                        <option value="">Select Semester</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="week">Week:</label>
+                <div class="input-wrapper">
+                    <select id="week" name="week">
+                        <option value="">Select Week</option>
+                    </select>
+                </div>
+            </div>
+            <button id="check_button">Check</button>
+        </div>
+        <div class="all-student-details" style="display: none;">
+            <h2 id="report-title">Weekly Class Report</h2>
+            <div class="two-buttons">
+                <button id="download_excel">Download as Excel Sheet</button>
+                <button id="check_other">Check Another</button>
+            </div>
+            <table id="student_table" border="1">
+                <thead>
+                    <tr>
+                        <th>Enrollment Number</th>
+                        <th>Faculty Number</th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="{% static 'faculty/js/check_week_class.js' %}"></script>
+</body>
+</html>

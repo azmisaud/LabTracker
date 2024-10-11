@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/central.css' %}">
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <h1 class="logo">LabTracker</h1>
+            <nav class="navbar">
+                <ul>
+                    <li>
+                        <a href="{% url 'homepage' %}">Home</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="form-container">
+        <h2>Faculty Login</h2>
+
+        <!-- Display any error messages -->
+        <div class="form-errors">
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">Username:</label>
+                {{ form.username }}  <!-- Render username field from the form -->
+            </div>
+            <div class="form-group">
+                <label for="id_password">Password:</label>
+                {{ form.password }}  <!-- Render password field from the form -->
+            </div>
+            <button type="submit" class="btn">Login</button>
+        </form>
+    </div>
+
+</body>
+</html>

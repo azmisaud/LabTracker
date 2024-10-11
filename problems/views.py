@@ -2,47 +2,17 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from django.shortcuts import render, get_object_or_404, redirect
-from LabTrackerAMU.decorators import teacher_required
-from teachers.models import Teacher, TeacherActivity
+from LabTrackerAMU.decorators import faculty_required
+from faculty.models import Faculty, FacultyActivity
 from .models import Problem
 from .forms import ProblemForm
 
 
-@teacher_required
+@faculty_required
 def add_problem(request):
-    """
-    Handles the process of adding a new problem by a teacher.
 
-    This view ensures that only authenticated teachers can add problems and records the action in the
-    TeacherActivity model.
+    faculty=request.user
 
-    Flow:
-    - Checks if the teacher is logged in via session data (`teacher_id`). If not, redirects to the login page.
-    - Processes a POST request to handle form submission for adding a problem.
-    - If the form is valid, saves the problem, logs the action in the `TeacherActivity` model, and redirects to the problem addition page with a success message.
-    - For a GET request, renders the empty `ProblemForm` for problem creation.
-
-    Args:
-        request (HttpRequest): The HTTP request object, either GET or POST.
-
-    Returns:
-        HttpResponse: Renders the problem addition form on GET request or redirects on successful form submission.
-
-    Raises:
-        Redirects to 'teacher_login' if the teacher is not authenticated (no `teacher_id` in the session).
-    """
-
-    # Get the teacher_id from session to verify if the teacher is logged in
-    teacher_id = request.session.get('teacher_id')
-
-    # If the teacher is not logged in, redirect to the login page
-    if not teacher_id:
-        return redirect('teacher_login')
-
-    # Retrieve the Teacher object based on the session's teacher_id
-    teacher = Teacher.objects.get(id=teacher_id)
-
-    # Handle POST request when the teacher submits the problem form
     if request.method == 'POST':
         form = ProblemForm(request.POST, request.FILES)
 
@@ -52,8 +22,8 @@ def add_problem(request):
             problem = form.save()
 
             # Log the teacher's activity in the TeacherActivity model
-            TeacherActivity.objects.create(
-                teacher=teacher,
+            FacultyActivity.objects.create(
+                faculty=faculty,
                 action='Added Problem',
                 course=problem.course,
                 semester=problem.semester,
@@ -256,48 +226,10 @@ def get_problem_details(request):
     return JsonResponse(response_data)
 
 
-@teacher_required
+@faculty_required
 def edit_problem(request):
-    """
-    Handles the editing of a specific problem by a teacher.
 
-    This view allows teachers to edit existing problems based on the provided course, semester, week, and problem number.
-    It also logs the teacher's activity after successfully editing a problem.
-
-    Workflow:
-    - The teacher must be logged in and identified through `teacher_id` stored in the session.
-    - If the request method is POST, the function retrieves the corresponding problem using the provided form data.
-    - The retrieved problem is then edited using the `ProblemForm`, and upon successful validation, it is saved.
-    - A `TeacherActivity` entry is created to log the action of editing the problem.
-    - On successful form submission, the user is redirected to the 'create_problem' page with a success message.
-    - If the request is not POST, a blank `ProblemForm` is returned for the teacher to fill out.
-
-    Args:
-        request (HttpRequest): The incoming HTTP request object that may contain form data.
-
-    Returns:
-        HttpResponse:
-        - Renders the problem edit form on GET requests.
-        - On successful submission (POST), redirects to the 'create_problem' page with a success message.
-        - If the teacher is not authenticated, redirects to the teacher login page.
-
-    Example Usage:
-        - On a POST request, the form will capture the fields `course`, `semester`, `week`, and `problemNumber` to identify the problem.
-        - After the form is submitted and validated, the problem is updated, and the teacher's action is logged.
-
-    Raises:
-        Http404: If the problem with the provided `course`, `semester`, `week`, and `problemNumber` does not exist.
-    """
-
-    # Retrieve the teacher ID from the session to ensure the user is authenticated as a teacher
-    teacher_id = request.session.get('teacher_id')
-
-    # If teacher is not logged in, redirect to the teacher login page
-    if not teacher_id:
-        return redirect('teacher_login')
-
-    # Retrieve the teacher instance based on the teacher_id
-    teacher = Teacher.objects.get(id=teacher_id)
+    faculty=request.user
     problem = None  # Default value for problem (used in case the request method is GET)
 
     if request.method == 'POST':
@@ -318,8 +250,8 @@ def edit_problem(request):
             form.save()
 
             # Log the teacher's activity of editing the problem
-            TeacherActivity.objects.create(
-                teacher=teacher,
+            FacultyActivity.objects.create(
+                faculty=faculty,
                 action='Edited Problem',
                 course=problem.course,
                 semester=problem.semester,
