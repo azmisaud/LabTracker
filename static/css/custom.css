@@ -1,3 +1,4 @@
+@import url(./root.css);
 .bg-slate-900 {
     background-color: white !important;
 }
@@ -60,11 +61,11 @@
 }
 
 .bg-slate-800 {
-    background-color: rgb(107, 0, 2);
+    background-color: var(--primary);
 }
 
 .text-red{
-    color:rgb(107, 0, 2);
+    color:var(--primary);
 }
 
 .hover\:bg-slate-600:hover {
@@ -128,7 +129,7 @@ width: 8rem;
 }
 
 .button-resources {
-    background-color: rgb(107, 0, 2);
+    background-color: var(--primary);
     color: white;
     padding: 0.5rem 1rem; 
     border-radius: 9999px; 
