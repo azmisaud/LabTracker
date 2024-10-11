@@ -1,3 +1,5 @@
+@import url(./root.css);
+
 /* General Styling */
 * {
     box-sizing: border-box;
@@ -35,7 +37,7 @@ body {
     font-size: 28px; /* Slightly larger for emphasis */
     font-family: 'Montserrat', sans-serif;
     font-weight: 800; /* Extra bold for a strong visual impact */
-    color: rgb(107, 0, 2); /* Maroon */
+    color: var(--primary); /* Maroon */
     letter-spacing: 1.5px; /* Letter spacing for a refined look */
     cursor: pointer;
 }
@@ -59,7 +61,7 @@ body {
     font-family: 'Garamond', sans-serif;
     font-weight: 400;
     font-size: 15px; /* Slightly larger font size */
-    background-color: rgb(107, 0, 2); /* Maroon buttons */
+    background-color: var(--primary); /* Maroon buttons */
     padding: 12px 24px; /* More padding for button size */
     border-radius: 30px; /* Rounded buttons */
     transition: background-color 0.3s ease, transform 0.3s ease;
@@ -108,7 +110,7 @@ body {
 .instructions {
     background-color: rgb(240, 240, 240);
     padding: 15px;
-    border-left: 4px solid rgb(107, 0, 2);
+    border-left: 4px solid var(--primary);
     margin-bottom: 20px;
     font-size: 14px;
     color: rgb(60, 60, 60);
@@ -157,7 +159,7 @@ input:focus, select:focus, textarea:focus {
 /* Error Messages */
 .form-errors {
     margin-top: 5px;
-    color: rgb(107, 0, 2); /* Error color */
+    color: var(--primary); /* Error color */
     font-size: 13px;
     font-weight: 600;
 }
@@ -170,7 +172,7 @@ input:focus, select:focus, textarea:focus {
 small.note {
     display: block;
     font-size: 12px;
-    color: rgb(107, 0, 2);
+    color: var(--primary);
     margin-top: 5px;
 }
 
@@ -182,7 +184,7 @@ button[type="submit"],
 button[type="button"]{
     width: 100%;
     padding: 12px 20px;
-    background-color: rgb(107, 0, 2);
+    background-color: var(--primary);
     color: white;
     font-size: 16px;
     font-weight: 600;
@@ -278,7 +280,7 @@ button[type="button"]:hover {
 
 #weekly_progress th {
     background-color: rgb(240, 240, 240); /* Light grey */
-    color: rgb(107, 0, 2); /* Maroon */
+    color: var(--primary); /* Maroon */
     font-weight: 600;
 }
 
@@ -302,7 +304,7 @@ button[type="button"]:hover {
 }
 
 #download_pdf:hover {
-    background-color: rgb(107, 0, 2); /* Greenish teal */
+    background-color: var(--primary); /* Greenish teal */
 }
 
 #check_button, #check_another {
