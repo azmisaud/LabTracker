@@ -14,7 +14,6 @@ from .forms import FacultyLoginForm, ChangePasswordForm, LastDateOfWeekForm
 from .models import Faculty, FacultyActivity, LastDateOfWeek
 from django.contrib.auth import logout
 from django.contrib import messages
-
 from .utils import update_student_data
 
 
@@ -45,7 +44,7 @@ def faculty_login(request):
 
     return render(request, 'faculty/faculty_login.html', {'form': form})  # Pass the form to the template
 
-@faculty_required
+# @faculty_required
 def change_password(request):
     faculty = request.user
 

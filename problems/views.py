@@ -3,12 +3,11 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from django.shortcuts import render, get_object_or_404, redirect
 from LabTrackerAMU.decorators import faculty_required
-from faculty.models import Faculty, FacultyActivity
+from faculty.models import FacultyActivity
 from .models import Problem
 from .forms import ProblemForm
 
 
-@faculty_required
 def add_problem(request):
 
     faculty=request.user
@@ -21,7 +20,6 @@ def add_problem(request):
             # Save the new problem
             problem = form.save()
 
-            # Log the teacher's activity in the TeacherActivity model
             FacultyActivity.objects.create(
                 faculty=faculty,
                 action='Added Problem',
@@ -31,7 +29,6 @@ def add_problem(request):
                 description=problem.description,
             )
 
-            # Show a success message and redirect back to the add problem page
             messages.success(request, 'PROBLEM ADDED SUCCESSFULLY')
             return redirect('addProblem')
 

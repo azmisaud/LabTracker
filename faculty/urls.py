@@ -17,10 +17,10 @@ urlpatterns = [
     path('fetch-whole-class/', views.fetch_whole_class_faculty, name='fetch_whole_class_faculty'),
     path('check-whole-class/', views.check_whole_class_faculty, name='check_whole_class_faculty'),
     path('trigger-update/', views.trigger_update_faculty, name='trigger_update_faculty'),
-    path('start-new/', views.delete_old_students_faculty, name='start_a_new_semester'),
+    path('start-new/', views.delete_old_students_faculty, name='start_a_new_semester_faculty'),
     path('your-activities/', views.your_activity_faculty, name='your_activities_faculty'),
-    path('other-activities/', views.other_activity_faculty, name='other_activities'),
-    path('fetch-graph-data/', views.fetch_graph_data_faculty, name='fetch_graph_data'),
+    path('other-activities/', views.other_activity_faculty, name='other_activities_faculty'),
+    path('fetch-graph-data/', views.fetch_graph_data_faculty, name='fetch_graph_data_faculty'),
     path('dashboard/', views.faculty_dashboard, name='faculty_dashboard'),
 
 ]

@@ -24,13 +24,13 @@
             <nav class="navbar">
                 <ul>
                     <li>
-                        <a href="#">Add a Problem</a>
-                        <a href="#">Edit a Problem</a>
-                        <a href="#">Set Date</a>
-                        <a href="#">Student Report</a>
-                        <a href="#">Weekly Report</a>
-                        <a href="#">Whole Report</a>
-                        <a href="#">Logout</a>
+                        <a href="{% url 'addProblem' %}">Add a Problem</a>
+                        <a href="{% url 'create_problem' %}">Edit a Problem</a>
+                        <a href="{% url 'week_last_date_faculty' %}">Set Date</a>
+                        <a href="{% url 'check_student_details_faculty' %}">Student Report</a>
+                        <a href="{% url 'check_student_details_faculty' %}">Weekly Report</a>
+                        <a href="{% url 'check_whole_class_faculty' %}">Whole Report</a>
+                        <a href="{% url 'faculty_logout' %}">Logout</a>
                     </li>
                 </ul>
             </nav>
@@ -43,7 +43,7 @@
         <!-- Middle Container -->
         <div class="middle-container">
             <section class="welcome-section">
-                <h2>Welcome, {{ teacher.name }}</h2>
+                <h2>Welcome, {{ faculty.name }}</h2>
                 <p>Use the links above to manage problems and students, and download reports.</p>
 
                 <!-- Additional Instructions -->
@@ -101,7 +101,7 @@
                         <li>{{ activity|safe }}</li>
                         {% endfor %}
                     </ul>
-                    <a href="{% url 'other_activities' %}">View More</a>
+                    <a href="{% url 'other_activities_faculty' %}">View More</a>
                 {% else %}
                     <ul>
                         <li>NO RECENT ACTIVITIES</li>
@@ -116,7 +116,7 @@
                         <li>{{ activity|safe }}</li>
                         {% endfor %}
                     </ul>
-                    <a href="{% url 'your_activities' %}">View More</a>
+                    <a href="{% url 'your_activities_faculty' %}">View More</a>
                 {% else %}
                     <ul>
                         <li>NO RECENT ACTIVITIES</li>
