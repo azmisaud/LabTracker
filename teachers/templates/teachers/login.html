@@ -8,8 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/friends.css' %}">
-    <link rel="stylesheet" href="{% static 'css/central.css' %}">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+
 </head>
 <body>
 
@@ -74,10 +75,8 @@
             </nav>
         </div> -->
     </header>
-    <div class="form-container">
+    <!-- <div class="form-container">
         <h2>Teacher Login</h2>
-
-        <!-- Display any error messages -->
         <div class="form-errors">
             {% if messages %}
                 <ul>
@@ -100,7 +99,46 @@
             </div>
             <button type="submit" class="btn">Login</button>
         </form>
-    </div>
+    </div> -->
+
+
+    <section class="form login">
+        <div id="login">
+            <div id="formLogin">
+                <h1>Teacher Login →</h1>
+                <form method="post" enctype="multipart/form-data" autocomplete="off">
+                    {% csrf_token %}
+                    <div class="error-text">
+                        {% if form.non_field_errors %}
+                            <div class="form-errors">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+               <div class="inputContainer">
+                        <select name="teacher" class="inputLogin" id="id_teacher">
+                            <option value="" disabled selected>Select your name</option>
+                            {% for teacher in form.teacher.field.queryset %}
+                                <option value="{{ teacher.id }}" {% if form.teacher.value == teacher.id %}selected{% endif %}>{{ teacher.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <label class="labelLogin">Select Your Name</label>
+                    </div>
+
+                    <div class="inputContainer">
+                        <input type="password" class="inputLogin" placeholder=" " name="password" id="id_password">
+                        <label class="labelLogin">Password</label>
+                    </div>
+
+                    <div class="field button">
+                        <input type="submit" class="submitButton" value="Login">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    
 
 </body>
 <script>

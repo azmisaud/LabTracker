@@ -46,7 +46,7 @@ def teacher_login(request):
             if password == expected_password:
                 # Store teacher's ID in session upon successful login.
                 request.session['teacher_id'] = teacher.id
-                return redirect('teacher_login')
+                return redirect('teacher_dashboard')
             else:
                 # Display an error message if the password is incorrect.
                 messages.error(request, 'Incorrect password.')
