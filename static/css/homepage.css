@@ -37,7 +37,7 @@ body {
 /* Logo Styling */
 .logo {
     font-size: 28px;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
     /* Slightly larger for emphasis */
     font-weight: 900; /* Extra bold for a strong visual impact */
     color: rgb(107, 0, 2); /* Maroon */
@@ -66,7 +66,7 @@ body {
 .navbar a {
     text-decoration: none;
     color: white;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
     font-weight: 300;
     font-size: 15px; /* Slightly larger font size */
     background-color: rgb(107, 0, 2); /* Maroon buttons */
