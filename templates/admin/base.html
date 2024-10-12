@@ -1,8 +1,95 @@
-{% extends "admin/base.html" %}
-{% load i18n %}
+{% extends 'admin/base.html' %}
 {% load static %}
 
-{% block extrastyle %}
-    {{ block.super }}
-        <link rel="stylesheet" type="text/css" href="{% static 'css/admin_base.css' %}">
+{% block extrastyle %}{{ block.super }}
+<style>
+html[data-theme="light"],
+:root {
+    --primary: rgb(47,98,86); /* Greenish teal */
+    --secondary: #800000; /* Maroon */
+    --accent: #f5dd5d; /* Light yellow for accent */
+    --primary-fg: #fff; /* White for foreground text */
+
+    --body-fg: #333; /* Dark grey for body text */
+    --body-bg: #fff; /* White for background */
+    --body-quiet-color: #666; /* Medium grey for quiet text */
+    --body-medium-color: #444; /* Darker grey for medium emphasis */
+    --body-loud-color: #000; /* Black for loud emphasis */
+
+    --header-color: #ffc; /* Light color for header */
+    --header-branding-color: var(--accent); /* Accent color for branding */
+    --header-bg: var(--secondary); /* Maroon for header background */
+    --header-link-color: var(--primary-fg); /* White for header link color */
+
+    --breadcrumbs-fg: white; /* Light blue for breadcrumbs text */
+    --breadcrumbs-link-fg: var(--body-bg); /* White for breadcrumbs links */
+    --breadcrumbs-bg: rgb(47,98,86); /* Darker teal for breadcrumbs background */
+
+    --link-fg: rgb(47,98,86); /* Teal for links */
+    --link-hover-color: #036; /* Dark teal for link hover */
+    --link-selected-fg: var(--secondary); /* Maroon for selected links */
+
+    --hairline-color: #e8e8e8; /* Light grey for hairlines */
+    --border-color: #ccc; /* Grey for borders */
+
+    --error-fg: #ba2121; /* Red for errors */
+
+    --message-success-bg: #dfd; /* Light green for success messages */
+    --message-warning-bg: #ffc; /* Light yellow for warnings */
+    --message-error-bg: #ffefef; /* Very light red for errors */
+
+    --darkened-bg: #f8f8f8; /* A bit darker than --body-bg */
+    --selected-bg: #e4e4e4; /* Light grey for selected table cells */
+    --selected-row: #ffc; /* Light yellow for selected rows */
+
+    --button-fg: #fff; /* White for button text */
+    --button-bg: var(--secondary); /* Maroon for button background */
+    --button-hover-bg: #a50000; /* Darker maroon for hover */
+    --default-button-bg: #205067; /* Dark teal for default button */
+    --default-button-hover-bg: var(--secondary); /* Maroon for hover */
+    --close-button-bg: #747474; /* Grey for close button */
+    --close-button-hover-bg: #333; /* Dark grey for close button hover */
+    --delete-button-bg: #ba2121; /* Red for delete button */
+    --delete-button-hover-bg: #a41515; /* Darker red for delete button hover */
+
+    --object-tools-fg: var(--button-fg); /* Button foreground */
+    --object-tools-bg: var(--close-button-bg); /* Close button background */
+    --object-tools-hover-bg: var(--close-button-hover-bg); /* Close button hover background */
+
+    --font-family-primary:
+        "Segoe UI",
+        system-ui,
+        Roboto,
+        "Helvetica Neue",
+        Arial,
+        sans-serif,
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji";
+    --font-family-monospace:
+        ui-monospace,
+        Menlo,
+        Monaco,
+        "Cascadia Mono",
+        "Segoe UI Mono",
+        "Roboto Mono",
+        "Oxygen Mono",
+        "Ubuntu Monospace",
+        "Source Code Pro",
+        "Fira Mono",
+        "Droid Sans Mono",
+        "Courier New",
+        monospace,
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji";
+
+    color-scheme: light;
+}
+
+</style>
+{% endblock %}
+{% block dark-mode-vars %}
 {% endblock %}

@@ -1,5 +1,4 @@
 from datetime import timedelta
-
 from django.contrib.auth import authenticate, login
 from django.core.paginator import Paginator
 from django.http import JsonResponse
@@ -772,7 +771,7 @@ def faculty_dashboard(request):
     # Helper function to format activities for display
     def format_activity(activity, is_your_activity=False):
         timestamp = format(timezone.localtime(activity.timestamp), 'd F Y, H:i')
-        teacher_name = "You" if is_your_activity else activity.teacher.name
+        teacher_name = "You" if is_your_activity else activity.faculty.name
 
         action_messages = {
             'Added Problem': f"{teacher_name} added a problem in {activity.course}, Sem {activity.semester} in Week {activity.week} <br> Problem Description: {activity.description}",

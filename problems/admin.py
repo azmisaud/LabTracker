@@ -17,22 +17,36 @@ class ProblemAdmin(admin.ModelAdmin):
             - 'problemNumber': Displays the unique problem number.
             - 'description': Displays a brief description of the problem.
             - 'image': Displays a reference to the image related to the problem (if any).
+            - 'last_updated': Displays the last updated timestamp of the problem.
 
         search_fields (tuple): Defines the fields that can be searched using the search bar in the admin panel.
             - 'course': Allows searching by course.
             - 'semester': Allows searching by semester number.
 
-    Decorators:
-        @admin.register(Problem): Registers the Problem model with this custom configuration in the Django admin site.
+        list_filter (tuple): Defines the fields by which the problems can be filtered.
+            - 'course': Filter by course.
+            - 'semester': Filter by semester.
+            - 'week': Filter by week.
 
-    Example:
-        In the Django admin interface, when managing problems, the list view will display columns for the course, semester,
-        week, problem number, description, and an image field (if available). Users can search through problems by course
-        or semester.
+        ordering (tuple): Defines the default ordering of the problems in the admin panel.
+            - ('course', 'semester', 'week', 'problemNumber'): Orders by course, semester, week, and problem number.
+
+        readonly_fields (tuple): Fields that are set as read-only in the admin interface.
+            - 'created_at': The timestamp when the problem was created.
+            - 'updated_at': The timestamp when the problem was last updated.
     """
 
     list_display = ('course', 'semester', 'week', 'problemNumber', 'description', 'image')
-    search_fields = ('course', 'semester')
+    search_fields = ('course', 'semester', 'week', 'problemNumber')
+    list_filter = ('course', 'semester', 'week')
+    ordering = ('course', 'semester', 'week', 'problemNumber')
+
+    # Optionally, you can add custom form behaviors
+    fieldsets = (
+        (None, {
+            'fields': ('course', 'semester', 'week', 'problemNumber', 'description', 'image')
+        }),
+    )
 
 @admin.register(ProblemCompletion)
 class ProblemCompletionAdmin(admin.ModelAdmin):
