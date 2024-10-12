@@ -10,10 +10,9 @@ class FacultyManager(BaseUserManager):
             raise ValueError('Faculty Name is required')
 
         first_name=name.split()[1]
-
         base_username=f"{first_name}amuCS"
 
-        username=base_username
+        username=base_username.lower()
 
         count=1
 
@@ -34,6 +33,17 @@ class FacultyManager(BaseUserManager):
         faculty.save(using=self._db)
 
         return faculty
+
+    def promote_to_superuser(self,faculty):
+        if not isinstance(faculty,Faculty):
+            raise ValueError('Faculty must be of type Faculty')
+
+        faculty.is_staff=True
+        faculty.is_superuser=True
+        faculty.save(using=self._db)
+        return faculty
+
+
 
 class Faculty(AbstractBaseUser, PermissionsMixin):
     name=models.CharField(max_length=100)
