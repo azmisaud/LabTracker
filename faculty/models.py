@@ -1,7 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser,BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser,BaseUserManager, PermissionsMixin, Permission
 from django.conf import settings
 from  django.utils import timezone
+from django.contrib.contenttypes.models import ContentType
 import uuid
 
 class FacultyManager(BaseUserManager):
@@ -34,12 +35,17 @@ class FacultyManager(BaseUserManager):
 
         return faculty
 
-    def promote_to_superuser(self,faculty):
+    def create_superuser(self,faculty):
         if not isinstance(faculty,Faculty):
             raise ValueError('Faculty must be of type Faculty')
 
         faculty.is_staff=True
         faculty.is_superuser=True
+        faculty.is_active=True
+
+        all_permissions=Permission.objects.all()
+
+        faculty.user_permissions.set(all_permissions)
         faculty.save(using=self._db)
         return faculty
 
@@ -58,7 +64,7 @@ class Faculty(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['name']
 
-    groups=models.ManyToManyField(
+    groups = models.ManyToManyField(
         'auth.Group',
         related_name='faculty_groups',
         blank=True,
@@ -73,6 +79,7 @@ class Faculty(AbstractBaseUser, PermissionsMixin):
         help_text='Specific permissions for this user.',
         verbose_name='user_permissions',
     )
+
     def __str__(self):
         return self.name
 

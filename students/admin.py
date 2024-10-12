@@ -108,7 +108,7 @@ class StudentAdmin(admin.ModelAdmin):
             ])
 
         # Define Table Styles
-        table = Table(data, colWidths=[0.5 * inch, 1 * inch, 1.5 * inch, 1.5 * inch, 1 * inch, 1 * inch])
+        table = Table(data, colWidths=[0.5 * inch, 1 * inch, 2 * inch, 1.5 * inch, 1 * inch, 1 * inch])
         style = TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), greenish_teal),  # Header row custom greenish teal color
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),  # Header text color

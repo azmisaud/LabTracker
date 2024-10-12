@@ -16,6 +16,7 @@ class FacultyAdmin(admin.ModelAdmin):
         form.base_fields.pop('password', None)
         return form
 
+    # exclude = ('groups','user_permissions')
     def save_model(self, request, obj, form, change):
         if not change:  # Only when creating a new faculty member
             first_name = obj.name.split()[1]  # Get the first name
@@ -24,7 +25,7 @@ class FacultyAdmin(admin.ModelAdmin):
             count = 1
 
             while Faculty.objects.filter(username=username).exists():
-                username = f"{username}amuCS{count}"
+                username = f"{first_name}amuCS{count}"
                 count += 1
 
             expected_password = f"{first_name}@{settings.TEACHER_PASSWORD_BASE}"

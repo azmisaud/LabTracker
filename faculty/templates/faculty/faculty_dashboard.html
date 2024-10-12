@@ -24,9 +24,6 @@
             <nav class="navbar">
                 <ul>
                     <li>
-                        {% if request.user.is_superuser %}
-                            <a href="{% url 'admin:index' %}">Admin Panel</a>
-                        {% endif %}
                         <a href="{% url 'addProblem' %}">Add a Problem</a>
                         <a href="{% url 'create_problem' %}">Edit a Problem</a>
                         <a href="{% url 'week_last_date_faculty' %}">Set Date</a>
