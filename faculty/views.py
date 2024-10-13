@@ -17,6 +17,52 @@ from .utils import update_student_data
 
 
 def faculty_login(request):
+    """
+    Handles the login process for faculty members.
+
+    This view provides a login form for faculty members and processes their login credentials.
+    If the credentials are valid, the faculty member is authenticated, logged in, and redirected
+    based on whether it's their first login or not.
+
+    Behavior:
+    - If the request method is `GET`, an empty login form is displayed.
+    - If the request method is `POST`, the form is bound with the submitted data.
+    - The function validates the form; if valid, it retrieves the username and password.
+    - It uses the custom `FacultyBackend` to authenticate the faculty member.
+    - Upon successful authentication:
+        - The faculty member is logged in, and their session is initiated.
+        - If it is the faculty member's first login, they are redirected to the change password view.
+        - Otherwise, they are redirected to the faculty dashboard.
+    - If authentication fails, an error message is displayed.
+
+    Parameters:
+    - `request`: The HTTP request object containing the submitted login data.
+
+    Returns:
+    - Renders the `faculty/faculty_login.html` template with the login form.
+    - On successful login, redirects to either the password change view or the faculty dashboard.
+
+    Example usage:
+    ```
+    POST /faculty_login/
+    {
+        "username": "faculty_username",
+        "password": "faculty_password"
+    }
+    ```
+
+    Example response:
+    - On successful login:
+      - Redirects to 'change_password' if first login.
+      - Redirects to 'faculty_dashboard' otherwise.
+    - On failed login:
+      - Displays a message: "Invalid username or password."
+
+    Notes:
+    - The `FacultyLoginForm` should handle username and password validation.
+    - Ensure that the `Faculty` model is set up to work with Django's authentication system.
+    """
+
     form = FacultyLoginForm()  # Instantiate the form
 
     if request.method == 'POST':
@@ -28,11 +74,8 @@ def faculty_login(request):
             # Use the custom FacultyBackend to authenticate
             faculty = authenticate(request, username=username, password=password)
 
-            print("Authenticated Faculty : ", faculty)
             if faculty is not None and isinstance(faculty, Faculty):  # Check if authenticated user is a faculty
                 login(request, faculty)  # Log the faculty in
-                print(f"Login successful for: {faculty.username}")
-                print(f"Session ID: {request.session.session_key}")
                 if faculty.is_first_login:
                     return redirect('change_password')  # Redirect to change password view
                 else:
@@ -43,7 +86,8 @@ def faculty_login(request):
 
     return render(request, 'faculty/faculty_login.html', {'form': form})  # Pass the form to the template
 
-# @faculty_required
+
+@faculty_required
 def change_password(request):
     faculty = request.user
 
