@@ -89,20 +89,67 @@ def faculty_login(request):
 
 @faculty_required
 def change_password(request):
-    faculty = request.user
+    """
+    Handles the password change process for faculty members.
+
+    This view allows faculty members to change their password, specifically after their first login,
+    or whenever they wish to update it. It checks the validity of the new password and saves the
+    updated password if the form is valid. After a successful password change, the faculty's
+    `is_first_login` attribute is set to `False` and they are redirected to the faculty dashboard.
+
+    Behavior:
+    - If the request method is `POST`, the form is bound with the submitted data and validated.
+    - If the form is valid, the new password is saved, and the faculty's `is_first_login` attribute is updated.
+    - A success message is displayed upon successful password change, and the faculty is redirected to the dashboard.
+    - If the request method is `GET`, an empty password change form is displayed.
+
+    Decorators:
+    - `@faculty_required`: Ensures that only authenticated faculty members can access this view.
+
+    Parameters:
+    - `request`: The HTTP request object containing the POST data or the request to display the form.
+
+    Returns:
+    - Renders the `faculty/change_password.html` template with the password change form.
+    - On successful password change, redirects to the `faculty_dashboard`.
+
+    Example usage:
+    ```
+    POST /change_password/
+    {
+        "old_password": "current_password",
+        "new_password1": "new_password",
+        "new_password2": "new_password"
+    }
+    ```
+
+    Example response:
+    - On successful password change:
+      - Displays a success message: "Password changed successfully."
+      - Redirects to the `faculty_dashboard`.
+    - On invalid form submission:
+      - Displays form errors and reloads the form.
+
+    Notes:
+    - The `ChangePasswordForm` handles the validation of old and new passwords.
+    - This view is protected by the `faculty_required` decorator to ensure only faculty can access it.
+    - The `faculty.is_first_login` attribute is updated to `False` after the first successful password change.
+    """
+    faculty = request.user  # Get the currently logged-in faculty member
 
     if request.method == 'POST':
-        form = ChangePasswordForm(user=faculty,data=request.POST)
+        form = ChangePasswordForm(user=faculty, data=request.POST)  # Bind the form with POST data
         if form.is_valid():
-            form.save()
-            faculty.is_first_login = False
-            faculty.save()
-            messages.success(request, 'Password changed successfully.')
-            return redirect('faculty_dashboard')
+            form.save()  # Save the new password
+            faculty.is_first_login = False  # Mark that the first login is completed
+            faculty.save()  # Save the changes to the faculty member
+            messages.success(request, 'Password changed successfully.')  # Display success message
+            return redirect('faculty_dashboard')  # Redirect to the dashboard
     else:
-        form = ChangePasswordForm(user=faculty)
+        form = ChangePasswordForm(user=faculty)  # Instantiate an empty form for GET requests
 
-    return render(request,'faculty/change_password.html',{'form' : form})
+    return render(request, 'faculty/change_password.html', {'form': form})  # Render the form template
+
 
 @faculty_required
 def faculty_logout(request):
