@@ -119,10 +119,10 @@ Welcome to **Lab Tracker**, a Django-based platform designed to automate and str
 ##### Step3
 ![Third Step](static/images/reset_password_step_3.png)
 
-### Teacher
+### Faculty
 
 #### Login
-![Teacher Login](static/images/teacher_login.jpeg)
+![Teacher Login](static/images/faculty_login.png)
 
 #### Set Week Last Date
 ![Set Week Last Date](static/images/set_last_date.png)
