@@ -139,6 +139,35 @@ Welcome to **Lab Tracker**, a Django-based platform designed to automate and str
 ![Check Whole Class Report 1](static/images/report_of_whole_class_1.png)
 ![Check Whole Class Report 2](static/images/report_of_whole_class_2.jpeg)
 
+### Admin
+
+#### Login
+![Admin Login](static/images/admin_login.png)
+
+#### Dashboard
+![Admin Dashboard](static/images/admin_homepage.png)
+
+#### Student Information
+![Admin Student](static/images/admin_student.png)
+
+#### Problem Details
+![Admin Problems](static/images/admin_problem.png)
+
+#### ProblemCompletion Details
+![Admin Completion](static/images/admin_problemcompletion.png)
+
+#### WeekCommit Details
+![Admin WeekCommit](static/images/admin_weekcommit.png)
+
+#### Faculty Information
+![Admin Faculty](static/images/admin_facultys.jpeg)
+
+#### FacultyActivity Details 
+![Admin Activity](static/images/admin_facultyactivity.png)
+
+#### LastDateOfWeek Details
+[!Admin lastDate](static/images/admin_lastdateofweek.jpeg)
+
 ## 🎯 Roadmap
 
 - Add OAuth support for GitHub login.
