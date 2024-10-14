@@ -154,26 +154,48 @@ def change_password(request):
 @faculty_required
 def faculty_logout(request):
     """
-    Handles the logout process for authenticated faculty members.
+    Logs out the current faculty member and redirects them to the login page.
 
-    This view logs out a faculty member by calling the Django logout method,
-    which removes the user from the session. It also displays a success message
-    upon successful logout and redirects the faculty member to the homepage.
+    This view handles the logout process for faculty members. It uses Django's built-in `logout` function
+    to terminate the faculty's session and then redirects them to the faculty login page. A success message
+    is displayed to confirm the successful logout.
 
-    Args:
-        request (HttpRequest): The HTTP request object, containing metadata
-        about the current session.
+    Behavior:
+    - Logs out the current faculty by clearing their session data.
+    - Displays a success message confirming the logout.
+    - Redirects the faculty to the login page.
+
+    Decorators:
+    - `@faculty_required`: Ensures that only authenticated faculty members can access this view.
+
+    Parameters:
+    - `request`: The HTTP request object, which contains session information to log out the current user.
 
     Returns:
-        HttpResponseRedirect: Redirects the user to the homepage after logout.
+    - Redirects the faculty to the `faculty_login` page after logout.
+    - Displays a success message: "You have successfully logged out."
+
+    Example usage:
+    ```
+    GET /faculty_logout/
+    ```
+
+    Example response:
+    - On successful logout:
+      - Displays the success message: "You have successfully logged out."
+      - Redirects to the faculty login page.
+
+    Notes:
+    - The `logout` function is a Django utility that handles clearing the session and performing the logout.
+    - The `faculty_required` decorator ensures that only logged-in faculty members can access the logout function.
     """
-    # Call Django's built-in logout function to log the user out
-    logout(request)
+    logout(request)  # Log out the current faculty member
 
     # Display a success message confirming the logout
     messages.success(request, 'You have successfully logged out.')
 
-    return redirect('faculty_login')
+    return redirect('faculty_login')  # Redirect to the faculty login page
+
 
 @require_GET
 @faculty_required
