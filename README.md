@@ -166,7 +166,7 @@ Welcome to **Lab Tracker**, a Django-based platform designed to automate and str
 ![Admin Activity](static/images/admin_facultyactivity.png)
 
 #### LastDateOfWeek Details
-[!Admin lastDate](static/images/admin_lastdateofweek.jpeg)
+![Admin lastDate](static/images/admin_lastdateofweek.jpeg)
 
 ## 🎯 Roadmap
 
