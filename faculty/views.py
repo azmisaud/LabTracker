@@ -44,7 +44,7 @@ def faculty_login(request):
 
     Example usage:
     ```
-    POST /faculty_login/
+    POST faculty/login/
     {
         "username": "faculty_username",
         "password": "faculty_password"
@@ -115,7 +115,7 @@ def change_password(request):
 
     Example usage:
     ```
-    POST /change_password/
+    POST faculty/change-password/
     {
         "old_password": "current_password",
         "new_password1": "new_password",
@@ -177,7 +177,7 @@ def faculty_logout(request):
 
     Example usage:
     ```
-    GET /faculty_logout/
+    GET faculty/logout/
     ```
 
     Example response:
@@ -201,22 +201,46 @@ def faculty_logout(request):
 @faculty_required
 def get_semesters_faculty(request):
     """
-    Retrieve and return a list of unique semesters for a specific course.
+    Retrieves a list of distinct semesters associated with a specific course.
 
-    This view handles GET requests to retrieve a list of distinct semesters
-    for students enrolled in a particular course. The view is restricted
-    to authenticated teachers using the `teacher_required` decorator, and
-    only responds to GET requests due to the `require_GET` decorator.
+    This view is used to fetch the available semesters for a given course, which can be utilized
+    by the faculty to filter students or problems based on their semester. It expects the 'course'
+    parameter to be passed via the GET request, and the response is a JSON list of semesters.
 
-    Args:
-        request (HttpRequest): The current HTTP GET request. The course is
-        expected as a query parameter (`course`).
+    Decorators:
+    - `@require_GET`: Ensures that the view can only be accessed via a GET request.
+    - `@faculty_required`: Ensures that only authenticated faculty members can access this view.
+
+    Parameters:
+    - `request`: The HTTP request object, containing the GET data, including the 'course' parameter.
+
+    Behavior:
+    - Retrieves the 'course' parameter from the GET request.
+    - Queries the `Student` model to find distinct semesters for students enrolled in the given course.
+    - Orders the semesters numerically (ascending) and ensures there are no duplicates using `distinct()`.
+    - Returns the list of semesters as a JSON response.
 
     Returns:
-        JsonResponse: A JSON response containing a list of distinct semesters
-        for the specified course. The response is sent in an array format.
-    """
+    - `JsonResponse`: A list of distinct semesters in JSON format.
+      - Example: `[1, 2, 3, 4, 5]`
+    - If no semesters are found, the response will be an empty list: `[]`.
+    - The `safe=False` argument is used to allow non-dict objects (like a list) to be serialized.
 
+    Example usage:
+    ```
+    GET faculty/get-semesters/?course=MCA
+    ```
+
+    Example response:
+    ```
+    [1, 2, 3, 4, 5]
+    ```
+
+    Notes:
+    - The `values_list('semester', flat=True)` method extracts only the 'semester' field from the query.
+    - `distinct()` ensures that only unique semesters are returned.
+    - The `@faculty_required` decorator guarantees that only authenticated faculty members can call this view.
+    """
     # Retrieve the 'course' parameter from the GET request.
     course = request.GET.get('course')
 
@@ -234,25 +258,51 @@ def get_semesters_faculty(request):
     # The 'safe=False' argument allows a non-dict object to be serialized.
     return JsonResponse(list(semester), safe=False)
 
+
 @require_GET
 @faculty_required
 def get_faculty_numbers_faculty(request):
     """
-    Retrieve and return a list of faculty numbers for students in a specific course and semester.
+    Retrieves a list of faculty numbers for students enrolled in a specific course and semester.
 
-    This view handles GET requests to retrieve a list of faculty numbers for students enrolled in
-    a particular course and semester. The view is restricted to authenticated teachers using the
-    `teacher_required` decorator and only accepts GET requests due to the `require_GET` decorator.
+    This view is used to fetch the faculty numbers of students based on the provided 'course' and
+    'semester' parameters. The list of faculty numbers can be used by faculty members to identify
+    or select students. The response is returned in JSON format.
 
-    Args:
-        request (HttpRequest): The current HTTP GET request. The course and semester are expected
-        as query parameters (`course`, `semester`).
+    Decorators:
+    - `@require_GET`: Ensures that the view can only be accessed via a GET request.
+    - `@faculty_required`: Ensures that only authenticated faculty members can access this view.
+
+    Parameters:
+    - `request`: The HTTP request object, containing the GET data, including 'course' and 'semester' parameters.
+
+    Behavior:
+    - Retrieves the 'course' and 'semester' parameters from the GET request.
+    - Queries the `Student` model to find all students that match the given course and semester.
+    - Extracts the faculty numbers of those students and orders the list by the `faculty_number` field.
+    - Returns the list of faculty numbers as a JSON response.
 
     Returns:
-        JsonResponse: A JSON response containing a list of faculty numbers for students in the
-        specified course and semester. The response is an array of faculty numbers.
-    """
+    - `JsonResponse`: A list of faculty numbers in JSON format.
+      - Example: `["23CAMSA101", "23CAMSA102", "23CAMSA103"]`
+    - If no faculty numbers are found, the response will be an empty list: `[]`.
+    - The `safe=False` argument is used to allow non-dict objects (like a list) to be serialized.
 
+    Example usage:
+    ```
+    GET faculty/get-faculty-numbers/?course=MCA&semester=3
+    ```
+
+    Example response:
+    ```
+    ["23CAMSA103", "23CAMSA104", "23CAMSA105"]
+    ```
+
+    Notes:
+    - The `values_list('faculty_number', flat=True)` method extracts only the `faculty_number` field from the query.
+    - The query is ordered by `faculty_number` to ensure the list is sorted.
+    - The `@faculty_required` decorator guarantees that only authenticated faculty members can call this view.
+    """
     # Retrieve the 'course' and 'semester' parameters from the GET request.
     course = request.GET.get('course')
     semester = request.GET.get('semester')
@@ -269,26 +319,52 @@ def get_faculty_numbers_faculty(request):
     # The 'safe=False' argument allows a non-dict object (like a list) to be serialized.
     return JsonResponse(list(faculty_number), safe=False)
 
+
 @require_GET
 @faculty_required
 def get_weeks_faculty(request):
     """
-    Retrieve and return a list of unique weeks for problems in a specific course and semester.
+    Retrieves a list of distinct weeks for a given course and semester.
 
-    This view handles GET requests to retrieve a list of distinct weeks for problems
-    associated with a particular course and semester. The view is restricted to
-    authenticated teachers using the `teacher_required` decorator and accepts only
-    GET requests due to the `require_GET` decorator.
+    This view is used by faculty members to fetch the weeks associated with problems in a specific
+    course and semester. The weeks are returned in ascending order and can be used for filtering or
+    selecting problem sets. The response is in JSON format.
 
-    Args:
-        request (HttpRequest): The current HTTP GET request. The course and semester
-        are expected as query parameters (`course`, `semester`).
+    Decorators:
+    - `@require_GET`: Ensures that the view can only be accessed via a GET request.
+    - `@faculty_required`: Ensures that only authenticated faculty members can access this view.
+
+    Parameters:
+    - `request`: The HTTP request object, containing the GET data, including 'course' and 'semester' parameters.
+
+    Behavior:
+    - Retrieves the 'course' and 'semester' parameters from the GET request.
+    - Queries the `Problem` model to find all distinct weeks for problems that match the given course and semester.
+    - Extracts the weeks from the query results and sorts them in ascending order.
+    - Returns the list of distinct weeks as a JSON response.
 
     Returns:
-        JsonResponse: A JSON response containing a list of distinct weeks for the
-        specified course and semester. The response is an array of week numbers.
-    """
+    - `JsonResponse`: A list of weeks in JSON format.
+      - Example: `[1, 2, 3, 4]`
+    - If no weeks are found, the response will be an empty list: `[]`.
+    - The `safe=False` argument is used to allow non-dict objects (like a list) to be serialized.
 
+    Example usage:
+    ```
+    GET /get_weeks_faculty/?course=BSc&semester=3
+    ```
+
+    Example response:
+    ```
+    [1, 2, 3, 4, 5]
+    ```
+
+    Notes:
+    - The `values_list('week', flat=True)` method extracts only the `week` field from the query results.
+    - The query is filtered by course and semester, ensuring the results are specific to the input parameters.
+    - The `@faculty_required` decorator ensures that only faculty members can access this endpoint.
+    - The weeks are returned in ascending order using the `order_by('week')` method.
+    """
     # Retrieve the 'course' and 'semester' parameters from the GET request.
     course = request.GET.get('course')
     semester = request.GET.get('semester')
