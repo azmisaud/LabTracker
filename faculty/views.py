@@ -386,28 +386,51 @@ def get_weeks_faculty(request):
 @faculty_required
 def week_last_date_faculty(request):
     """
-    Manage the setting of the last date for a specific week by a faculty member.
+    Handles the setting of the last date for a specific week by faculty members.
 
-    This view allows a faculty member to set the last date for a particular week in their course.
-    The faculty member must be logged in to access this functionality. If the request method is
-    POST, it processes the submitted form data. If the form is valid, it saves the last date
-    and records this action in the FacultyActivity log.
+    This view allows faculty to specify the last date for a given week in a course and semester.
+    Upon successful submission of the form, the action is logged, and a success message is displayed.
 
     Decorators:
-    - @faculty_required: Ensures that only authenticated faculty can access this view.
-
-    Request Types:
-    - GET: Renders the form for setting the last date.
-    - POST: Processes the submitted form data to set the last date.
+    - `@faculty_required`: Ensures that only authenticated faculty members can access this view.
 
     Parameters:
-    - request (HttpRequest): The HTTP request object containing metadata about the request.
+    - `request`: The HTTP request object, containing the form data for setting the last date of the week.
+
+    Behavior:
+    - If the request method is POST, the view binds the submitted data to the `LastDateOfWeekForm`.
+    - If the form is valid, it saves the form data, which includes the week date details.
+    - A new `FacultyActivity` entry is created to log the action, including the faculty member's information,
+      the course, semester, week number, and the last date set.
+    - A success message is displayed, and the user is redirected to the 'last_date_of_week' page.
+    - If the request method is not POST, a new instance of `LastDateOfWeekForm` is created for display.
 
     Returns:
-    - HttpResponse: Renders the 'faculty/week_last_date.html' template with the form for
-      GET requests or redirects to the same page with a success message for POST requests.
+    - If the request method is POST and the form is valid, it redirects to the 'last_date_of_week' page.
+    - If the request method is GET or the form is invalid, it renders the 'set_last_date.html' template
+      with the form for input.
+
+    Example usage:
+    ```
+    POST /week_last_date_faculty/
+    {
+        "course": "BSc",
+        "semester": 3,
+        "week": 2,
+        "last_date": "2024-10-31"
+    }
+    ```
+
+    Example response:
+    - On success, the user is redirected to the 'last_date_of_week' page with a success message.
+    - If the form submission fails, the same page is rendered with the form containing validation errors.
+
+    Notes:
+    - The `FacultyActivity` model is used to track actions performed by faculty members for audit and logging purposes.
+    - The `LastDateOfWeekForm` should be defined to handle the data input for course, semester, week, and last date.
+    - The faculty instance is retrieved from the request user to ensure the activity is logged under the correct faculty member.
     """
-    faculty = request.user # Fetch the faculty instance
+    faculty = request.user  # Fetch the faculty instance
 
     if request.method == 'POST':
         form = LastDateOfWeekForm(request.POST)
