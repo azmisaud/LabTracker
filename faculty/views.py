@@ -456,6 +456,77 @@ def week_last_date_faculty(request):
 @require_GET
 @faculty_required
 def fetch_student_details_faculty(request):
+    """
+    Fetches detailed information about a student based on their faculty number.
+
+    This view allows faculty to retrieve a student's progress in terms of problems solved,
+    commit history, and submission status for each week in the student's course and semester.
+
+    Decorators:
+    - `@faculty_required`: Ensures that only authenticated faculty members can access this view.
+    - `@require_GET`: Restricts this view to GET requests only.
+
+    Parameters:
+    - `request`: The HTTP request object, which must include the 'faculty_number' parameter in the GET query.
+
+    Behavior:
+    - The view retrieves the student associated with the given faculty number.
+    - If the student exists, the view gathers information such as:
+      - Total problems solved by the student across all weeks.
+      - List of weeks for the student's course and semester.
+      - Problems solved by the student on a weekly basis.
+      - Last commit details for each week.
+      - Whether the student's submission was on time or late.
+    - If the student does not exist, the view returns a 404 error with an appropriate message.
+
+    Returns:
+    - A JSON response containing the following information about the student:
+      - `name`: Full name of the student.
+      - `enrollment_number`: The student's enrollment number.
+      - `faculty_number`: The student's faculty number.
+      - `course`: The course the student is enrolled in.
+      - `semester`: The semester the student is in.
+      - `available_weeks`: A list of distinct weeks for the student's course and semester.
+      - `problem_solved_overall`: The total number of problems solved by the student across all weeks.
+      - `problems_solved_weekly`: A list of the number of problems solved by the student for each week.
+      - `last_commit_times`: A list of dictionaries containing the last commit time and hash for each week,
+        or "Not Committed" if no commit exists.
+      - `total_problems`: A list of the total number of problems available for each week.
+      - `statuses`: A list indicating whether the student's submission was "On Time", "Late", or not submitted.
+
+    Example usage:
+    ```
+    GET /fetch_student_details_faculty/?faculty_number=12345
+    ```
+
+    Example response:
+    ```json
+    {
+        "name": "John Doe",
+        "enrollment_number": "EN123456",
+        "faculty_number": "12345",
+        "course": "BSc",
+        "semester": 3,
+        "available_weeks": [1, 2, 3, 4],
+        "problem_solved_overall": 10,
+        "problems_solved_weekly": [3, 2, 3, 2],
+        "last_commit_times": [
+            {"last_commit_time": "2024-10-01T12:00:00Z", "last_commit_hash": "abcd1234"},
+            "Not Committed",
+            {"last_commit_time": "2024-10-07T09:30:00Z", "last_commit_hash": "efgh5678"},
+            "Not Committed"
+        ],
+        "total_problems": [4, 3, 5, 4],
+        "statuses": ["On Time", "-----", "Late", "-----"]
+    }
+    ```
+
+    Notes:
+    - The `ProblemCompletion` model tracks problems solved by the student, and the `WeekCommit` model tracks the
+      commit history for each week.
+    - The `LastDateOfWeek` model is used to determine whether a submission was made on time or late, based on the last date for each week.
+    - If no commit or last date exists for a particular week, the status is set to "-----".
+    """
     faculty_number = request.GET.get('faculty_number')
     try:
         student = Student.objects.get(faculty_number=faculty_number)
