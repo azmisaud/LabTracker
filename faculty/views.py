@@ -597,57 +597,85 @@ def fetch_student_details_faculty(request):
 @faculty_required
 def check_student_details_faculty(request):
     """
-    Render the 'check_student_details' template for teachers to view student details.
+    Render the 'check_student_details' template for faculty members to view student details.
 
-    This view provides a simple interface for teachers to access a page where they can input or
-    search for student details. The form on the page likely triggers other actions to fetch or display
-    student information.
+    This view serves as a simple interface where faculty can search for student information by entering
+    relevant details such as a student's faculty number or other identifying information.
+    The form on the rendered page allows faculty to search or retrieve detailed student information,
+    potentially triggering other actions or views (such as fetch_student_details_faculty) based on user input.
 
     Decorators:
-    - @teacher_required: Ensures that only authenticated teachers can access this view.
+    - @faculty_required: Ensures that only authenticated faculty members can access this view.
 
     Parameters:
     - request (HttpRequest): The HTTP request object.
 
     Returns:
-    - HttpResponse: Renders the 'check_student_details.html' template for the teacher.
+    - HttpResponse: Renders the 'faculty/check_student_details.html' template for the faculty.
     """
     return render(request, 'faculty/check_student_details.html')
+
 
 @faculty_required
 @csrf_exempt
 @require_POST
 def log_activity_faculty(request):
     """
-    Log a teacher's activity related to course and semester actions.
+    Logs an activity performed by a faculty member, such as setting deadlines or monitoring weekly progress.
 
-    This view handles logging specific actions performed by a teacher, such as setting deadlines,
-    or other course-related activities. The action details are posted via a form and stored in the
-    TeacherActivity model.
+    This view allows faculty to log specific actions related to a course, semester, and week. The action is recorded
+    in the `FacultyActivity` model for tracking purposes.
 
     Decorators:
-    - @teacher_required: Ensures that only authenticated teachers can access this view.
-    - @csrf_exempt: Allows the view to be accessed without CSRF token validation.
-    - @require_POST: Ensures that only POST requests are allowed.
+    - `@faculty_required`: Ensures that only authenticated faculty members can access this view.
+    - `@csrf_exempt`: Disables CSRF protection for this view (should be used with caution).
+    - `@require_POST`: Restricts this view to POST requests only.
 
     Parameters:
-    - request (HttpRequest): The HTTP request object, expected to contain POST data including:
-      - action (str): The action performed by the teacher (e.g., 'Set Last Date').
-      - course (str): The course related to the action.
-      - semester (str): The semester related to the action.
-      - week (str): The specific week of the semester related to the action.
+    - `request`: The HTTP request object containing the POST data.
+
+    POST Data:
+    - `action`: A string representing the action taken by the faculty (e.g., "Set Last Date").
+    - `course`: The course for which the action is being performed.
+    - `semester`: The semester to which the action applies.
+    - `week`: The specific week for which the action is logged.
+
+    Behavior:
+    - The view creates a new `FacultyActivity` record, logging the provided action, course, semester, and week.
+    - The faculty performing the action is identified via `request.user`.
 
     Returns:
-    - JsonResponse: A success message in JSON format upon successful logging of the activity.
-      Returns an error message if the teacher is not logged in.
+    - A JSON response indicating success if the activity is logged.
+
+    Example usage:
+    ```
+    POST /log_activity_faculty/
+    {
+        "action": "Set Last Date",
+        "course": "BSc Computer Science",
+        "semester": 3,
+        "week": 2
+    }
+    ```
+
+    Example response:
+    ```json
+    {
+        "success": "Activity logged successfully"
+    }
+    ```
+
+    Notes:
+    - The `FacultyActivity` model is used to log the activity, storing the faculty member's action, course, semester, and week.
+    - CSRF protection is disabled in this view, so be mindful of security concerns in production.
     """
+    faculty = request.user  # Get the authenticated faculty member from the request
+    action = request.POST.get('action')  # Get the action from the POST request
+    course = request.POST.get('course')  # Get the course from the POST request
+    semester = request.POST.get('semester')  # Get the semester from the POST request
+    week = request.POST.get('week')  # Get the week from the POST request
 
-    faculty=request.user
-    action = request.POST.get('action')
-    course = request.POST.get('course')
-    semester = request.POST.get('semester')
-    week = request.POST.get('week')
-
+    # Log the faculty activity in the FacultyActivity model
     FacultyActivity.objects.create(
         faculty=faculty,
         action=action,
@@ -656,6 +684,7 @@ def log_activity_faculty(request):
         week=week
     )
 
+    # Return a success message as a JSON response
     return JsonResponse({'success': 'Activity logged successfully'})
 
 @faculty_required
