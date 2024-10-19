@@ -690,30 +690,100 @@ def log_activity_faculty(request):
 @faculty_required
 @require_GET
 def fetch_whole_class_weekly_faculty(request):
+    """
+    Fetches the weekly progress of all students in a particular course and semester.
 
-    course = request.GET.get('course')
-    semester = request.GET.get('semester')
-    week = request.GET.get('week')
+    This view allows faculty to retrieve details about each student's performance for a specific week,
+    including the number of problems solved, the last commit time, and the submission status (on time or late).
 
+    Decorators:
+    - `@faculty_required`: Ensures that only authenticated faculty members can access this view.
+    - `@require_GET`: Restricts this view to GET requests only.
+
+    Parameters:
+    - `request`: The HTTP request object, which must include the following query parameters:
+      - `course`: The course for which the data is being retrieved.
+      - `semester`: The semester for which the data is being retrieved.
+      - `week`: The week number for which progress is being checked.
+
+    Behavior:
+    - The view retrieves all students for the given course and semester.
+    - For each student, the view gathers:
+      - The total number of problems solved for the week.
+      - The last commit time for the week.
+      - Whether the submission was made on time, late, or no commit was made.
+    - If no last date for the week exists, the status is marked as "-----".
+
+    Returns:
+    - A JSON response containing a list of dictionaries for each student, with the following keys:
+      - `enrollment_number`: The student's enrollment number.
+      - `faculty_number`: The student's faculty number.
+      - `full_name`: The student's full name.
+      - `last_commit_time`: The last commit time for the week, or "No Commits" if no commit exists.
+      - `problems_solved`: The number of problems the student solved for the week.
+      - `total_problems`: The total number of problems available for the week.
+      - `status`: The submission status, which can be "On Time", "Late", or "----".
+
+    Example usage:
+    ```
+    GET /fetch_whole_class_weekly_faculty/?course=BSc&semester=3&week=2
+    ```
+
+    Example response:
+    ```json
+    [
+        {
+            "enrollment_number": "EN123456",
+            "faculty_number": "12345",
+            "full_name": "John Doe",
+            "last_commit_time": "2024-10-07T09:30:00Z",
+            "problems_solved": 3,
+            "total_problems": 5,
+            "status": "On Time"
+        },
+        {
+            "enrollment_number": "EN123457",
+            "faculty_number": "12346",
+            "full_name": "Jane Smith",
+            "last_commit_time": "No Commits",
+            "problems_solved": 0,
+            "total_problems": 5,
+            "status": "----"
+        }
+    ]
+    ```
+
+    Notes:
+    - The `LastDateOfWeek` model is used to determine the last allowed submission date for the week.
+    - The `ProblemCompletion` model tracks the problems solved by the student.
+    - The `WeekCommit` model tracks the last commit time for each student and week.
+    - If no commit or last date exists for a particular week, the status is marked as "-----".
+    """
+    course = request.GET.get('course')  # Get the course from the query parameters
+    semester = request.GET.get('semester')  # Get the semester from the query parameters
+    week = request.GET.get('week')  # Get the week number from the query parameters
+
+    # Fetch all students for the course and semester, ordered by faculty number
     all_student = Student.objects.filter(course=course, semester=semester).order_by('faculty_number')
 
-    # Fetch last date for the week
+    # Fetch the last date for the week, if it exists
     week_last_date_2 = LastDateOfWeek.objects.filter(course=course, semester=semester, week=week).first()
     last_date = week_last_date_2.last_date if week_last_date_2 else None
 
-    # Total problems for the week
+    # Get the total number of problems for the week
     total_problems_in_week = Problem.objects.filter(course=course, semester=semester, week=week).count()
 
-    report_data = []
+    report_data = []  # Initialize a list to hold the report data for each student
 
-    # Loop through each student to gather progress data
+    # Loop through each student to gather their weekly progress
     for student in all_student:
+        # Fetch the last commit for the student in the given week
         week_commit = WeekCommit.objects.filter(student=student, week_number=week).first()
 
-        problems_solved = ProblemCompletion.objects.filter(student=student, problem__week=week,
-                                                           is_completed=True).count()
+        # Count the problems solved by the student for the week
+        problems_solved = ProblemCompletion.objects.filter(student=student, problem__week=week, is_completed=True).count()
 
-        # Determine submission status based on the last commit time and deadline
+        # Determine the submission status based on the last commit time and deadline
         if last_date:
             if week_commit:
                 last_commit_time = week_commit.last_commit_time
@@ -732,7 +802,7 @@ def fetch_whole_class_weekly_faculty(request):
                 last_commit_time = "No Commits"
                 commit_status = "-----"
 
-        # Append student data to the report
+        # Append the student's progress data to the report
         report_data.append({
             'enrollment_number': student.enrollment_number,
             'faculty_number': student.faculty_number,
@@ -743,6 +813,7 @@ def fetch_whole_class_weekly_faculty(request):
             'status': commit_status
         })
 
+    # Return the report data as a JSON response
     return JsonResponse(report_data, safe=False)
 
 @faculty_required
