@@ -11,7 +11,7 @@ def start():
     if os.environ.get('RUN_MAIN',None) == 'true':
         scheduler = BackgroundScheduler()
 
-        trigger=CronTrigger(hour="19",minute="02")
+        trigger=CronTrigger(hour="21",minute="07")
 
         scheduler.add_job(run_management_command,trigger)
         scheduler.start()

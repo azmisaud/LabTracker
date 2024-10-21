@@ -14,7 +14,7 @@ from .models import Faculty, FacultyActivity, LastDateOfWeek
 from django.contrib.auth import logout
 from django.contrib import messages
 from .utils import update_student_data
-
+from django.utils.dateformat import format
 
 def faculty_login(request):
     """
