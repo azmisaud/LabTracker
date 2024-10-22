@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/friends.css' %}">
-    <link rel="stylesheet" href="{% static 'css/central.css' %}">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     <link rel="stylesheet" href="{% static 'css/form.css' %}">
     <style>
@@ -35,34 +34,15 @@
                             <a href="{% url 'student_login' %}" class="button-resources">Login</a>
                         </li>
                     </ul>
-                            
-                        <!-- Resources Link -->
-                        <ul class="hidden sm:flex items-center justify-end gap-5">
-                            <li>
-                                <a href="https://www.amu.ac.in/department/computer-science" class="button-resources">
-                                   Resources
-                                </a>
-                            </li>
-                        </ul>
-                    
+                    <ul class="hidden sm:flex items-center justify-end gap-5">
+                        <li>
+                            <a href="https://www.amu.ac.in/department/computer-science"
+                                class="button-resources">Resources</a>
+                        </li>
+                    </ul>
                 </div>
             </nav>
         </div>
-
-
-        <!-- <div class="header-content">
-            <h1 class="logo">LabTracker</h1>
-            <nav class="navbar">
-                <ul>
-                    <li>
-                        <a href="{% url 'student_login' %}">Login</a>
-                    </li>
-                    <li>
-                        <a href="{% url 'homepage' %}">Home</a>
-                    </li>
-                </ul>
-            </nav>
-        </div> -->
     </header>
     <section class="form login">
         <div id="login">
