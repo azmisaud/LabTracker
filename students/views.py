@@ -20,6 +20,7 @@ import requests
 from PIL import Image
 import json
 from .models import Student, PasswordResetToken
+from django.contrib.auth import authenticate, login as auth_login
 
 
 def student_signup(request):
@@ -45,8 +46,8 @@ def student_signup(request):
         if form.is_valid():
             # Save the user and create the student account
             user = form.save()
-            # Redirect to the same page (or another) upon successful sign-up
-            return redirect('student_signup')
+            # Redirect to the login page upon successful sign-up
+            return redirect('student_login')
         else:
             # If the form is invalid, re-render the page with form errors
             return render(request, 'students/signup.html', {'form': form})
@@ -58,44 +59,35 @@ def student_signup(request):
     # Render the sign-up template with the form
     return render(request, 'students/signup.html', {'form': form})
 
-
 def student_login(request):
     """
-    Handle the login process for students using Django's AuthenticationForm.
-
-    This view function checks if the incoming request is a POST request (i.e., the login form has been submitted).
-    If the form submission is valid, it authenticates and logs in the user. If the request method is not POST,
-    the function renders a blank login form.
+    Handle the login process for students using their username (displayed as email in the UI).
 
     Args:
         request: HttpRequest object that contains metadata about the request.
 
     Returns:
         HttpResponseRedirect: Redirects to the 'student_dashboard' page upon successful login.
-        HttpResponse: Renders the login page with the AuthenticationForm if GET request or invalid POST data.
-
-    Flow:
-    - If the request method is POST:
-        - Instantiate the AuthenticationForm with the POST data.
-        - Validate the form. If valid:
-            - Get the user object.
-            - Authenticate and log in the user.
-            - Redirect the logged-in user to the 'student_dashboard' page.
-    - If the request method is GET:
-        - Instantiate an empty AuthenticationForm and render the login page.
+        HttpResponse: Renders the login page with an error if the credentials are invalid.
     """
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
+        username = request.POST.get('email')  # Get the username from the "email" input field
+        password = request.POST.get('password')
+
+        # Authenticate the user
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            # If the user exists, log them in
             auth_login(request, user)
             return redirect('student_dashboard')
-    else:
-        form = AuthenticationForm()
+        else:
+            # If authentication fails, render the form with an error
+            error_message = "Invalid username or password."
+            return render(request, 'students/login.html', {'error': error_message})
 
-    return render(request, 'students/login.html', {'form': form})
+    return render(request, 'students/login.html')
 
-@student_required
 def student_logout(request):
     """
     Logs out the current student and redirects them to the login page.

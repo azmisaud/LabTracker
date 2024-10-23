@@ -1,3 +1,4 @@
+@import url(./root.css);
 /* General Styling */
 * {
     box-sizing: border-box;
@@ -40,7 +41,7 @@ body {
     font-family: 'Montserrat', sans-serif;
     /* Slightly larger for emphasis */
     font-weight: 900; /* Extra bold for a strong visual impact */
-    color: rgb(107, 0, 2); /* Maroon */
+    color: var(--primary); /* Maroon */
     letter-spacing: 1px; /* Letter spacing for a refined look */
     transition: color 0.3s ease;
     cursor: pointer;
@@ -69,7 +70,7 @@ body {
     font-family: 'Montserrat', sans-serif;
     font-weight: 300;
     font-size: 15px; /* Slightly larger font size */
-    background-color: rgb(107, 0, 2); /* Maroon buttons */
+    background-color: var(--primary); /* Maroon buttons */
     padding: 12px 24px; /* More padding for button size */
     border-radius: 24px; /* Rounded buttons */
     box-shadow: 0 6px 20px rgba(107, 0, 2, 0.2); /* Deeper shadow */
@@ -107,7 +108,7 @@ body {
     padding: 10px; /* Adjusted padding for elegance */
     font-size: 15px; /* Uniform font size for all links */
     transition: background-color 0.3s ease, color 0.3s ease;
-    background-color: rgb(107, 0, 2); /* Background color of the dropdown */
+    background-color: var(--primary); /* Background color of the dropdown */
     border:none;
 }
 

@@ -7,45 +7,75 @@
     <title>Student Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/central.css' %}"> <!-- Include your CSS file -->
+    <link rel="stylesheet" href="{% static 'css/friends.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
 </head>
 <body>
     <header>
-        <div class="header-content">
-            <h1 class="logo">LabTracker</h1>
-            <nav class="navbar">
-                <ul>
-                    <li>
-                        <a href="{% url 'student_signup' %}">Sign Up</a>
-                    </li>
-                    <li>
-                        <a href="{% url 'homepage' %}">Home</a>
-                    </li>
-                </ul>
+        <div class="bg-slate-900 py-5 text-white sm:py-8">
+            <nav class="container flex items-center justify-between">
+                <div class="text-red font-bold text-xl">
+                    <button>
+                        <span><a href="{% url 'homepage' %}">LAB TRACKER</a></span>
+                    </button>
+                </div>
+                <div class="flex items-center gap-5">
+                    <ul class="hidden sm:flex items-center justify-end gap-5">
+                        <li>
+                            <a href="{% url 'student_signup' %}" class="button-resources">
+                                Sign Up
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="hidden sm:flex items-center justify-end gap-5">
+                        <li>
+                            <a href="https://www.amu.ac.in/department/computer-science" class="button-resources">
+                               Resources
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </nav>
         </div>
     </header>
-    <div class="form-container">
-        <h2>Student Login</h2>
-        <form method="post">
-            {% csrf_token %}
-            {% if form.non_field_errors %}
-                <div class="form-errors">
-                    {{ form.non_field_errors }}
-                </div>
-            {% endif %}
-            <div class="form-group">
-                <label for="id_username">Username:</label>
-                {{ form.username }}
-            </div>
-            <div class="form-group">
-                <label for="id_password">Password:</label>
-                {{ form.password }}
-            </div>
-            <button type="submit">Login</button>
-        </form>
 
-        <a href="{% url 'password_reset' %}" class="forgot-password-button">Forgot Password?</a>
-    </div>
+    <section class="form login">
+        <div id="login">
+            <div id="formLogin">
+                <h1>Login →</h1>
+                <form method="post" enctype="multipart/form-data" autocomplete="off">
+                    {% csrf_token %}
+                    <div class="error-text">
+                        {% if form.non_field_errors %}
+                            <div class="form-errors">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="inputContainer">
+                        <!-- Change 'email' to 'username' to match your view -->
+                        <input type="text" class="inputLogin" placeholder=" " name="email" id="id_username">
+                        <label class="labelLogin">Username</label>
+                    </div>
+                    <div class="inputContainer">
+                        <input type="password" class="inputLogin" placeholder=" " name="password" id="id_password">
+                        <label class="labelLogin">Password</label>
+                    </div>
+                    <div class="field button">
+                        <input type="submit" class="submitButton" value="Login">
+                    </div>
+                </form>
+                <div class="register">
+                    <span class="breaker">or</span>
+                    <a class="links" href="{% url 'student_signup' %}">Register</a>
+                </div>
+                <div class="register">
+                    <span class="breaker"><b>Forgot password?</b></span>
+                    <a class="links" href="{% url 'password_reset' %}">Reset Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
 </html>
