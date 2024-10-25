@@ -7,12 +7,34 @@
     <title>Faculty Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/central.css' %}">
+    <link rel="stylesheet" href="{% static 'css/friends.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
 </head>
 <body>
 
     <header>
-        <div class="header-content">
+
+
+        <div class="bg-slate-900 py-5 text-white sm:py-8">
+            <nav class="container flex items-center justify-between">
+                <div class="text-red font-bold text-xl">
+                    <button>
+                        <span><a href="{% url 'homepage' %}">LAB TRACKER</a></span>
+                    </button>
+                </div>
+                <div class="flex items-center gap-5">
+                    <ul class="hidden sm:flex items-center justify-end gap-5">
+                        <li>
+                            <a href="https://www.amu.ac.in/department/computer-science" class="button-resources">
+                               Resources
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <!-- <div class="header-content">
             <h1 class="logo">LabTracker</h1>
             <nav class="navbar">
                 <ul>
@@ -21,13 +43,12 @@
                     </li>
                 </ul>
             </nav>
-        </div>
+        </div> -->
     </header>
-
+<!-- 
     <div class="form-container">
         <h2>Faculty Login</h2>
 
-        <!-- Display any error messages -->
         <div class="form-errors">
             {% if messages %}
                 <ul>
@@ -42,15 +63,45 @@
             {% csrf_token %}
             <div class="form-group">
                 <label for="id_username">Username:</label>
-                {{ form.username }}  <!-- Render username field from the form -->
+                {{ form.username }}
             </div>
             <div class="form-group">
                 <label for="id_password">Password:</label>
-                {{ form.password }}  <!-- Render password field from the form -->
+                {{ form.password }} 
             </div>
             <button type="submit" class="btn">Login</button>
         </form>
-    </div>
+    </div> -->
+
+
+    <section class="form login">
+        <div id="login">
+            <div id="formLogin">
+                <h1>Faculty Login →</h1>
+                <form method="post" enctype="multipart/form-data" autocomplete="off">
+                    {% csrf_token %}
+                    <div class="error-text">
+                        {% if form.non_field_errors %}
+                            <div class="form-errors">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="inputContainer">
+                        <input type="text" class="inputLogin" placeholder=" " name="username" id="id_username">
+                        <label class="labelLogin">Username</label>
+                    </div>
+                    <div class="inputContainer">
+                        <input type="password" class="inputLogin" placeholder=" " name="password" id="id_password">
+                        <label class="labelLogin">Password</label>
+                    </div>
+                    <div class="field button">
+                        <input type="submit" class="submitButton" value="Login">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section> 
 
 </body>
 </html>

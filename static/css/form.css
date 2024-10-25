@@ -1,0 +1,221 @@
+@import url(./root.css);
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 0 10px;
+}
+
+.error-text {
+    color: var(--white); /* Updated text color */
+    padding: 10px 10px;
+    text-align: center;
+    border-radius: var(--radius-4); /* Updated border radius */
+    background: var(--primary); /* Updated background color */
+    border: 1px solid var(--cultured-2); /* Updated border color */
+    margin-bottom: 20px;
+    display: none;
+}
+
+
+.error-text{
+    color: #fff;
+    color: var(--primary);
+    padding: 10px 10px;
+    text-align: center;
+    border-radius: 15px;
+    background: var(--primary);
+    border: 1px solid #f5c6cb;
+    margin-bottom: 20px;
+    display: none;
+  }
+
+#login {
+    display: flex;
+    align-items: center;
+}
+
+#login #formLogin {
+
+    margin: auto;
+    width: 450px;
+    /* height: 700px; */
+    padding: 100px 50px;
+}
+
+#login #formLogin h1,
+h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+h3 {
+    margin-bottom: 8px;
+}
+
+
+#login #formLogin .inputContainer {
+    position: relative;
+    height: 48px;
+    margin-bottom: 30px;
+}
+
+#login #formLogin .inputContainer .inputLogin {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    font-size: 16px;
+    border: 1px solid #adb5bd;
+    outline: none;
+    background: none;
+    padding: 12px;
+    z-index: 1;
+}
+#login #formLogin .inputContainer .labelLogin {
+    position: absolute;
+    left: 16px;
+    top: 10px;
+    padding: 0px 5px;
+    background-color: white;
+    color: #adb5bd;
+    font-size: 16px;
+    transition: 0.3s;
+}
+input {
+    height: 40px;
+    width: 100%;
+    font-size: 16px;
+    padding: 0 10px;
+    border-radius: 5px;
+}
+input {
+    outline: none !important;
+}
+
+#login #formLogin .submitButton {
+    display: block;
+    margin: auto;
+    padding: 10px 30px;
+    outline: none;
+    border: none;
+    background-color: var(--primary);
+    color: var(--raisin-black-2);
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#login #formLogin .register {
+    margin: auto;
+    text-align: center;
+    padding-top: 7px;
+    color: var(--primary);
+}
+
+
+#login #formLogin .register .breaker {
+    color: #000 !important;
+}
+
+.links {
+    text-decoration: none;
+    color: var(--primary);
+}
+.links:hover{
+    color: var(--secondary);
+}
+
+#login #formLogin .submitButton{
+    font-weight: bold;
+    color: #fff;
+}
+#login #formLogin .submitButton:hover {
+    border-radius: 5px;
+    font-weight: normal;
+    background-color: var(--secondary);
+}
+
+#login #formLogin .inputLogin:focus+.labelLogin {
+    top: -10px;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--primary);
+    z-index: 2;
+}
+
+#login #formLogin .inputLogin:not(:placeholder-shown).inputLogin:not(:focus)+.labelLogin {
+    top: -10px;
+    font-size: 13px;
+    z-index: 2;
+}
+
+#login #formLogin .inputLogin:focus {
+    border: 1px solid var(--primary);
+}
+
+
+.inputContainer textarea.inputLogin {
+    height: auto; /* Let height be determined by content */
+    min-height: 120px; /* Set a minimum height */
+    padding: 16px; /* Match padding with other inputs */
+}
+
+
+#formLogin {
+    position: relative; /* Set position to relative */
+}
+
+#contactForm .submitButton {
+    position: absolute; /* Set position to absolute */
+    bottom: -6px; /* Align the button at the bottom */
+    width: 75%;
+}
+/* Instructions Styling */
+.instructions {
+    background-color: rgb(240, 240, 240);
+    padding: 15px;
+    border-left: 4px solid var(--primary);
+    font-size: 12px;
+    color: rgb(60, 60, 60);
+}
+
+.instructions ul {
+    padding-left: 20px;
+    list-style-type: disc;
+}
+
+.accordion {
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    margin: 20px 0;
+}
+
+.accordion-title {
+    background-color: var(--primary); 
+    color: white;
+    cursor: pointer; 
+    padding: 8px; 
+    font-weight: bold; 
+    text-align: center; 
+    border: none;
+    outline: none;
+    font-size: 15px; 
+    border-radius: 5px;
+}
+.accordion-title:hover{
+    background-color: var(--secondary);
+}
+.accordion-content {
+    display: none; 
+}
