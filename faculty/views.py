@@ -447,7 +447,7 @@ def week_last_date_faculty(request):
             )
 
             messages.success(request, 'Last date set successfully')
-            return redirect('last_date_of_week')
+            return redirect('week_last_date_faculty')
     else:
         form = LastDateOfWeekForm()
 
