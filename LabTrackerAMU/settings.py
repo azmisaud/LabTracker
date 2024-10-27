@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     "students.apps.StudentsConfig",
     "problems.apps.ProblemsConfig",
     "faculty.apps.FacultyConfig",
-    'django_extensions'
 ]
 
 MIDDLEWARE = [
