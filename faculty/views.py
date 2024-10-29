@@ -1018,23 +1018,23 @@ def other_activity_faculty(request):
 
         # Check the action type and format accordingly with the teacher's name
         if activity.action == 'Added Problem':
-            return f"{timestamp} : {activity.teacher.name} added a problem in {activity.course}, Sem {activity.semester} in Week {activity.week} <br> Problem Description : {activity.description}"
+            return f"{timestamp} : {activity.faculty.name} added a problem in {activity.course}, Sem {activity.semester} in Week {activity.week} <br> Problem Description : {activity.description}"
         elif activity.action == 'Edited Problem':
-            return f"{timestamp} : {activity.teacher.name} edited a problem in {activity.course}, Sem {activity.semester} in Week {activity.week} <br> Problem Description : {activity.description}"
+            return f"{timestamp} : {activity.faculty.name} edited a problem in {activity.course}, Sem {activity.semester} in Week {activity.week} <br> Problem Description : {activity.description}"
         elif activity.action == 'Viewed Class Report':
-            return f"{timestamp} : {activity.teacher.name} viewed the class report of {activity.course}, Sem {activity.semester}"
+            return f"{timestamp} : {activity.faculty.name} viewed the class report of {activity.course}, Sem {activity.semester}"
         elif activity.action == 'Downloaded Class Report':
-            return f"{timestamp} : {activity.teacher.name} downloaded the class report of {activity.course}, Sem {activity.semester}"
+            return f"{timestamp} : {activity.faculty.name} downloaded the class report of {activity.course}, Sem {activity.semester}"
         elif activity.action == 'Started a New Semester':
-            return f"{timestamp} : {activity.teacher.name} started a new Semester"
+            return f"{timestamp} : {activity.faculty.name} started a new Semester"
         elif activity.action == 'Updated the data':
-            return f"{timestamp} : {activity.teacher.name} updated the data for {activity.course}, Sem {activity.semester}"
+            return f"{timestamp} : {activity.faculty.name} updated the data for {activity.course}, Sem {activity.semester}"
         elif activity.action == 'Viewed Weekly Class Report':
-            return f"{timestamp} : {activity.teacher.name} viewed the weekly report of {activity.course}, Sem {activity.semester}, Week {activity.week}"
+            return f"{timestamp} : {activity.faculty.name} viewed the weekly report of {activity.course}, Sem {activity.semester}, Week {activity.week}"
         elif activity.action == 'Downloaded Weekly Class Report':
-            return f"{timestamp} : {activity.teacher.name} downloaded the weekly report of {activity.course}, Sem {activity.semester}, Week {activity.week}"
+            return f"{timestamp} : {activity.faculty.name} downloaded the weekly report of {activity.course}, Sem {activity.semester}, Week {activity.week}"
         elif activity.action == 'Set Last Date':
-            return f"{timestamp} : {activity.teacher.name} have set the last date for {activity.course}, Sem {activity.semester}, Week {activity.week} as {activity.description}"
+            return f"{timestamp} : {activity.faculty.name} have set the last date for {activity.course}, Sem {activity.semester}, Week {activity.week} as {activity.description}"
         else:
             return "Unknown activity"
 
