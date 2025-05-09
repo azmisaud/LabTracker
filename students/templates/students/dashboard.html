@@ -3,110 +3,245 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'students/css/student_dashboard.css' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-<body>
-{% block content %}
-<div class="dashboard-header">
-    <h1>Welcome {{ student.first_name }} {{ student.last_name }}</h1>
-    <div class="logout-button">
-        <a href="{% url 'student_logout' %}" class="btn btn-danger">Logout</a>
-    </div>
-</div>
+<body class="bg-[rgb(245,245,245)] min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-md border-b border-gray-200" x-data="{ open: false }">
+        <div class="w-full px-4 sm:px-6 py-4 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer group">
+                <!-- Icon -->
+                <svg class="w-7 h-7 text-[#6B0002] group-hover:text-[#2F6256] transition-colors duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm4 14h8"></path>
+                </svg>
+                <!-- Brand Text -->
+                <span class="text-[26px] font-bold font-[Montserrat] tracking-wide text-[#6B0002] group-hover:text-[#2F6256] transition duration-200 leading-none">
+                    Lab<span class="text-[#2F6256] font-semibold">Tracker</span>
+                    <span class="block text-xs font-light tracking-normal text-neutral-500">Manage. Monitor. Master.</span>
+                </span>
+            </div>
 
-<div class="dashboard-container">
-    <!-- Left: Student Info Box -->
-    <div class="student-info-box">
-        <h3>Your Information</h3>
-        <p><strong>GitHub Username:</strong> {{ student.username }}</p>
-        <p><strong>Name:</strong> {{ student.first_name}} {{ student.last_name }}</p>
-        <p><strong>Faculty Number:</strong> {{ student.faculty_number }}</p>
-        <p><strong>Enrollment Number:</strong> {{ student.enrollment_number }}</p>
-        <p><strong>Course:</strong> {{ student.course }}</p>
-        <p><strong>Semester:</strong> {{ student.semester }}</p>
-
-        <!-- Download Index Button -->
-        <div class="download-index">
-            <button onclick="window.location.href='{% url 'generate_problem_doc' %}'">Download Index</button>
+            <!-- Logout Button -->
+            <a href="{% url 'student_logout' %}" class="font-[Lora] text-sm text-white bg-[#6B0002] px-5 py-2 rounded-full hover:bg-[#2F6256] transition-all duration-200 flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span>Logout</span>
+            </a>
         </div>
-        <br>
-        <!-- Instructions Box -->
-        <div class="instructions">
-            <h3>Instructions</h3>
-            <ul>
-                <li>
-                    <strong>Create Week-Wise Directories:</strong>
-                    <p>Organize your repository with directories for each week. Name these directories as <code>Week1</code>, <code>Week2</code>, <code>Week3</code>, ... up to <code>Week14</code>.</p>
-                </li>
-                <li>
-                    <strong>Strict Naming Conventions:</strong>
-                    <p>When solving problems, use the appropriate file names. For example:</p>
-                    <ul>
-                        <li>If solving <em>Problem 1</em> of <em>Week 1</em>, the file should be named <code>Problem1.py</code> (assuming the solution is in Python) and placed in the <code>Week1</code> directory.</li>
-                        <li>If solving <em>Problem 3</em> of <em>Week 4</em>, the file should be named <code>Problem3.py</code> and placed in the <code>Week4</code> directory.</li>
-                    </ul>
-                    <p>Any deviation from these naming conventions may result in incorrect data display, even if your solutions are correctly uploaded to your GitHub repository.</p>
-                </li>
-                <li>
-                    <strong>Uploading Output Images for File Generation:</strong>
-                    <p>If you want to <strong>generate a file</strong>, you must upload the output image in one of the following formats: <code>.jpg</code>, <code>.jpeg</code>, or <code>.png</code>.</p>
-                    <p>Follow these rules:</p>
-                    <ul>
-                        <li>For an output image of <em>Problem 1</em> of <em>Week 1</em>, the image should be named <code>Problem1.jpg</code> (or with the appropriate extension) and placed in the <code>Week1</code> directory.</li>
-                        <li>For an output image of <em>Problem 5</em> of <em>Week 6</em>, the image should be named <code>Problem5.jpg</code> and placed in the <code>Week6</code> directory.</li>
-                    </ul>
-                    <p>Make sure the image is correctly named and placed in the correct directory to trigger the file generation process.</p>
-                </li>
-                <li>
-                    <strong>Avoid Frequent File Generation:</strong>
-                    <p>Please limit file generation to <strong>one file per hour</strong>. Generating multiple files in a short period may cause system errors, resulting in incorrect or incomplete files.</p>
-                </li>
-            </ul>
-        </div>
-    </div>
+    </header>
 
-    <!-- Middle to Right: Weekly Problems and Progress -->
-    <div class="problems-progress">
-        <h3>Weekly Problems</h3>
-        {% for week, progress in weekly_progress.items %}
-        <div class="dropdown">
-            <button class="dropbtn">Week {{ week }} - Last Commit: {{ progress.last_commit_time|default:"Not Committed" }} - {{ progress.completed }} / {{ progress.total }} Completed , Deadline : {{ progress.last_date }}</button>
-            <div class="dropdown-content">
-                <ul>
-                    <button onclick="window.location.href='{% url 'generate_file' week %}'">Generate File</button>
-                    {% for problem in problems %}
-                    {% if problem.week == week %}
-                    <li>
-                        <span>{{ problem.problemNumber }}: </span>
-                        <p>{% filter linebreaksbr %}{{ problem.description }}{% endfilter %}</p>
-                    </li>
-                    {% endif %}
-                    {% endfor %}
-                </ul>
+    <!-- Dashboard Container -->
+    <div class="container mx-auto px-4 sm:px-6 py-8 max-w-7xl">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Left: Student Info Box -->
+            <div class="bg-white rounded-xl shadow-lg p-6 lg:w-1/3">
+                <!-- Student Profile Header -->
+                <div class="flex items-center space-x-4 mb-8 pb-6 border-b border-gray-100">
+                    <div class="w-16 h-16 rounded-full bg-[rgb(107,0,2)] flex items-center justify-center text-white text-2xl font-bold">
+                        {{ student.first_name|first }}{{ student.last_name|first }}
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-[rgb(107,0,2)]">{{ student.first_name }} {{ student.last_name }}</h3>
+                        <p class="text-sm text-gray-500">@{{ student.username }}</p>
+                    </div>
+                </div>
+
+                <!-- Student Information -->
+                <div class="space-y-6">
+                    <div class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+                        <h4 class="text-[rgb(107,0,2)] font-semibold mb-3 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                            </svg>
+                            Academic Details
+                        </h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center text-[rgb(60,60,60)]">
+                                <span class="w-24 text-sm font-medium">Course:</span>
+                                <span class="text-sm">{{ student.course }}</span>
+                            </div>
+                            <div class="flex items-center text-[rgb(60,60,60)]">
+                                <span class="w-24 text-sm font-medium">Semester:</span>
+                                <span class="text-sm">{{ student.semester }}</span>
+                            </div>
+                            <div class="flex items-center text-[rgb(60,60,60)]">
+                                <span class="w-24 text-sm font-medium">Faculty No:</span>
+                                <span class="text-sm">{{ student.faculty_number }}</span>
+                            </div>
+                            <div class="flex items-center text-[rgb(60,60,60)]">
+                                <span class="w-24 text-sm font-medium">Enrollment:</span>
+                                <span class="text-sm">{{ student.enrollment_number }}</span>
+                            </div>
+                            <div class="flex items-center text-[rgb(60,60,60)]">
+                                <span class="w-24 text-sm font-medium">Instructor:</span>
+                                <span class="text-sm">{{ instructor }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Download Index Button -->
+                    <div class="mt-6">
+                        <button onclick="window.location.href='{% url 'generate_problem_doc' %}'" class="w-full py-2.5 sm:py-3 px-4 sm:px-5 bg-[rgb(107,0,2)] text-white text-sm sm:text-base font-semibold rounded-full hover:bg-[rgb(47,98,86)] hover:-translate-y-1 hover:shadow-[0_6px_20px_rgba(47,98,86,0.2)] transition-all duration-300 flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Download Index
+                        </button>
+                    </div>
+
+                    <!-- Instructions Box -->
+                    <div class="mt-8">
+                        <h3 class="text-[rgb(107,0,2)] text-xl sm:text-2xl font-bold mb-4 flex items-center">
+                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Instructions
+                        </h3>
+                        <div class="space-y-4 text-[rgb(60,60,60)]">
+                            <div class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+                                <h4 class="font-semibold mb-2 flex items-center text-[rgb(107,0,2)]">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
+                                    Directory Structure
+                                </h4>
+                                <p class="text-sm sm:text-base">Organize your repository with directories for each week. Name these directories as <code class="bg-gray-100 px-1 rounded">Week1</code>, <code class="bg-gray-100 px-1 rounded">Week2</code>, <code class="bg-gray-100 px-1 rounded">Week3</code>, ... up to <code class="bg-gray-100 px-1 rounded">Week14</code>.</p>
+                            </div>
+
+                            <div class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+                                <h4 class="font-semibold mb-2 flex items-center text-[rgb(107,0,2)]">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    </svg>
+                                    File Naming
+                                </h4>
+                                <p class="text-sm sm:text-base mb-2">When solving problems, use the appropriate file names. For example:</p>
+                                <ul class="list-disc pl-5 space-y-2 text-sm">
+                                    <li>If solving <em>Problem 1</em> of <em>Week 1</em>, the file should be named <code class="bg-gray-100 px-1 rounded">Problem1.py</code> and placed in the <code class="bg-gray-100 px-1 rounded">Week1</code> directory.</li>
+                                    <li>If solving <em>Problem 3</em> of <em>Week 4</em>, the file should be named <code class="bg-gray-100 px-1 rounded">Problem3.py</code> and placed in the <code class="bg-gray-100 px-1 rounded">Week4</code> directory.</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+                                <h4 class="font-semibold mb-2 flex items-center text-[rgb(107,0,2)]">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    Image Upload
+                                </h4>
+                                <p class="text-sm sm:text-base mb-2">If you want to <strong>generate a file</strong>, you must upload the output image in one of the following formats: <code class="bg-gray-100 px-1 rounded">.jpg</code>, <code class="bg-gray-100 px-1 rounded">.jpeg</code>, or <code class="bg-gray-100 px-1 rounded">.png</code>.</p>
+                                <ul class="list-disc pl-5 space-y-2 text-sm">
+                                    <li>For an output image of <em>Problem 1</em> of <em>Week 1</em>, the image should be named <code class="bg-gray-100 px-1 rounded">Problem1.jpg</code> and placed in the <code class="bg-gray-100 px-1 rounded">Week1</code> directory.</li>
+                                    <li>For an output image of <em>Problem 5</em> of <em>Week 6</em>, the image should be named <code class="bg-gray-100 px-1 rounded">Problem5.jpg</code> and placed in the <code class="bg-gray-100 px-1 rounded">Week6</code> directory.</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+                                <h4 class="font-semibold mb-2 flex items-center text-[rgb(107,0,2)]">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Generation Limit
+                                </h4>
+                                <p class="text-sm sm:text-base">Please limit file generation to <strong>one file per hour</strong>. Generating multiple files in a short period may cause system errors.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Weekly Problems and Progress -->
+            <div class="bg-white rounded-xl shadow-lg p-6 lg:w-2/3">
+                <!-- Welcome Section -->
+                <div class="mb-8 pb-6 border-b border-gray-100">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-full bg-[rgb(107,0,2)] flex items-center justify-center text-white text-xl">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-[rgb(107,0,2)] font-[Montserrat]">Hello, {{ student.first_name }}! 👋</h2>
+                            <p class="text-gray-600 font-[Lora]">Let's track your progress and keep up the great work!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Problems -->
+                <div class="max-w-3xl mx-auto mb-8">
+                    <h3 class="text-[rgb(107,0,2)] text-xl sm:text-2xl font-bold mb-6 text-center font-[Montserrat] tracking-wide">Weekly Problems</h3>
+                    <div class="space-y-4">
+                        {% for week, progress in weekly_progress.items %}
+                        <div x-data="{ open: false }" class="border border-gray-200 rounded-lg overflow-hidden">
+                            <button @click="open = !open" class="w-full text-left bg-[rgb(107,0,2)] text-white px-4 py-3 hover:bg-[rgb(47,98,86)] transition-colors duration-200">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-[Montserrat] font-semibold tracking-wide">Week {{ week }}</span>
+                                    <span class="text-sm font-[Lora]">{{ progress.completed }} / {{ progress.total }} Completed</span>
+                                </div>
+                                <div class="text-sm mt-1 font-[Lora] flex items-center justify-between">
+                                    <span class="flex items-center space-x-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <span>Last Commit: {{ progress.last_commit_time|default:"Not Committed" }}</span>
+                                    </span>
+                                    <span class="flex items-center space-x-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span>Deadline: {{ progress.last_date }}</span>
+                                    </span>
+                                </div>
+                            </button>
+                            <div x-show="open" x-transition class="p-4 bg-gray-50">
+                                <button onclick="window.location.href='{% url 'generate_file' week %}'" class="w-full mb-4 py-2 bg-[rgb(107,0,2)] text-white rounded-lg hover:bg-[rgb(47,98,86)] transition-colors duration-200 font-[Montserrat] font-medium">Generate File</button>
+                                <ul class="space-y-4">
+                                    {% for problem in problems %}
+                                    {% if problem.week == week %}
+                                    <li class="bg-white p-4 rounded-lg shadow-sm">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <span class="font-[Montserrat] font-semibold">{{ problem.problemNumber }}:</span>
+                                                <p class="mt-1 text-[rgb(60,60,60)] font-[Lora]">{% filter linebreaksbr %}{{ problem.description }}{% endfilter %}</p>
+                                                {% if problem.instructor_comment %}
+                                                <div class="mt-2 p-2 bg-gray-50 rounded">
+                                                    <p class="text-sm font-[Lora]"><span class="font-[Montserrat] font-semibold">Instructor Comment:</span> {{ problem.instructor_comment }}</p>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <span class="ml-4 flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center {% if problem.is_completed %}bg-green-500{% else %}bg-red-500{% endif %} text-white">
+                                                {% if problem.is_completed %}✔{% else %}✘{% endif %}
+                                            </span>
+                                        </div>
+                                    </li>
+                                    {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Overall Progress -->
+                <div class="max-w-2xl mx-auto text-center">
+                    <h3 class="text-[rgb(107,0,2)] text-xl sm:text-2xl font-bold mb-4 font-[Montserrat] tracking-wide">Overall Progress</h3>
+                    <div class="w-full h-8 bg-gray-200 rounded-full overflow-hidden">
+                        <div class="h-full bg-[rgb(47,98,86)] text-white text-center leading-8 transition-all duration-500 font-[Lora]" style="width: {{ overall_progress.percentage|floatformat:2 }}%">
+                            {{ overall_progress.completed }} / {{ overall_progress.total }} completed
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        {% endfor %}
-        <br>
-        <!-- Overall Progress Bar -->
-        <h3>Overall Progress</h3>
-        <div class="progress-bar">
-            <div class="progress" style="width: {{ overall_progress.percentage|floatformat:2 }}%;">
-                {{ overall_progress.completed }} / {{ overall_progress.total }} completed
-            </div>
-        </div>
     </div>
-</div>
-{% endblock %}
-
-<!-- JavaScript to handle dropdowns -->
-<script>
-document.querySelectorAll('.dropdown').forEach(dropdown => {
-    dropdown.querySelector('.dropbtn').addEventListener('click', () => {
-        dropdown.classList.toggle('open');
-    });
-});
-</script>
 </body>
 </html>
+
+

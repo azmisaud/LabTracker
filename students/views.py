@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.contrib.auth.forms import AuthenticationForm
+from django.db.models import Subquery, OuterRef
 from django.shortcuts import render, redirect
 from django.contrib.auth import login as auth_login, logout
 from django.views.decorators.csrf import csrf_exempt
@@ -8,6 +9,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_PARAGRAPH_ALIGNMENT
 from LabTrackerAMU import settings
 from LabTrackerAMU.decorators import student_required
 from faculty.models import LastDateOfWeek
+from instructor.models import SelectedStudent
 from .forms import StudentSignUpForm, EnrollmentFacultyForm, DateOfBirthForm, PasswordResetForm
 from problems.models import Problem, ProblemCompletion, WeekCommit
 from django.http import HttpResponse, JsonResponse
@@ -217,9 +219,23 @@ def student_dashboard(request):
         else 0
     )
 
+    problems=problems.annotate(
+        is_completed=Subquery(
+            problem_completions.filter(problem=OuterRef('pk'),is_completed=True).values('is_completed')[:1]
+        ),
+        instructor_comment=Subquery(
+            problem_completions.filter(problem=OuterRef('pk')).values('instructor_comment')[:1]
+        )
+    )
+
+    # instructor=SelectedStudent.objects.get(student=student).instructor
+    selected=SelectedStudent.objects.filter(student=student).first()
+    instructor=selected.instructor.name if selected else "Not assigned yet."
+
     # Prepare the context for rendering the template
     context = {
         'student': student,
+        'instructor':instructor,
         'weekly_progress': weekly_progress,  # Progress for each week
         'overall_progress': overall_progress,  # Overall progress across all weeks
         'problems': problems,  # List of problems for the course

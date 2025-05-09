@@ -83,6 +83,8 @@ class ProblemCompletion(models.Model):
     is_completed = models.BooleanField(default=False)
     solution_url = models.URLField(blank=True, null=True)
     output_image_url = models.URLField(blank=True, null=True)
+    instructor_comment=models.TextField(blank=True,null=True)
+    ai_analysis=models.TextField(blank=True,null=True)
 
     class Meta:
         unique_together = ('student', 'problem')

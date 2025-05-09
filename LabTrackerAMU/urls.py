@@ -17,7 +17,6 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path,include
-import students
 from LabTrackerAMU import views
 
 urlpatterns = [
@@ -26,4 +25,5 @@ urlpatterns = [
     path('students/',include('students.urls')),
     path('problems/',include('problems.urls')),
     path('faculty/',include('faculty.urls')),
+    path('instructor/',include('instructor.urls')),
 ]

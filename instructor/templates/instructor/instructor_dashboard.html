@@ -1,0 +1,358 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Instructor Dashboard{% endblock %}
+
+{% block desktop_nav %}
+<a href="{% url 'select_students' %}" class="font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+    </svg>
+    <span>Select Students</span>
+</a>
+<a href="{% url 'instructor_logout' %}" class="font-[Lora] text-sm text-white bg-[#6B0002] px-4 py-2 rounded-full hover:bg-[#2F6256] transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+    </svg>
+    <span>Logout</span>
+</a>
+{% endblock %}
+
+{% block mobile_nav %}
+<a href="{% url 'select_students' %}" class="block font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+    </svg>
+    <span>Select Students</span>
+</a>
+<a href="{% url 'instructor_logout' %}" class="block font-[Lora] text-sm text-white bg-[#6B0002] px-4 py-2 rounded-full hover:bg-[#2F6256] transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+    </svg>
+    <span>Logout</span>
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Dashboard Container -->
+<div class="w-full container mx-auto px-4 sm:px-6 py-8 max-w-7xl">
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Left: Selected Students -->
+        <div class="bg-white rounded-xl shadow-lg p-6 lg:w-1/3">
+            <!-- Welcome Section -->
+            <div class="flex items-center space-x-4 mb-8 pb-6 border-b border-gray-100">
+                <div class="w-16 h-16 rounded-full bg-[rgb(107,0,2)] flex items-center justify-center text-white text-2xl font-bold">
+                    {{ instructor.name|first }}
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-[rgb(107,0,2)] font-[Montserrat]">{{ instructor.name }}</h3>
+                    <p class="text-sm text-gray-500 font-[Lora]">Instructor Dashboard</p>
+                </div>
+            </div>
+
+            <!-- Selected Students Section -->
+            <div class="space-y-6">
+                <h3 class="text-[rgb(107,0,2)] text-xl font-bold mb-4 font-[Montserrat] flex items-center space-x-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <span>Selected Students</span>
+                </h3>
+                {% if grouped_students %}
+                    {% for group, students in grouped_students.items %}
+                        <div class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+                            <h4 class="text-[rgb(47,98,86)] font-semibold mb-3 flex items-center font-[Montserrat]">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                                {{ group }}
+                            </h4>
+                            <ul class="space-y-2">
+                                {% for student in students %}
+                                    <li class="flex justify-between items-center p-2 rounded hover:bg-white transition-colors duration-200">
+                                        <span class="text-[rgb(60,60,60)] font-[Lora]">{{ student.first_name }} {{ student.last_name }} ({{ student.faculty_number }})</span>
+                                        <a href="{% url 'instructor_dashboard' %}?student_id={{ student.id }}"
+                                           class="text-[#6B0002] hover:text-[#2F6256] text-sm font-medium transition-colors duration-200">View</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <p class="text-gray-500 font-[Lora]">No students selected yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right: Submissions -->
+        <div class="bg-white rounded-xl shadow-lg p-6 lg:w-2/3">
+            <!-- Filters -->
+            <div class="mb-6">
+                <form method="get" action="{% url 'instructor_dashboard' %}" class="flex flex-wrap gap-4">
+                    <div class="flex-1 min-w-[200px]">
+                        <select id="course" name="course" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-[#6B0002] focus:ring-2 focus:ring-[#6B0002]/20 transition-all duration-200">
+                            <option value="">Select Course</option>
+                            <option value="BCA">B.C.A</option>
+                            <option value="MCA">M.C.A</option>
+                            <option value="MSC">M.Sc(C.S & D.F)</option>
+                        </select>
+                    </div>
+                    <div class="flex-1 min-w-[200px]">
+                        <select id="semester" name="semester" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-[#6B0002] focus:ring-2 focus:ring-[#6B0002]/20 transition-all duration-200">
+                            <option value="">Select Semester</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="px-6 py-2 bg-[#6B0002] text-white rounded-lg hover:bg-[#2F6256] transition-all duration-200 font-[Montserrat] font-medium flex items-center space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <span>Apply Filters</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Submissions -->
+            <div class="space-y-8">
+                {% if page_obj %}
+                    {% for submission in page_obj %}
+                        <div class="border rounded-xl p-6 shadow-sm bg-white hover:shadow-md transition-shadow duration-200">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <div class="flex items-center space-x-2">
+                                        <h3 class="text-lg font-semibold text-[#6B0002] font-[Montserrat]">
+                                            {{ submission.student.first_name }} {{ submission.student.last_name }}
+                                        </h3>
+                                        <span class="text-sm text-gray-lg font-[Lora]">({{ submission.student.faculty_number }})</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2 mt-1">
+                                        <p class="text-sm text-gray-500 font-[Lora]">{{ submission.student.course }}</p>
+                                        <span class="text-gray-300">|</span>
+                                        <p class="text-sm text-gray-500 font-[Lora]">Semester {{ submission.student.semester }}</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="inline-block px-3 py-1 bg-[#6B0002] text-white text-sm rounded-full font-[Lora]">
+                                        Week {{ submission.problem.week }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <h4 class="text-sm font-semibold text-[#2F6256] font-[Montserrat]">{{ submission.problem.problemNumber }}</h4>
+                                </div>
+                                <p class="text-[rgb(60,60,60)] font-[Lora] text-sm whitespace-pre-line">{{ submission.problem.description|safe|linebreaksbr }}</p>
+                            </div>
+
+                            {% if submission.solution_url %}
+                                <div class="mb-4">
+                                    <h4 class="text-[#2F6256] font-semibold mb-2 font-[Montserrat] flex items-center space-x-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                                        </svg>
+                                        <span>Submitted Code</span>
+                                    </h4>
+                                    <pre class="bg-gray-50 text-[#3C3C3C] border border-gray-200 border-l-4 border-l-[#2F6256] p-4 rounded-lg overflow-auto max-h-60"><code class="code-block" id="code-{{ forloop.counter }}" data-url="{{ submission.solution_url }}"></code></pre>
+                                </div>
+                            {% endif %}
+
+                            {% if submission.ai_analysis %}
+                                <div class="mb-4">
+                                    <h4 class="text-[#2F6256] font-semibold mb-2 font-[Montserrat] flex items-center space-x-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                        </svg>
+                                        <span>AI Analysis</span>
+                                    </h4>
+                                    <div class="bg-gray-50 border border-gray-200 border-l-4 border-l-[#6B0002] rounded-lg p-4">
+                                        <p class="text-[rgb(60,60,60)] font-[Lora] text-sm whitespace-pre-line">{{ submission.ai_analysis }}</p>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="mb-4">
+                                    <h4 class="text-[#2F6256] font-semibold mb-2 font-[Montserrat] flex items-center space-x-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                        </svg>
+                                        <span>AI Analysis</span>
+                                    </h4>
+                                    <div class="bg-gray-50 border border-gray-200 border-l-4 border-l-[#6B0002] rounded-lg p-4">
+                                        <p class="text-[rgb(60,60,60)] font-[Lora] text-sm whitespace-pre-line">AI analysis not available at the moment, refresh after some minutes.</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <form id="feedback-form-{{ submission.id }}" data-submission-id="{{ submission.id }}" class="mt-6 space-y-4">
+                                {% csrf_token %}
+                                <div>
+                                    <label class="block text-[#2F6256] font-semibold mb-2 font-[Montserrat]">Your Feedback</label>
+                                    <textarea name="comment" rows="3" placeholder="Leave a comment..." class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-[#6B0002] focus:ring-2 focus:ring-[#6B0002]/20 transition-all duration-200 font-[Lora]">{{ submission.instructor_comment|default_if_none:'' }}</textarea>
+                                </div>
+
+                                <div class="flex gap-4">
+                                    <button type="button" onclick="submitFeedback({{ submission.id }}, 'right')"
+                                            class="flex-1 px-4 py-2 bg-[#6B0002] text-white rounded-lg hover:bg-[#2F6256] transition-all duration-200 font-[Montserrat] font-medium flex items-center justify-center space-x-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        <span>Mark Right</span>
+                                    </button>
+                                    <button type="button" onclick="submitFeedback({{ submission.id }}, 'wrong')"
+                                            class="flex-1 px-4 py-2 bg-[#6B0002] text-white rounded-lg hover:bg-[#2F6256] transition-all duration-200 font-[Montserrat] font-medium flex items-center justify-center space-x-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                        <span>Mark Wrong</span>
+                                    </button>
+                                </div>
+
+                                <p id="feedback-status-{{ submission.id }}" class="text-sm text-gray-500 hidden">✅ Feedback saved!</p>
+                            </form>
+                        </div>
+                    {% endfor %}
+
+                    <!-- Pagination -->
+                    <div class="flex justify-center mt-8 space-x-2">
+                        {% if page_obj.has_previous %}
+                            <a href="?page={{ page_obj.previous_page_number }}{% if selected_course %}&course={{ selected_course }}{% endif %}{% if selected_semester %}&semester={{ selected_semester }}{% endif %}"
+                               class="px-4 py-2 bg-[#6B0002] text-white rounded-lg hover:bg-[#2F6256] transition-all duration-200 font-[Montserrat] font-medium">
+                                Previous
+                            </a>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <span class="px-4 py-2 bg-[#6B0002] text-white rounded-lg font-[Montserrat] font-medium">{{ num }}</span>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <a href="?page={{ num }}{% if selected_course %}&course={{ selected_course }}{% endif %}{% if selected_semester %}&semester={{ selected_semester }}{% endif %}"
+                                   class="px-4 py-2 bg-gray-200 text-[#3C3C3C] rounded-lg hover:bg-gray-300 transition-all duration-200 font-[Montserrat] font-medium">
+                                    {{ num }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}{% if selected_course %}&course={{ selected_course }}{% endif %}{% if selected_semester %}&semester={{ selected_semester }}{% endif %}"
+                               class="px-4 py-2 bg-[#6B0002] text-white rounded-lg hover:bg-[#2F6256] transition-all duration-200 font-[Montserrat] font-medium">
+                                Next
+                            </a>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-12">
+                        <p class="text-gray-600 font-[Lora] text-lg">No submissions found!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
+<script>
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+
+    function submitFeedback(submissionId, action) {
+        const form = document.getElementById(`feedback-form-${submissionId}`);
+        const comment = form.querySelector('textarea[name="comment"]').value;
+        const status = document.getElementById(`feedback-status-${submissionId}`);
+
+        fetch(`/instructor/feedback/${submissionId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                comment: comment,
+                action: action,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                status.textContent = "✅ Feedback saved!";
+                status.classList.remove('hidden');
+                status.classList.add('text-green-600');
+            } else {
+                status.textContent = "⚠️ Failed to save.";
+                status.classList.remove('hidden');
+                status.classList.add('text-red-600');
+            }
+        })
+        .catch(() => {
+            status.textContent = "⚠️ Network error.";
+            status.classList.remove('hidden');
+            status.classList.add('text-red-600');
+        });
+    }
+
+    // Code highlighting functionality
+    const extensionMap = {
+        py: "python", js: "javascript", java: "java", cpp: "cpp",
+        c: "c", cs: "csharp", html: "xml", css: "css", json: "json",
+        rb: "ruby", php: "php", go: "go", ts: "typescript", sh: "bash"
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const codeBlocks = document.querySelectorAll(".code-block");
+
+        const highlightNext = (index = 0) => {
+            if (index >= codeBlocks.length) return;
+
+            const codeEl = codeBlocks[index];
+            const url = codeEl.dataset.url;
+            const ext = url.split('.').pop().toLowerCase();
+            const lang = extensionMap[ext] || "plaintext";
+
+            fetch(url)
+                .then(res => res.ok ? res.text() : Promise.reject("Error loading code"))
+                .then(code => {
+                    codeEl.textContent = code;
+                    codeEl.className = `language-${lang} code-block`;
+                    hljs.highlightElement(codeEl);
+                })
+                .catch(err => {
+                    codeEl.textContent = "⚠️ Could not load code.";
+                    console.error(err);
+                })
+                .finally(() => {
+                    // Wait a bit before highlighting the next one
+                    setTimeout(() => highlightNext(index + 1), 100);
+                });
+        };
+
+        highlightNext();
+    });
+
+    $(document).ready(function () {
+        $('#course').change(function () {
+            const selectedCourse = $(this).val();
+            if (selectedCourse) {
+                $.ajax({
+                    url: '/instructor/get-semesters/',
+                    data: { course: selectedCourse },
+                    success: function (data) {
+                        $('#semester').empty().append('<option value="">Select Semester</option>');
+                        data.forEach(function (sem) {
+                            $('#semester').append(`<option value="${sem}">Semester ${sem}</option>`);
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching semesters:", error);
+                    }
+                });
+            } else {
+                $('#semester').empty().append('<option value="">Select Semester</option>');
+            }
+        });
+    });
+</script>
+{% endblock %}
+

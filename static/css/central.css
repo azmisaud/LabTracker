@@ -311,7 +311,7 @@ button[type="button"]:hover {
     background-color: rgb(107,0,2);
     color: white;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 400;
     border: none;
     border-radius: 30px;
     cursor: pointer;
@@ -319,7 +319,7 @@ button[type="button"]:hover {
     margin-top: 20px;
 }
 
-#check-button:hover, #check_another:hover{
+#check_button:hover, #check_another:hover{
     background-color: rgb(47,98,86);
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(47,98,86,0.2);

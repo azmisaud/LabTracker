@@ -1,64 +1,113 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Activities</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'faculty/css/faculty_dashboard.css' %}">
-</head>
-<body>
-    <header>
-        <div class="header-content">
-            <h1 class="logo">LabTracker</h1>
-            <div class="navbar-toggle" onclick="document.querySelector('.navbar').classList.toggle('active');">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <nav class="navbar">
-                <ul>
-                    <li>
-                        <a href="{% url 'faculty_dashboard' %}">Dashboard</a>
-                    </li>
-                </ul>
-            </nav>
+
+{% block title %}Teacher Activities{% endblock %}
+
+{% block desktop_nav %}
+<a href="{% url 'faculty_dashboard' %}" class="font-[Lora] text-sm text-white bg-[#6B0002] px-4 py-2 rounded-full hover:bg-[#2F6256] transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+    <span>Dashboard</span>
+</a>
+{% endblock %}
+
+{% block mobile_nav %}
+<a href="{% url 'faculty_dashboard' %}" class="block font-[Lora] text-sm text-white bg-[#6B0002] px-4 py-2 rounded-full hover:bg-[#2F6256] transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+    <span>Dashboard</span>
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Main Content -->
+<div class="bg-white mx-auto my-6 sm:my-8 md:my-12 px-4 sm:px-6 md:px-10 py-6 sm:py-8 md:py-10 max-w-[800px] rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.1)] text-left box-content">
+    <h2 class="text-[rgb(47,98,86)] mb-6 sm:mb-8 text-xl sm:text-2xl font-bold uppercase tracking-[2px] text-center animate-[fadeInDown_0.8s_ease-out] flex items-center justify-center space-x-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Your Activities</span>
+    </h2>
+
+    <div class="space-y-4">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <ul class="divide-y divide-gray-200">
+                {% for activity in page_obj %}
+                <li class="p-4 hover:bg-gray-50 transition-colors duration-200 group">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#6B0002]/10 flex items-center justify-center group-hover:bg-[#6B0002]/20 transition-colors duration-200">
+                            <svg class="w-5 h-5 text-[#6B0002]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-gray-700 font-[Lora] leading-relaxed">{{ activity|safe }}</p>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
         </div>
-    </header>
 
-    <div class="dashboard-layout">
-        <div class="right-container">
-            <div class="activities-container">
-                <h3>Your Activities</h3>
-                    <ul>
-                        {% for activity in page_obj %}
-                        <li>{{ activity|safe }}</li>
-                        {% endfor %}
-                    </ul>
-            </div>
-            <div class="pagination">
-                    <span class="step-links">
-                        {% if page_obj.has_previous %}
-                            <a href="?page=1">&laquo; first</a>
-                            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-                        {% endif %}
+        <!-- Pagination -->
+        <div class="flex justify-center items-center space-x-2 mt-8">
+            {% if page_obj.has_previous %}
+                <a href="?page=1" class="px-4 py-2 text-sm text-[#6B0002] border border-[#6B0002] rounded-full hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-1 shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                    </svg>
+                    <span>First</span>
+                </a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 text-sm text-[#6B0002] border border-[#6B0002] rounded-full hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-1 shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span>Previous</span>
+                </a>
+            {% endif %}
 
-                        <span class="current">
-                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                        </span>
+            <span class="px-4 py-2 text-sm text-gray-600 bg-gray-50 rounded-full shadow-sm">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
 
-                        {% if page_obj.has_next %}
-                            <a href="?page={{ page_obj.next_page_number }}">next</a>
-                            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-                        {% endif %}
-                    </span>
-            </div>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 text-sm text-[#6B0002] border border-[#6B0002] rounded-full hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-1 shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
+                    <span>Next</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="px-4 py-2 text-sm text-[#6B0002] border border-[#6B0002] rounded-full hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-1 shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
+                    <span>Last</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                    </svg>
+                </a>
+            {% endif %}
         </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<style>
+    /* Animation */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+
 
 
 

@@ -1,157 +1,298 @@
+
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'faculty/css/faculty_dashboard.css' %}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    <header>
-        <div class="header-content">
-            <h1 class="logo">LabTracker</h1>
-            <!-- Navbar Toggle Button -->
-            <div class="navbar-toggle" onclick="document.querySelector('.navbar').classList.toggle('active');">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <nav class="navbar">
-                <ul>
-                    <li>
-                        <a href="{% url 'addProblem' %}">Add a Problem</a>
-                        <a href="{% url 'create_problem' %}">Edit a Problem</a>
-                        <a href="{% url 'week_last_date_faculty' %}">Set Date</a>
-                        <a href="{% url 'check_student_details_faculty' %}">Student Report</a>
-                        <a href="{% url 'check_student_details_faculty' %}">Weekly Report</a>
-                        <a href="{% url 'check_whole_class_faculty' %}">Whole Report</a>
-                        <a href="{% url 'faculty_logout' %}">Logout</a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-    <div class="dashboard-layout">
-        <!-- Left Container -->
+{% block title %}Faculty Dashboard{% endblock %}
 
+{% block desktop_nav %}
+<a href="{% url 'addProblem' %}" class="font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+    </svg>
+    <span>Add Problem</span>
+</a>
+<a href="{% url 'create_problem' %}" class="font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+    </svg>
+    <span>Edit Problem</span>
+</a>
+<a href="{% url 'week_last_date_faculty' %}" class="font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+    <span>Set Date</span>
+</a>
+<a href="{% url 'check_student_details_faculty' %}" class="font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+    </svg>
+    <span>Student Report</span>
+</a>
+<a href="{% url 'check_student_details_faculty' %}" class="font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+    <span>Weekly Report</span>
+</a>
+<a href="{% url 'check_whole_class_faculty' %}" class="font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+    <span>Whole Report</span>
+</a>
+<a href="{% url 'faculty_logout' %}" class="font-[Lora] text-sm text-white bg-[#6B0002] px-4 py-2 rounded-full hover:bg-[#2F6256] transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+    </svg>
+    <span>Logout</span>
+</a>
+{% endblock %}
 
-        <!-- Middle Container -->
-        <div class="middle-container">
-            <section class="welcome-section">
-                <h2>Welcome, {{ faculty.name }}</h2>
-                <p>Use the links above to manage problems and students, and download reports.</p>
+{% block mobile_nav %}
+<a href="{% url 'addProblem' %}" class="block font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+    </svg>
+    <span>Add Problem</span>
+</a>
+<a href="{% url 'create_problem' %}" class="block font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+    </svg>
+    <span>Edit Problem</span>
+</a>
+<a href="{% url 'week_last_date_faculty' %}" class="block font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+    <span>Set Date</span>
+</a>
+<a href="{% url 'check_student_details_faculty' %}" class="block font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+    </svg>
+    <span>Student Report</span>
+</a>
+<a href="{% url 'check_student_details_faculty' %}" class="block font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+    <span>Weekly Report</span>
+</a>
+<a href="{% url 'check_whole_class_faculty' %}" class="block font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+    <span>Whole Report</span>
+</a>
+<a href="{% url 'faculty_logout' %}" class="block font-[Lora] text-sm text-white bg-[#6B0002] px-4 py-2 rounded-full hover:bg-[#2F6256] transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+    </svg>
+    <span>Logout</span>
+</a>
+{% endblock %}
 
-                <!-- Additional Instructions -->
-                <div class="instructions-section">
-                    <h3>Instructions for Teachers</h3>
-                    <ul>
-                        <li><strong>Add a Problem:</strong> Click on the "Add Problem" button and enter the required details including course, semester, week, problem number, description, and an optional image.</li>
-                        <li><strong>Edit a Problem:</strong> Click on the "Edit Problem" button, provide the course, semester, week, and problem number, fetch the problem details, and make necessary edits.</li>
-                        <li><strong>Download a Specific Student Report:</strong> To review a particular student's report, click on the "Review Specific Student" button and enter the course, semester, and faculty number.</li>
-                        <li><strong>Download Weekly Class Reports:</strong> To download weekly reports for the entire class, click on the "Download Weekly Report" button and select the course and semester.</li>
-                        <li><strong>Download Complete Class Report:</strong> Click on the "Download Whole Report" button, enter the course and semester details to download a complete report for the class.</li>
-                        <li><strong>Update Student Data:</strong> Use the "Update Student Data" button to manually update student details from GitHub after entering the course and semester. Due to GitHub’s API rate limitations, this button will be disabled for all teachers for one hour after the update.</li>
-                        <li><strong>Start a New Semester:</strong> Use caution when selecting this option, as it will permanently remove students who have been on the platform for over 150 days.</li>
-                        <li><strong>Review Recent Activities:</strong> Before performing any actions, check recent activities by other teachers to stay informed and avoid conflicts.</li>
-                    </ul>
+{% block content %}
+<!-- Dashboard Container -->
+<div class="container mx-auto px-4 sm:px-6 py-8 max-w-7xl">
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Left: Welcome and Instructions -->
+        <div class="bg-white rounded-xl shadow-lg p-6 lg:w-1/3">
+            <!-- Welcome Section -->
+            <div class="flex items-center space-x-4 mb-8 pb-6 border-b border-gray-100">
+                <div class="w-16 h-16 rounded-full bg-[rgb(107,0,2)] flex items-center justify-center text-white text-2xl font-bold">
+                    {{ faculty.name|first }}
                 </div>
-            </section>
-        </div>
-
-        <div class="left-container">
-                <div class="button-group">
-                    <button id="update-data-btn">Update Student Data</button>
-                    <form id="update-data-form" class="update-form" style="display: none;">
-                        <div class="form-group">
-                            <label for="course">Course:</label>
-                            <div class="input-wrapper">
-                                <select id="course" name="course">
-                                    <option value="">Select Course</option>
-                                    <option value="BCA">B.C.A</option>
-                                    <option value="MCA">M.C.A</option>
-                                    <option value="MSC">M.Sc(C.S & D.F)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="semester">Semester:</label>
-                            <div class="input-wrapper">
-                                <select id="semester" name="semester">
-                                    <option value="">Select Semester</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit">Submit</button>
-                    </form>
-                    <button id="start-new-semester-btn">Start a New Semester</button>
-                </div>
-            </div>
-        <!-- Right Container -->
-        <div class="right-container">
-            <div class="activities-container">
-                <h3>Recent Activities by Others</h3>
-                {% if other_teacher_activities %}
-                    <ul>
-                        {% for activity in other_teacher_activities %}
-                        <li>{{ activity|safe }}</li>
-                        {% endfor %}
-                    </ul>
-                    <a href="{% url 'other_activities_faculty' %}">View More</a>
-                {% else %}
-                    <ul>
-                        <li>NO RECENT ACTIVITIES</li>
-                    </ul>
-                {% endif %}
-            </div>
-            <div class="activities-container">
-                <h3>Your Recent Activities</h3>
-                {% if your_activities %}
-                    <ul>
-                        {% for activity in your_activities %}
-                        <li>{{ activity|safe }}</li>
-                        {% endfor %}
-                    </ul>
-                    <a href="{% url 'your_activities_faculty' %}">View More</a>
-                {% else %}
-                    <ul>
-                        <li>NO RECENT ACTIVITIES</li>
-                    </ul>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="graph-container">
-            <div class="week-selection-container">
-                <div class="form-group">
-                    <label for="week-select"><strong>Select Week:</strong> </label>
-                    <select id="week-select">
-                        <option value="1">Week 1</option>
-                        <option value="2">Week 2</option>
-                        <option value="3">Week 3</option>
-                        <option value="4">Week 4</option>
-                        <option value="5">Week 5</option>
-                        <option value="6">Week 6</option>
-                        <option value="7">Week 7</option>
-                        <option value="8">Week 8</option>
-                        <option value="9">Week 9</option>
-                        <option value="10">Week 10</option>
-                        <option value="11">Week 11</option>
-                        <option value="12">Week 12</option>
-                        <option value="13">Week 13</option>
-                        <option value="14">Week 14</option>
-                    </select>
+                <div>
+                    <h3 class="text-xl font-bold text-[rgb(107,0,2)] font-[Montserrat]">{{ faculty.name }}</h3>
+                    <p class="text-sm text-gray-500 font-[Lora]">Faculty Dashboard</p>
                 </div>
             </div>
-            <div class="graphs-section" id="graphs">
+
+            <!-- Update Student Data Form -->
+            <div class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+                <h4 class="text-[rgb(107,0,2)] font-semibold mb-3 flex items-center font-[Montserrat]">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Update Student Data
+                </h4>
+                <form id="update-data-form" class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-[rgb(60,60,60)]">Course:</label>
+                        <select class="w-full p-2 border border-gray-200 rounded-lg focus:border-[rgb(47,98,86)] focus:ring-1 focus:ring-[rgb(47,98,86)]">
+                            <option value="">Select Course</option>
+                            <option value="BCA">B.C.A</option>
+                            <option value="MCA">M.C.A</option>
+                            <option value="MSC">M.Sc(C.S & D.F)</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-[rgb(60,60,60)]">Semester:</label>
+                        <select class="w-full p-2 border border-gray-200 rounded-lg focus:border-[rgb(47,98,86)] focus:ring-1 focus:ring-[rgb(47,98,86)]">
+                            <option value="">Select Semester</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full py-2 px-4 bg-[rgb(107,0,2)] text-white rounded-lg hover:bg-[rgb(47,98,86)] transition-colors duration-200 font-[Montserrat] font-medium">
+                        Update Data
+                    </button>
+                </form>
+            </div>
+
+            <!-- Start New Semester Button -->
+            <div class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow duration-200 mt-6">
+                <h4 class="text-[rgb(107,0,2)] font-semibold mb-3 flex items-center font-[Montserrat]">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    Start New Semester
+                </h4>
+                <button id="start-new-semester-btn" class="w-full py-2 px-4 bg-[rgb(107,0,2)] text-white rounded-lg hover:bg-[rgb(47,98,86)] transition-colors duration-200 font-[Montserrat] font-medium">
+                    Start New Semester
+                </button>
+            </div>
+
+            <!-- Activities Section -->
+            <div class="mt-6">
+                <h3 class="text-[rgb(107,0,2)] text-xl font-bold mb-4 font-[Montserrat]">Recent Activities</h3>
+                <div class="space-y-4">
+                    <!-- Other Teachers' Activities -->
+                    <div class="bg-gray-50 rounded-lg p-4 border-l-4 border-[rgb(47,98,86)]">
+                        <h4 class="text-[rgb(47,98,86)] font-semibold mb-3 font-[Montserrat]">Others Activities</h4>
+                        {% if other_teacher_activities %}
+                            <ul class="space-y-2">
+                                {% for activity in other_teacher_activities %}
+                                    <li class="text-sm text-[rgb(60,60,60)] font-[Lora]">{{ activity|safe }}</li>
+                                {% endfor %}
+                            </ul>
+                            <a href="{% url 'other_activities_faculty' %}" class="text-[rgb(107,0,2)] text-sm hover:text-[rgb(47,98,86)] transition-colors duration-200 mt-2 inline-block">View More</a>
+                        {% else %}
+                            <p class="text-sm text-[rgb(60,60,60)] font-[Lora]">No recent activities</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Your Activities -->
+                    <div class="bg-gray-50 rounded-lg p-4 border-l-4 border-[rgb(107,0,2)]">
+                        <h4 class="text-[rgb(107,0,2)] font-semibold mb-3 font-[Montserrat]">Your Activities</h4>
+                        {% if your_activities %}
+                            <ul class="space-y-2">
+                                {% for activity in your_activities %}
+                                    <li class="text-sm text-[rgb(60,60,60)] font-[Lora]">{{ activity|safe }}</li>
+                                {% endfor %}
+                            </ul>
+                            <a href="{% url 'your_activities_faculty' %}" class="text-[rgb(107,0,2)] text-sm hover:text-[rgb(47,98,86)] transition-colors duration-200 mt-2 inline-block">View More</a>
+                        {% else %}
+                            <p class="text-sm text-[rgb(60,60,60)] font-[Lora]">No recent activities</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Instructions and Reports -->
+        <div class="bg-white rounded-xl shadow-lg p-6 lg:w-2/3">
+            <!-- Instructions Section -->
+            <div class="mb-8">
+                <h3 class="text-[rgb(107,0,2)] text-xl font-bold mb-4 font-[Montserrat]">Instructions for Faculty</h3>
+                <div class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+                    <ul class="space-y-3 text-[rgb(60,60,60)] font-[Lora]">
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-4 h-4 text-[rgb(107,0,2)] mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span class="text-sm"><strong>Add a Problem:</strong> Click on the "Add Problem" button and enter the required details including course, semester, week, problem number, description, and an optional image.</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-4 h-4 text-[rgb(107,0,2)] mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            <span class="text-sm"><strong>Edit a Problem:</strong> Click on the "Edit Problem" button, provide the course, semester, week, and problem number, fetch the problem details, and make necessary edits.</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-4 h-4 text-[rgb(107,0,2)] mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span class="text-sm"><strong>Set Date:</strong> Use the "Set Date" button to manage deadlines for each week.</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-4 h-4 text-[rgb(107,0,2)] mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            <span class="text-sm"><strong>Download a Specific Student Report:</strong> To review a particular student's report, click on the "Student Report" button and enter the course, semester, and faculty number.</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-4 h-4 text-[rgb(107,0,2)] mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span class="text-sm"><strong>Download Weekly Class Reports:</strong> To download weekly reports for the entire class, click on the "Weekly Report" button and select the course and semester.</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-4 h-4 text-[rgb(107,0,2)] mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span class="text-sm"><strong>Download Complete Class Report:</strong> Click on the "Whole Report" button, enter the course and semester details to download a complete report for the class.</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-4 h-4 text-[rgb(107,0,2)] mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            <span class="text-sm"><strong>Update Student Data:</strong> Use the "Update Student Data" button to manually update student details from GitHub after entering the course and semester. Due to GitHub's API rate limitations, this button will be disabled for all teachers for one hour after the update.</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-4 h-4 text-[rgb(107,0,2)] mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span class="text-sm"><strong>Start a New Semester:</strong> Use caution when selecting this option, as it will permanently remove students who have been on the platform for over 150 days.</span>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <svg class="w-4 h-4 text-[rgb(107,0,2)] mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-sm"><strong>Review Recent Activities:</strong> Before performing any actions, check recent activities by other teachers to stay informed and avoid conflicts.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Graphs Section -->
+            <div class="mt-8">
+                <h3 class="text-[rgb(107,0,2)] text-xl font-bold mb-4 font-[Montserrat]">Weekly Progress</h3>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-[rgb(60,60,60)] mb-2">Select Week:</label>
+                        <select id="week-select" class="w-full p-2 border border-gray-200 rounded-lg focus:border-[rgb(47,98,86)] focus:ring-1 focus:ring-[rgb(47,98,86)]">
+                            <option value="1">Week 1</option>
+                            <option value="2">Week 2</option>
+                            <option value="3">Week 3</option>
+                            <option value="4">Week 4</option>
+                            <option value="5">Week 5</option>
+                            <option value="6">Week 6</option>
+                            <option value="7">Week 7</option>
+                            <option value="8">Week 8</option>
+                            <option value="9">Week 9</option>
+                            <option value="10">Week 10</option>
+                            <option value="11">Week 11</option>
+                            <option value="12">Week 12</option>
+                            <option value="13">Week 13</option>
+                            <option value="14">Week 14</option>
+                        </select>
+                    </div>
+                    <div id="graphs" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Graphs will be dynamically inserted here -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</div>
+{% endblock %}
 
-    <script src="{% static 'faculty/js/faculty_dashboard.js' %}"></script>
-</body>
-</html>
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'faculty/js/faculty_dashboard.js' %}"></script>
+{% endblock %}
+

@@ -8,8 +8,8 @@
 }
 
 body {
-    background-color: rgb(245, 245, 245); /* Light grey background */
-    color: black;
+    /*background-color: rgb(245, 245, 245); !* Light grey background *!*/
+    /*color: black;*/
     margin: 0;
     padding: 0;
     text-align: center;
@@ -165,7 +165,7 @@ h3 {
     margin-bottom: 15px;
 }
 
-/* Paragraph Styling */
+ /*Paragraph Styling */
 .info p {
     max-width: 700px; /* Refined width for better readability */
     line-height: 1.75;
@@ -210,3 +210,87 @@ h3 {
         transform: translateY(0);
     }
 }
+
+/*/* Photo Slider Styling */
+/*.photo-slider {*/
+/*    position: relative;*/
+/*    max-width: 800px;*/
+/*    margin: 0 auto 40px;*/
+/*    border-radius: 20px;*/
+/*    overflow: hidden;*/
+/*    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);*/
+/*}*/
+
+/*.slides {*/
+/*    display: none;*/
+/*}*/
+
+/*.slides img {*/
+/*    width: 100%;*/
+/*    border-radius: 20px;*/
+/*    height: auto;*/
+/*    object-fit: cover;*/
+/*    animation: fadeIn 1s ease-in-out;*/
+/*}*/
+
+/*@keyframes fadeIn {*/
+/*    from { opacity: 0; transform: scale(1.05); }*/
+/*    to { opacity: 1; transform: scale(1); }*/
+/*}*/
+
+/* Photo Slider Styling */
+.photo-slider {
+    position: relative;
+    width: 100%;
+    max-width: 700px;
+    margin: 40px auto 60px auto;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.slides {
+    position: relative;
+    width: 100%;
+    height: 500px;
+}
+
+.slide {
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 1s ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
+
+.slide.active {
+    display: block;
+    opacity: 1;
+    z-index: 1;
+}
+
+/* Dots */
+.slider-dots {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.slider-dots .dot {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin: 0 6px;
+    background-color: rgba(107, 0, 2, 0.4);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.slider-dots .dot.active {
+    background-color: rgb(47, 98, 86); /* Active color */
+}
+

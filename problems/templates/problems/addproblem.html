@@ -1,101 +1,267 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Problem</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Garamond:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/central.css' %}">
-    <link rel="stylesheet" href="{% static 'css/override.css' %}">
-</head>
-<body>
+{% extends 'base.html' %}
 
-    <header>
-        <div class="header-content">
-            <h1 class="logo">LabTracker</h1>
-            <div class="navbar-toggle" onclick="document.querySelector('.navbar').classList.toggle('active');">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <nav class="navbar">
-                <ul>
-                    <li>
-                        <a href="{% url 'faculty_dashboard' %}">Dashboard</a>
-                        <a href="{% url 'create_problem' %}">Edit Problem</a>
-                        <a href="{% url 'week_last_date_faculty' %}">Set Date</a>
-                        <a href="{% url 'check_student_details_faculty' %}">Student Report</a>
-                        <a href="{% url 'check_whole_class_weekly_faculty' %}">Weekly Report</a>
-                        <a href="{% url 'check_whole_class_faculty' %}">Whole Report</a>
-                    </li>
-                </ul>
-            </nav>
+{% block title %}Add Problem{% endblock %}
+
+{% block desktop_nav %}
+<a href="{% url 'faculty_dashboard' %}" class="font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+    <span>Dashboard</span>
+</a>
+<a href="{% url 'create_problem' %}" class="font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+    </svg>
+    <span>Edit Problem</span>
+</a>
+<a href="{% url 'week_last_date_faculty' %}" class="font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+    <span>Set Date</span>
+</a>
+<a href="{% url 'check_student_details_faculty' %}" class="font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+    </svg>
+    <span>Student Report</span>
+</a>
+<a href="{% url 'check_whole_class_weekly_faculty' %}" class="font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+    <span>Weekly Report</span>
+</a>
+<a href="{% url 'check_whole_class_faculty' %}" class="font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+    <span>Whole Report</span>
+</a>
+{% endblock %}
+
+{% block mobile_nav %}
+<a href="{% url 'faculty_dashboard' %}" class="block font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+    <span>Dashboard</span>
+</a>
+<a href="{% url 'create_problem' %}" class="block font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+    </svg>
+    <span>Edit Problem</span>
+</a>
+<a href="{% url 'week_last_date_faculty' %}" class="block font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+    <span>Set Date</span>
+</a>
+<a href="{% url 'check_student_details_faculty' %}" class="block font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+    </svg>
+    <span>Student Report</span>
+</a>
+<a href="{% url 'check_whole_class_weekly_faculty' %}" class="block font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+    <span>Weekly Report</span>
+</a>
+<a href="{% url 'check_whole_class_faculty' %}" class="block font-[Lora] text-sm text-[#6B0002] px-4 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+    <span>Whole Report</span>
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Form Container -->
+<div class="bg-white mx-auto my-6 sm:my-8 md:my-12 px-4 sm:px-6 md:px-10 py-6 sm:py-8 md:py-10 max-w-[600px] rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.1)] text-left box-content">
+    <h2 class="text-[rgb(47,98,86)] mb-6 sm:mb-8 text-xl sm:text-2xl font-bold uppercase tracking-[2px] text-center animate-[fadeInDown_0.8s_ease-out] flex items-center justify-center space-x-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Add Problem</span>
+    </h2>
+
+    {% if messages %}
+        <div class="mb-6 flex justify-center">
+            {% for message in messages %}
+                <div class="alert {{ message.tags }} p-3 rounded-lg text-sm font-medium mb-2 text-center w-full max-w-md">
+                    {{ message }}
+                </div>
+            {% endfor %}
         </div>
-    </header>
+    {% endif %}
 
-    <div class="form-container">
-        <h2>Add Problem</h2>
+    <form method="post" enctype="multipart/form-data" class="space-y-4 sm:space-y-5">
+        {% csrf_token %}
+        <div class="space-y-1">
+            <label for="id_course" class="block font-semibold text-[rgb(60,60,60)] text-sm sm:text-base">Course:</label>
+            <div class="relative">
+                {{ form.course }}
+            </div>
+        </div>
 
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert {{ message.tags }}">{{ message }}</div>
-                {% endfor %}
+        <div class="space-y-1">
+            <label for="id_semester" class="block font-semibold text-[rgb(60,60,60)] text-sm sm:text-base">Semester:</label>
+            <div class="relative">
+                {{ form.semester }}
             </div>
-        {% endif %}
+        </div>
 
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="id_course">Course:</label>
-                <div class="input-wrapper">
-                    {{ form.course }}
-                </div>
+        <div class="space-y-1">
+            <label for="id_week" class="block font-semibold text-[rgb(60,60,60)] text-sm sm:text-base">Week:</label>
+            <div class="relative">
+                {{ form.week }}
             </div>
-            <div class="form-group">
-                <label for="id_semester">Semester:</label>
-                <div class="input-wrapper">
-                    {{ form.semester }}
-                </div>
+        </div>
+
+        <div class="space-y-1">
+            <label for="id_problemNumber" class="block font-semibold text-[rgb(60,60,60)] text-sm sm:text-base">Problem Number:</label>
+            <div class="relative">
+                {{ form.problemNumber }}
             </div>
-            <div class="form-group">
-                <label for="id_week">Week:</label>
-                <div class="input-wrapper">
-                    {{ form.week }}
-                </div>
+        </div>
+
+        <div class="space-y-1">
+            <label for="id_description" class="block font-semibold text-[rgb(60,60,60)] text-sm sm:text-base">Description:</label>
+            <div class="relative">
+                {{ form.description }}
             </div>
-            <div class="form-group">
-                <label for="id_problemNumber">Problem Number:</label>
-                <div class="input-wrapper">
-                    {{ form.problemNumber }}
-                </div>
+        </div>
+
+        <div class="space-y-1">
+            <label for="id_image" class="block font-semibold text-[rgb(60,60,60)] text-sm sm:text-base">Upload Image (Optional):</label>
+            <div class="relative">
+                {{ form.image }}
             </div>
-            <div class="form-group">
-                <label for="id_description">Description:</label>
-                <div class="input-wrapper">
-                    {{ form.description }}
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="id_image">Upload Image (Optional) : </label>
-                <div class="input-wrapper">
-                    {{ form.image }}
-                </div>
-            </div>
-            <button type="submit" class="btn">Submit</button>
-        </form>
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var problemNumberInput = document.getElementById('id_problemNumber');
-            if (problemNumberInput) {
-                if (!problemNumberInput.value) {
-                    problemNumberInput.value = 'Problem ';
-                }
+        </div>
+
+        <button type="submit" class="w-full py-2.5 sm:py-3 px-4 sm:px-5 bg-[rgb(107,0,2)] text-white text-sm sm:text-base font-[Lora] font-semibold rounded-full hover:bg-[rgb(47,98,86)] hover:-translate-y-1 hover:shadow-[0_6px_20px_rgba(47,98,86,0.2)] transition-all duration-300 mt-4 sm:mt-5 flex items-center justify-center space-x-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Submit</span>
+        </button>
+    </form>
+</div>
+
+<style>
+    /* Form input styling */
+    textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    input, select, textarea {
+        width: calc(100% - 20px);
+        padding: 10px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        border-color: rgb(47, 98, 86);
+        outline: none;
+        box-shadow: 0 0 5px rgba(47, 98, 86, 0.2);
+    }
+
+    /* Alert styling */
+    .alert {
+        border-radius: 8px;
+        padding: 12px 20px;
+        margin-bottom: 10px;
+        font-family: 'Lora', serif;
+        font-size: 14px;
+        font-weight: 500;
+        display: inline-block;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        width: 100%;
+    }
+
+    .alert.success {
+        background-color: #e6f7e6;
+        border: 1px solid #a4d3a4;
+        color: #2d6b2d;
+    }
+
+    .alert.error {
+        background-color: #f8d7da;
+        border: 1px solid #f5c2c7;
+        color: #721c24;
+    }
+
+    .alert.info {
+        background-color: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+    }
+
+    .alert.warning {
+        background-color: #fff3cd;
+        border: 1px solid #ffeeba;
+        color: #856404;
+    }
+
+    /* Form group styling */
+    .space-y-1 {
+        margin-bottom: 1.5rem;
+    }
+
+    .space-y-1 label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: rgb(60, 60, 60);
+        font-weight: 600;
+    }
+
+    /* Animation */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .form-container {
+            @apply w-[95%] p-4;
+        }
+
+        button[type="submit"] {
+            @apply py-2.5 px-4 text-sm;
+        }
+
+        input, select, textarea {
+            padding: 10px;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var problemNumberInput = document.getElementById('id_problemNumber');
+        if (problemNumberInput) {
+            if (!problemNumberInput.value) {
+                problemNumberInput.value = 'Problem ';
             }
-        });
-    </script>
-</body>
-</html>
+        }
+    });
+</script>
+{% endblock %}
+

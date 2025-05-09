@@ -207,6 +207,45 @@ body {
     font-weight: bold;
     transition: width 0.4s ease;
 }
+.status-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 16px;
+    color: white;
+    margin-left: 10px;
+}
+
+.status-icon.done {
+    background-color: #4CAF50; /* Green for done */
+}
+
+.status-icon.not-done {
+    background-color: #F44336; /* Red for not done */
+}
+
+/* Instructor Comment Box */
+.instructor-comment {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 8px;
+    border: 1px solid rgb(220, 220, 220);
+    font-size: 14px;
+    color: rgb(60, 60, 60);
+    display: none;
+}
+
+.instructor-comment.show {
+    display: block;
+}
+
+.instructor-comment p {
+    margin: 0;
+}
 
 /* Responsive Design */
 @media screen and (max-width: 768px) {

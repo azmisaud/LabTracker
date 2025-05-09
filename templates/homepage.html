@@ -1,55 +1,310 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab Tracker - Department of Computer Science, AMU</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/homepage.css' %}">
-</head>
-<body>
-    <header>
-        <div class="header-content">
-            <h1 class="logo">LabTracker</h1>
-            <nav class="navbar">
-                <ul>
-                    <li class="dropdown">
-                        <a href="#" class="dropbtn">Student</a>
-                        <div class="dropdown-content">
-                            <a href="{% url 'student_signup' %}">Sign Up</a>
-                            <a href="{% url 'student_login' %}">Login</a>
-                        </div>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropbtn">Faculty</a>
-                        <div class="dropdown-content">
-                            <a href="{% url 'faculty_login' %}">Login</a>
-                        </div>
-                    </li>
-                    <li class="dropdown">
-                        <a href="https://www.amu.ac.in/department/computer-science">Resources</a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-    <div class="overlay">
-        <div class="background-logo">
-            <img src="{% static 'images/img.png' %}" alt="AMU Logo">
-        </div>
-        <h2>Department of Computer Science, AMU</h2>
-        <section class="info">
-            <h3>About the Department</h3>
-            <p>The Department of Computer Science, AMU is one of the oldest and pioneer departments of Computer Science and Information Technology in India. The Department is one of the growing departments of computer science in India, which has been witnessed by various reputed ranking agencies such as Times Higher, India today, NIRF etc.<br>
-                It came into the existence in the year 1971 with the installation of IBM1130 Computing System, under the umbrella of Computer Centre and later blossomed into an independent department known as "Department of Computer Science" in the year 1988.<br>
-                In the year 1980, VAX11/780 system was purchased from DEC (USA) and installed at the centre, which is one of the first computer systems in India. The approval of two new programmes, a three year Master of Computer Science and Applications (MCA) and one year Post Graduate Diploma in Computer Science Applications (PGDCA) by the standing committee of the UGC in the year 1982 and the formal introduction of these courses from the session 1983-84, were one of the major landmarks in the development of Computer Science department.<br>
-                The Department offers various programmes like Ph.D., M.C.A, M.Sc. in (Cyber Security & Digital Forensics), P.G.E.D.P., P.G.D.C.P. and B.Sc. (Hons.) Computer Applications. Syllabi of these programmes are designed considering the requirement of time as well as the demand of the IT industry. In the year 2009, Department of Computer Science witnessed a major breakthrough with the introduction of Ph.D. in order to provide an opportunity to the young and enthusiastic IT professionals to walk over that extra yard, which makes a vital difference and contribute towards the ongoing IT research and development. In the year 2021, a new program M.Sc. (Cyber Security & Digital Forensics) has been introduced to train and produce experts in the area of cyber security and digital forensics.<br>
-                The guidance and cooperation of the experienced and expert faculty members of the department is one of the attracting features of the department, which enlivens the students to stretch their wings, so that they can fly higher than their dreams and serve the country. The Department has state of the art infrastructure in terms of modern conference room, smart class rooms and well equipped separate computing labs for research scholars, undergraduate and post graduate students.<br>
-                In consequence to their arduous training and exposure with the state of the arts professional programs offered, the students graduating from this department get placed in the leading IT industries even before the completion of their final semesters. There are plethora of companies, like TCS, Accenture, Infosys, IBM, JK Techno soft, HCL, Info system, NIC, Wipro, Bharti Telesoft, etc, that recruits the passing out students each year through campus placement. The last semester students have provision of four to six months rigorous training in the leading IT companies and other reputed organizations.<br>
-                VISION : Attaining global recognition in computer science education, research and training to meet the growing needs of the industry and society.
-            </p>
-        </section>
+{% block title %}Lab Tracker - Department of Computer Science, AMU{% endblock %}
+
+{% block desktop_nav %}
+<div class="relative group">
+    <button class="font-[Lora] text-sm text-[#6B0002] px-5 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <span>Student</span>
+    </button>
+    <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top scale-95 group-hover:scale-100">
+        <a href="{% url 'student_signup' %}" class="block px-4 py-2.5 text-sm text-[#6B0002] hover:bg-[#6B0002]/5 hover:text-[#6B0002] transition-colors duration-200 flex items-center space-x-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+            <span>Sign Up</span>
+        </a>
+        <a href="{% url 'student_login' %}" class="block px-4 py-2.5 text-sm text-[#6B0002] hover:bg-[#6B0002]/5 hover:text-[#6B0002] transition-colors duration-200 flex items-center space-x-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+            </svg>
+            <span>Login</span>
+        </a>
     </div>
-</body>
-</html>
+</div>
+
+<div class="relative group">
+    <button class="font-[Lora] text-sm text-[#6B0002] px-5 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+        <span>Faculty</span>
+    </button>
+    <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top scale-95 group-hover:scale-100">
+        <a href="{% url 'faculty_login' %}" class="block px-4 py-2.5 text-sm text-[#6B0002] hover:bg-[#6B0002]/5 hover:text-[#6B0002] transition-colors duration-200 flex items-center space-x-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+            </svg>
+            <span>Login</span>
+        </a>
+    </div>
+</div>
+
+<div class="relative group">
+    <button class="font-[Lora] text-sm text-[#6B0002] px-5 py-2 rounded-full border border-[#6B0002] hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        </svg>
+        <span>Instructor</span>
+    </button>
+    <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top scale-95 group-hover:scale-100">
+        <a href="{% url 'instructor_login' %}" class="block px-4 py-2.5 text-sm text-[#6B0002] hover:bg-[#6B0002]/5 hover:text-[#6B0002] transition-colors duration-200 flex items-center space-x-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+            </svg>
+            <span>Login</span>
+        </a>
+    </div>
+</div>
+
+<a href="https://www.amu.ac.in/department/computer-science" class="font-[Lora] text-sm text-white bg-[#6B0002] px-5 py-2 rounded-full hover:bg-[#2F6256] transition-all duration-200 flex items-center space-x-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+    </svg>
+    <span>Resources</span>
+</a>
+{% endblock %}
+
+{% block mobile_nav %}
+<div class="space-y-2">
+    <div class="relative" x-data="{ open: false }">
+        <button @click="open = !open" class="w-full text-left font-[Lora] text-sm text-[#6B0002] border border-[#6B0002] px-4 py-2 rounded-full hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <span>Student</span>
+        </button>
+        <div x-show="open" class="mt-2 space-y-2 pl-4">
+            <a href="{% url 'student_signup' %}" class="block font-[Lora] text-sm text-[#6B0002] border border-[#6B0002] px-4 py-2 rounded-full hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                <span>Sign Up</span>
+            </a>
+            <a href="{% url 'student_login' %}" class="block font-[Lora] text-sm text-[#6B0002] border border-[#6B0002] px-4 py-2 rounded-full hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                <span>Login</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="relative" x-data="{ open: false }">
+        <button @click="open = !open" class="w-full text-left font-[Lora] text-sm text-[#6B0002] border border-[#6B0002] px-4 py-2 rounded-full hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            <span>Faculty</span>
+        </button>
+        <div x-show="open" class="mt-2 space-y-2 pl-4">
+            <a href="{% url 'faculty_login' %}" class="block font-[Lora] text-sm text-[#6B0002] border border-[#6B0002] px-4 py-2 rounded-full hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                <span>Login</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="relative" x-data="{ open: false }">
+        <button @click="open = !open" class="w-full text-left font-[Lora] text-sm text-[#6B0002] border border-[#6B0002] px-4 py-2 rounded-full hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            <span>Instructor</span>
+        </button>
+        <div x-show="open" class="mt-2 space-y-2 pl-4">
+            <a href="{% url 'instructor_login' %}" class="block font-[Lora] text-sm text-[#6B0002] border border-[#6B0002] px-4 py-2 rounded-full hover:bg-[#6B0002] hover:text-white transition-all duration-200 flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                <span>Login</span>
+            </a>
+        </div>
+    </div>
+
+    <a href="https://www.amu.ac.in/department/computer-science" class="block font-[Lora] text-sm text-white bg-[#6B0002] px-4 py-2 rounded-full hover:bg-[#2F6256] transition-all duration-200 flex items-center space-x-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+        <span>Resources</span>
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 sm:px-6 py-8 max-w-7xl">
+    <!-- Hero Section -->
+    <div class="text-center mb-12">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-[rgb(107,0,2)] font-[Montserrat] tracking-wide mb-3">
+            Department of Computer Science
+        </h1>
+        <p class="text-lg text-[rgb(47,98,86)] font-[Lora] tracking-wide">Aligarh Muslim University</p>
+    </div>
+
+    <!-- Image Slider -->
+    <div class="max-w-4xl mx-auto mb-12">
+        <div class="relative h-[400px] sm:h-[500px] rounded-xl overflow-hidden shadow-lg">
+            <div class="slides-container">
+                <img src="{% static 'images/slider1.jpeg' %}" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000" alt="Slide 1">
+                <img src="{% static 'images/slider2.jpg' %}" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000" alt="Slide 2">
+                <img src="{% static 'images/slider3.jpg' %}" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000" alt="Slide 3">
+                <img src="{% static 'images/slider4.jpeg' %}" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000" alt="Slide 4">
+                <img src="{% static 'images/slider2.jpeg' %}" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000" alt="Slide 5">
+            </div>
+            <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-3">
+                <span class="dot w-3 h-3 bg-[#6B0002]/40 rounded-full cursor-pointer transition-colors duration-300"></span>
+                <span class="dot w-3 h-3 bg-[#6B0002]/40 rounded-full cursor-pointer transition-colors duration-300"></span>
+                <span class="dot w-3 h-3 bg-[#6B0002]/40 rounded-full cursor-pointer transition-colors duration-300"></span>
+                <span class="dot w-3 h-3 bg-[#6B0002]/40 rounded-full cursor-pointer transition-colors duration-300"></span>
+                <span class="dot w-3 h-3 bg-[#6B0002]/40 rounded-full cursor-pointer transition-colors duration-300"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <div class="max-w-5xl mx-auto">
+        <div class="flex items-center justify-center space-x-3 mb-8">
+            <div class="h-px w-16 bg-[#6B0002]/20"></div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-[rgb(107,0,2)] font-[Montserrat] tracking-wide">About the Department</h2>
+            <div class="h-px w-16 bg-[#6B0002]/20"></div>
+        </div>
+        
+        <div class="grid gap-6">
+            <!-- About Cards -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-[#6B0002]/5 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-[#6B0002]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                    </div>
+                    <p class="text-[rgb(60,60,60)] font-[Lora] leading-relaxed">
+                        The Department of Computer Science at Aligarh Muslim University stands as a beacon of excellence in computer science education and research in India. Established in 1971 with the installation of the IBM1130 Computing System, our department has evolved into a premier institution recognized by prestigious ranking agencies including Times Higher Education, India Today, and NIRF.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-[#6B0002]/5 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-[#6B0002]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <p class="text-[rgb(60,60,60)] font-[Lora] leading-relaxed">
+                        Our journey of innovation began with the establishment of the Computer Centre, which later blossomed into an independent department in 1988. A significant milestone was achieved in 1980 with the installation of the VAX11/780 system from DEC (USA), marking one of the first such installations in India.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-[#6B0002]/5 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-[#6B0002]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <p class="text-[rgb(60,60,60)] font-[Lora] leading-relaxed">
+                        The department's academic evolution reached new heights in 1982 with the UGC's approval of two pioneering programs: the three-year Master of Computer Science and Applications (MCA) and the one-year Post Graduate Diploma in Computer Science Applications (PGDCA), which commenced in the 1983-84 academic session.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-[#6B0002]/5 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-[#6B0002]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                    <p class="text-[rgb(60,60,60)] font-[Lora] leading-relaxed">
+                        Today, we offer a comprehensive range of programs including Ph.D., M.C.A., M.Sc. in Cyber Security & Digital Forensics, P.G.E.D.P., P.G.D.C.P., and B.Sc. (Hons.) Computer Applications. Our curriculum is meticulously designed to meet contemporary industry demands while fostering innovation and research.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-[#6B0002]/5 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-[#6B0002]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                    </div>
+                    <p class="text-[rgb(60,60,60)] font-[Lora] leading-relaxed">
+                        The department's strength lies in its distinguished faculty, state-of-the-art infrastructure, and industry partnerships. Our facilities include modern conference rooms, smart classrooms, and dedicated computing laboratories for research scholars and students at all levels.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-[#6B0002]/5 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-[#6B0002]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <p class="text-[rgb(60,60,60)] font-[Lora] leading-relaxed">
+                        Our commitment to excellence is reflected in our students' success. Graduates from our department are highly sought after by leading IT companies such as TCS, Accenture, Infosys, IBM, HCL, Wipro, and many others. The department's placement record is exemplary, with students securing positions even before completing their final semesters.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Vision Statement -->
+            <div class="bg-gradient-to-r from-[#2F6256]/10 to-[#6B0002]/10 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-center space-x-4 mb-4">
+                    <div class="w-12 h-12 rounded-lg bg-[#6B0002]/5 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-[#6B0002]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-[rgb(107,0,2)] font-[Montserrat]">Vision</h3>
+                </div>
+                <p class="text-[rgb(47,98,86)] font-[Lora] leading-relaxed">
+                    To achieve global recognition in computer science education, research, and training while addressing the evolving needs of industry and society.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let currentIndex = 0;
+        const slides = document.querySelectorAll(".slide");
+        const dots = document.querySelectorAll(".dot");
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle("opacity-100", i === index);
+                slide.classList.toggle("opacity-0", i !== index);
+                dots[i].classList.toggle("bg-[#2F6256]", i === index);
+                dots[i].classList.toggle("bg-[#6B0002]/40", i !== index);
+            });
+        }
+
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % slides.length;
+            showSlide(currentIndex);
+        }
+
+        dots.forEach((dot, i) => {
+            dot.addEventListener("click", () => {
+                currentIndex = i;
+                showSlide(currentIndex);
+            });
+        });
+
+        showSlide(0);
+        setInterval(nextSlide, 4000);
+    });
+</script>
+{% endblock %}
+

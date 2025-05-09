@@ -3,12 +3,7 @@ from .models import Student
 from django.http import HttpResponse
 import csv
 import io
-from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-from django.utils.text import slugify
-from reportlab.lib.pagesizes import letter
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Table, TableStyle, Paragraph
 from reportlab.lib.units import inch
 from reportlab.lib import colors

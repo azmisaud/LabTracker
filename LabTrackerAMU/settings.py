@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     "students.apps.StudentsConfig",
     "problems.apps.ProblemsConfig",
     "faculty.apps.FacultyConfig",
+    "instructor.apps.InstructorConfig",
+    "social_django",
 ]
 
 MIDDLEWARE = [
@@ -147,5 +149,7 @@ GITHUB_TOKEN2=os.getenv('GITHUB_TOKEN2')
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Default for students
-    'faculty.backends.FacultyBackend',  # Add your custom backend for faculty
+    'faculty.backends.FacultyBackend',
+    'instructor.backends.InstructorBackend',
+    'social_core.backends.github.GithubOAuth2',
 ]

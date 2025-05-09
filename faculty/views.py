@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from LabTrackerAMU.decorators import faculty_required
 from problems.models import Problem, ProblemCompletion, WeekCommit
 from students.models import Student
@@ -144,7 +144,7 @@ def change_password(request):
             faculty.is_first_login = False  # Mark that the first login is completed
             faculty.save()  # Save the changes to the faculty member
             messages.success(request, 'Password changed successfully.')  # Display success message
-            return redirect('faculty_dashboard')  # Redirect to the dashboard
+            return redirect('faculty_login')  # Redirect to the dashboard
     else:
         form = ChangePasswordForm(user=faculty)  # Instantiate an empty form for GET requests
 
@@ -384,74 +384,102 @@ def get_weeks_faculty(request):
     return JsonResponse(list(week), safe=False)
 
 @faculty_required
+@require_http_methods(["GET", "POST"])
 def week_last_date_faculty(request):
     """
-    Handles the setting of the last date for a specific week by faculty members.
+    Allows faculty to set or update the last submission date for a given course, semester, and week.
 
-    This view allows faculty to specify the last date for a given week in a course and semester.
-    Upon successful submission of the form, the action is logged, and a success message is displayed.
+    This view lets faculty define deadlines for student submissions on a per-week basis.
+    If a deadline already exists for a specified course-semester-week combination, it updates the entry.
+    Otherwise, it creates a new one.
 
     Decorators:
-    - `@faculty_required`: Ensures that only authenticated faculty members can access this view.
-
-    Parameters:
-    - `request`: The HTTP request object, containing the form data for setting the last date of the week.
+    - `@faculty_required`: Ensures only authenticated faculty members can access this view.
+    - `@require_http_methods(["GET", "POST"])`: Restricts the view to GET and POST requests.
 
     Behavior:
-    - If the request method is POST, the view binds the submitted data to the `LastDateOfWeekForm`.
-    - If the form is valid, it saves the form data, which includes the week date details.
-    - A new `FacultyActivity` entry is created to log the action, including the faculty member's information,
-      the course, semester, week number, and the last date set.
-    - A success message is displayed, and the user is redirected to the 'last_date_of_week' page.
-    - If the request method is not POST, a new instance of `LastDateOfWeekForm` is created for display.
+    - GET: Renders an empty form for entering the course, semester, week, and last submission date.
+    - POST:
+        - Accepts form data (course, semester, week, last_date).
+        - Checks if a `LastDateOfWeek` instance already exists.
+        - If yes, updates it; if not, creates a new instance.
+        - Logs the action using the `FacultyActivity` model for auditing.
+        - Displays a success message indicating whether the date was set or updated.
+
+    Request Data (POST):
+    - `course`: The course for which to set the week deadline.
+    - `semester`: The semester within the course.
+    - `week`: The week number to set or update.
+    - `last_date`: The deadline date to be saved.
 
     Returns:
-    - If the request method is POST and the form is valid, it redirects to the 'last_date_of_week' page.
-    - If the request method is GET or the form is invalid, it renders the 'set_last_date.html' template
-      with the form for input.
+    - On GET: Renders `faculty/set_last_date.html` with an empty `LastDateOfWeekForm`.
+    - On valid POST: Redirects to the same page with a success message.
+    - On invalid POST: Re-renders the form with error messages.
+
+    Template:
+    - `faculty/set_last_date.html`
 
     Example usage:
+    ```http
+    GET /faculty/set_last_date/
+    POST /faculty/set_last_date/ with form data
     ```
-    POST /week_last_date_faculty/
-    {
-        "course": "BSc",
-        "semester": 3,
-        "week": 2,
-        "last_date": "2024-10-31"
-    }
-    ```
-
-    Example response:
-    - On success, the user is redirected to the 'last_date_of_week' page with a success message.
-    - If the form submission fails, the same page is rendered with the form containing validation errors.
 
     Notes:
-    - The `FacultyActivity` model is used to track actions performed by faculty members for audit and logging purposes.
-    - The `LastDateOfWeekForm` should be defined to handle the data input for course, semester, week, and last date.
-    - The faculty instance is retrieved from the request user to ensure the activity is logged under the correct faculty member.
+    - Each faculty action is recorded in the `FacultyActivity` model.
+    - Only one entry per course-semester-week is allowed.
+    - Errors in form validation are printed to the console for debugging during development.
     """
-    faculty = request.user  # Fetch the faculty instance
+    faculty = request.user  # The currently logged-in faculty member
 
     if request.method == 'POST':
-        form = LastDateOfWeekForm(request.POST)
+        # Extract form inputs from the POST data
+        course = request.POST.get('course')
+        semester = request.POST.get('semester')
+        week = request.POST.get('week')
+
+        # Try to fetch existing entry for course-semester-week, if any
+        instance = LastDateOfWeek.objects.filter(
+            course=course, semester=semester, week=week
+        ).first()
+
+        # Bind submitted data to the form and attach instance if it exists
+        form = LastDateOfWeekForm(request.POST, instance=instance)
+
         if form.is_valid():
+            # Save form data (update or create the deadline entry)
             week_date = form.save()
 
+            # Log the action in the FacultyActivity table
             FacultyActivity.objects.create(
-                faculty=faculty,  # Log the action under the correct faculty member
+                faculty=faculty,
                 action='Set Last Date',
                 course=week_date.course,
                 semester=week_date.semester,
                 week=week_date.week,
-                description=week_date.last_date
+                description=str(week_date.last_date)
             )
 
-            messages.success(request, 'Last date set successfully')
-            return redirect('week_last_date_faculty')
+            # Show appropriate success message
+            if instance:
+                messages.success(request, f"Last date updated to {week_date.last_date}")
+            else:
+                messages.success(request, f"Last date set to {week_date.last_date}")
+
+            # Redirect to the same page to prevent form resubmission on reload
+            return redirect(request.path)
+        else:
+            # Print form errors in development/debug mode
+            print(form.errors)
+
     else:
+        # Initialize a blank form for GET request
         form = LastDateOfWeekForm()
 
+    # Render the form template
     return render(request, 'faculty/set_last_date.html', {'form': form})
+
 
 @require_GET
 @faculty_required
@@ -823,6 +851,94 @@ def check_whole_class_weekly_faculty(request):
 @faculty_required
 @require_GET
 def fetch_whole_class_faculty(request):
+    """
+        Fetches a weekly progress report for all students in a specific course and semester.
+
+        This view is used by faculty to retrieve a comprehensive report on every student's weekly
+        performance within a selected course and semester. For each student, the view provides:
+        - Problems solved
+        - Last commit time
+        - Submission timeliness (On Time, Late, or Not Submitted)
+
+        Decorators:
+        - `@faculty_required`: Ensures that only authenticated faculty members can access this view.
+        - `@require_GET`: Restricts the view to GET requests only.
+
+        Parameters:
+        - `request`: The HTTP request object. Must include the following query parameters:
+            - `course`: The course code or name (e.g., 'BCA', 'MCA').
+            - `semester`: The semester number (e.g., '1', '2').
+
+        Behavior:
+        - Retrieves all students enrolled in the given course and semester.
+        - For each student:
+            - Iterates over each available week.
+            - Gathers data on total problems assigned, problems solved, last commit time, and submission status.
+            - Determines commit status based on comparison between the last commit time and the last allowed date for that week.
+
+        Returns:
+        - A JSON response containing a list of student progress dictionaries.
+          Each dictionary contains:
+            - `enrollment_number`: The student's enrollment number.
+            - `faculty_number`: The student's faculty number.
+            - `name`: Full name of the student.
+            - `weeks_data`: A list of dictionaries for each week, containing:
+                - `week`: Week number.
+                - `total_problems`: Number of problems assigned for the week.
+                - `problems_solved`: Number of problems the student completed for that week.
+                - `last_commit_time`: Timestamp of the student's last GitHub commit or "No Commits".
+                - `commit_status`: Status of the submission ("On Time", "Late", "-----", or "----").
+
+        Example usage:
+        ```
+        GET /fetch_whole_class_faculty/?course=BCA&semester=3
+        ```
+
+        Example response:
+        ```json
+        [
+            {
+                "enrollment_number": "EN10001",
+                "faculty_number": "FN10001",
+                "name": "Alice Smith",
+                "weeks_data": [
+                    {
+                        "week": 1,
+                        "total_problems": 4,
+                        "problems_solved": 3,
+                        "last_commit_time": "2024-10-01T12:00:00Z",
+                        "commit_status": "On Time"
+                    },
+                    {
+                        "week": 2,
+                        "total_problems": 3,
+                        "problems_solved": 1,
+                        "last_commit_time": "No Commits",
+                        "commit_status": "----"
+                    }
+                ]
+            },
+            {
+                "enrollment_number": "EN10002",
+                "faculty_number": "FN10002",
+                "name": "Bob Johnson",
+                "weeks_data": [
+                    ...
+                ]
+            }
+        ]
+        ```
+
+        Notes:
+        - The `Problem` model defines available problems for each course, semester, and week.
+        - The `ProblemCompletion` model tracks completed problems by each student.
+        - The `WeekCommit` model stores the last GitHub commit time and hash for each student-week.
+        - The `LastDateOfWeek` model stores the final submission deadline per week for evaluation.
+
+        Edge cases:
+        - If no commit exists, the status is marked as "----" or "-----" depending on whether a last date exists.
+        - If no problems are defined for a week, the total problem count will be 0.
+        """
 
     course = request.GET.get('course')
     semester = request.GET.get('semester')
@@ -880,19 +996,88 @@ def fetch_whole_class_faculty(request):
 
 @faculty_required
 def check_whole_class_faculty(request):
+    """
+       Renders the interface for faculty to view the weekly performance of the entire class.
+
+       This view provides access to a frontend page where faculty members can select a course and semester,
+       and then view a detailed report of all students' weekly submissions and commit status.
+
+       Decorators:
+       - `@faculty_required`: Ensures that only authenticated faculty members can access this view.
+
+       Parameters:
+       - `request`: The HTTP request object (typically a GET request when accessing the page).
+
+       Behavior:
+       - Renders the `check_whole_class.html` template from the `faculty` directory.
+       - The actual data for the report is fetched asynchronously via JavaScript (likely from
+         the `fetch_whole_class_faculty` endpoint).
+
+       Template:
+       - `faculty/check_whole_class.html`
+
+       Example usage:
+       ```
+       GET /faculty/check-whole-class/
+       ```
+
+       Notes:
+       - This view only serves the HTML page.
+       - All dynamic data (student submissions, commit status, etc.) is retrieved separately via AJAX/JS using a JSON API.
+    """
     return render(request, 'faculty/check_whole_class.html')
 
 @faculty_required
 @csrf_exempt
 @require_POST
 def trigger_update_faculty(request):
+    """
+       Allows a faculty member to manually trigger an update for student data
+       for a specific course and semester.
 
+       This view prevents excessive or repeated updates by enforcing a cooldown
+       of 1 hour between updates for all faculty members. Only POST requests are allowed.
+
+       Decorators:
+       - `@faculty_required`: Restricts access to authenticated faculty users only.
+       - `@csrf_exempt`: Temporarily disables CSRF protection (ensure this is safe or protect it another way).
+       - `@require_POST`: Ensures that only POST requests are accepted.
+
+       Parameters:
+       - `request`: The HTTP POST request object. It must include:
+           - `course`: The course identifier (e.g., 'BCA').
+           - `semester`: The semester number (e.g., '3').
+
+       Behavior:
+       - Checks whether any faculty has triggered a data update in the last hour.
+       - If an update was made within the past hour, returns a JSON error response indicating who triggered it and for which course and semester.
+       - If allowed, invokes the `update_student_data(course, semester)` function to refresh data (such as pulling latest submissions, syncing repositories, etc.).
+       - Records the activity using the `FacultyActivity` model for audit and cooldown purposes.
+
+       Returns:
+       - `JsonResponse`:
+           - On success: `{ "success": "Data updated successfully" }`
+           - On cooldown error: `{ "error": "Button is disabled for 1 hour because ..." }`
+
+       Example request:
+       ```http
+       POST /faculty/trigger-update/
+       Content-Type: application/x-www-form-urlencoded
+
+       course=BCA&semester=3
+       ```
+
+       Notes:
+       - The cooldown is global across faculty. If *any* faculty triggers an update, the button is disabled for all for the next hour.
+       - Consider enhancing with per-course-per-semester cooldown or scoped permissions depending on future needs.
+       - The update logic itself is encapsulated in the `update_student_data()` function, which should be idempotent and safely re-runnable.
+    """
     last_update = FacultyActivity.objects.filter(action='Updated the data').order_by('-timestamp').first()
 
     # Check if the last update was within the past hour
     if last_update and (timezone.now() - last_update.timestamp) < timedelta(hours=1):
         return JsonResponse({
-            'error': f'Button is disabled for 1 hour because {last_update.teacher} updated for {last_update.course}, Semester {last_update.semester}'
+            'error': f'Button is disabled for 1 hour because {last_update.faculty.name} updated for {last_update.course}, Semester {last_update.semester}'
         })
 
     faculty=request.user
@@ -915,6 +1100,40 @@ def trigger_update_faculty(request):
 @faculty_required
 @require_GET
 def delete_old_students_faculty(request):
+    """
+       Allows a faculty member to initiate a new semester by deleting inactive or outdated student accounts
+       that have been on the platform for more than 150 days.
+
+       This operation is restricted to ensure it is not executed too frequently:
+       it cannot be performed if a "new semester" was already started within the last 150 days.
+
+       Decorators:
+       - `@faculty_required`: Ensures the user is an authenticated faculty member.
+       - `@require_GET`: Only allows HTTP GET requests to access this view.
+
+       Process:
+       1. Defines a cutoff of 150 days before the current time.
+       2. Checks if a "Started a New Semester" action has been logged within the last 150 days.
+          - If such an activity exists, returns an error preventing duplicate semester resets.
+       3. Filters students whose accounts were created more than 150 days ago.
+          - Superusers and staff accounts are excluded from deletion.
+       4. Deletes those student records and logs the action as a new semester start in `FacultyActivity`.
+       5. Returns a JSON response indicating either the number of students deleted or an appropriate error message.
+
+       Parameters:
+       - `request`: The HTTP GET request object.
+
+       Returns:
+       - `JsonResponse`:
+           - On recent semester activity: `{ "error": "A new semester has been started recently." }`
+           - If no eligible students found: `{ "error": "No students have completed 150 days on the platform." }`
+           - On success: `{ "success": "<number> students deleted successfully" }`
+
+       Notes:
+       - This logic ensures safety by enforcing a minimum interval between resets.
+       - Intended for cleaning up stale accounts during transitions between academic terms.
+       - Consider backing up student data or adding a confirmation step for production environments.
+    """
     faculty=request.user
 
     # Define the cutoff date (150 days from the current time)
@@ -954,9 +1173,39 @@ def delete_old_students_faculty(request):
 
 @faculty_required
 def your_activity_faculty(request):
+    """
+       Displays the activity log of the currently logged-in faculty member.
 
-    # Get the teacher ID from the session
-    # Get the teacher object based on the session ID
+       This view retrieves all actions performed by the faculty member (such as editing/adding problems,
+       generating reports, starting a new semester, updating data, etc.) and displays them in a paginated
+       format (15 per page), ordered from the most recent to the oldest.
+
+       Decorators:
+       - `@faculty_required`: Ensures the view is only accessible to authenticated faculty members.
+
+       Workflow:
+       1. Retrieves the current faculty user from the session (`request.user`).
+       2. Fetches all `FacultyActivity` records associated with that faculty member, ordered by timestamp descending.
+       3. Formats each activity into a human-readable HTML string using a helper function `format_activity2()`.
+          - The function converts timestamps to the local timezone and returns descriptive text depending on the action type.
+          - Handles actions like "Added Problem", "Viewed Report", "Started a New Semester", etc.
+       4. Paginates the formatted activity list, 15 entries per page using Django's `Paginator`.
+       5. Passes the paginated activity log and faculty object into the context for rendering.
+
+       Parameters:
+       - `request`: The HTTP GET request object.
+
+       Returns:
+       - `HttpResponse`: Renders the `faculty/your_activity.html` template with paginated activity data.
+
+       Template Context:
+       - `faculty`: The current faculty user.
+       - `page_obj`: The paginated page of formatted activity strings.
+
+       Notes:
+       - This log helps faculty members keep track of their administrative actions within the system.
+       - Formatting includes HTML line breaks (`<br>`) to improve readability in the template.
+    """
     faculty=request.user
 
     # Retrieve all activities of the teacher, sorted by timestamp (most recent first)
@@ -1006,7 +1255,39 @@ def your_activity_faculty(request):
 
 @faculty_required
 def other_activity_faculty(request):
+    """
+        Displays the activity log of all other faculty members except the one currently logged in.
 
+        This view is intended to give faculty members insight into the administrative actions performed
+        by their peers (e.g., adding/editing problems, downloading reports, updating data, etc.).
+
+        Decorators:
+        - `@faculty_required`: Ensures the view is only accessible to authenticated faculty users.
+
+        Workflow:
+        1. Retrieves the currently logged-in faculty user from the request.
+        2. Queries the `FacultyActivity` model for all activity logs **not** performed by the current faculty.
+           Activities are ordered in reverse chronological order (most recent first).
+        3. Each activity is formatted into a readable string via the `format_activity()` helper function.
+           This function includes the timestamp, action, course/semester/week, and a description,
+           and attributes the activity to the correct faculty name.
+        4. Paginate the list of formatted activities with 15 entries per page using Django’s `Paginator`.
+        5. Renders the results using the `faculty/other_activity.html` template.
+
+        Parameters:
+        - `request`: The HTTP GET request object.
+
+        Returns:
+        - `HttpResponse`: Renders a template with a paginated list of faculty activities not performed
+          by the current user.
+
+        Template Context:
+        - `page_obj`: A paginated list of formatted activity descriptions from other faculty.
+
+        Notes:
+        - Useful for maintaining transparency and collaboration across teaching staff.
+        - Activities include HTML formatting such as `<br>` for better display in templates.
+    """
     faculty=request.user
     # Retrieve all activities performed by other teachers, ordered by timestamp (most recent first)
     other_teacher_activities = FacultyActivity.objects.exclude(faculty=faculty).order_by('-timestamp')
@@ -1056,6 +1337,57 @@ def other_activity_faculty(request):
 
 @faculty_required
 def fetch_graph_data_faculty(request):
+    """
+        Provides categorized graph data about student problem completion for a specific week across all
+        course-semester combinations. Used in visual analytics for faculty members.
+
+        Decorators:
+        - `@faculty_required`: Ensures only authenticated faculty users can access this view.
+
+        Query Parameters:
+        - `week` (GET): The week number to fetch data for. Defaults to 1 if not provided.
+
+        Workflow:
+        1. Retrieves all distinct course-semester pairs where students are not superusers or staff.
+        2. Iterates through each course-semester pair to:
+           - Check if problems exist for the selected week.
+           - Count how students are categorized into five groups:
+             a. `late_solved`: Solved all problems but after the deadline.
+             b. `late_unsolved`: Submitted late and did not solve all problems.
+             c. `on_time_solved`: Solved all problems on time.
+             d. `on_time_unsolved`: Submitted on time but didn't solve all.
+             e. `not_committed`: Didn't submit any code at all.
+        3. Uses `WeekCommit` and `LastDateOfWeek` models to determine submission timeliness.
+        4. Returns the compiled statistics as a JSON array for chart rendering.
+
+        Returns:
+        - `JsonResponse`: A list of dictionaries, each containing:
+            - `course`: Course name
+            - `semester`: Semester number
+            - `late_solved`: Count of students who submitted late but solved all problems
+            - `late_unsolved`: Submitted late and didn’t solve all
+            - `on_time_solved`: Submitted on time and solved all
+            - `on_time_unsolved`: Submitted on time but didn’t solve all
+            - `not_committed`: Didn’t submit any code
+
+        Example Response:
+        ```json
+        [
+            {
+                "course": "B.C.A",
+                "semester": 2,
+                "late_solved": 4,
+                "late_unsolved": 3,
+                "on_time_solved": 10,
+                "on_time_unsolved": 5,
+                "not_committed": 2
+            },
+            ...
+        ]
+        ```
+
+        This endpoint supports faculty dashboards for tracking student submission performance visually.
+    """
     selected_week = int(request.GET.get('week', 1))
 
     # Get distinct course-semester combinations of non-superuser, non-staff students
@@ -1144,7 +1476,38 @@ def fetch_graph_data_faculty(request):
 
 @faculty_required
 def faculty_dashboard(request):
+    """
+       Displays the faculty dashboard, showing the latest activities of the logged-in faculty
+       and other teachers. The dashboard includes formatted activity details for both the logged-in
+       teacher and other teachers.
 
+       Decorators:
+       - `@faculty_required`: Ensures that only authenticated faculty users can access this view.
+
+       Workflow:
+       1. Retrieves the latest 4 activities of the logged-in teacher (your activities).
+       2. Retrieves the latest 4 activities of other teachers (other teacher activities).
+       3. Formats the activity data for both the logged-in teacher and other teachers into readable strings.
+       4. Passes the formatted activity data to the template for display.
+
+       Template Context:
+       - `faculty`: The logged-in faculty user.
+       - `your_activities`: A list of formatted activities of the logged-in faculty.
+       - `other_teacher_activities`: A list of formatted activities of other teachers.
+
+       Returns:
+       - `HttpResponse`: Renders the `faculty_dashboard.html` template with the context.
+
+       Helper function `format_activity`:
+       - Formats activity details based on the action type (e.g., "Added Problem", "Edited Problem").
+       - Takes into account whether the activity is performed by the logged-in faculty or other teachers.
+
+       Example of formatted activity messages:
+       - "You added a problem in B.C.A, Sem 2 in Week 4 <br> Problem Description: Problem description here"
+       - "Dr. Smith edited a problem in M.C.A, Sem 1 in Week 3 <br> Problem Description: Another description"
+
+       This view is intended for the faculty dashboard to display a concise list of recent activities for the faculty member.
+    """
     faculty=request.user
 
     # Fetch the latest 4 activities of the logged-in teacher and other teachers

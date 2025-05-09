@@ -78,7 +78,7 @@ class ProblemCompletionAdmin(admin.ModelAdmin):
     """
 
     # Fields to be displayed in the list view of the admin interface
-    list_display = ('student', 'problem', 'is_completed', 'solution_url', 'output_image_url')
+    list_display = ('student', 'problem', 'is_completed', 'solution_url', 'output_image_url','ai_analysis','instructor_comment')
 
     # Fields that can be searched in the admin interface
     search_fields = ('student', 'problem')
