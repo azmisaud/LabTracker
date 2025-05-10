@@ -106,24 +106,26 @@ Welcome to **Lab Tracker**, a Django-based platform designed to automate and str
 ![Student Login](static/images/student_login.jpeg)
 
 #### Dashboard
-![Student Dashboard](static/images/student_dashboard.png)
+![Student Dashboard](static/images/student_dashboard.jpeg)
 
 #### Forgot Password
 
 ##### Step1
-![First Step](static/images/reset_password_step_1.png)
+![First Step](static/images/reset_password_step_1.jpeg)
 
 ##### Step2
-![Second Step](static/images/reset_password_step_2.png)
+![Second Step](static/images/reset_password_step_2.jpeg)
 
 ##### Step3
-![Third Step](static/images/reset_password_step_3.png)
+![Third Step](static/images/reset_password_step_3.jpeg)
 
 ### Faculty
 
 #### Login
-![Teacher Login](static/images/faculty_login.png)
+![Faculty Login](static/images/faculty_login.jpeg)
 
+#### Faculty Dashboard
+![Faculty Dashboard](static/images/faculty_dashboard.jpeg)
 #### Set Week Last Date
 ![Set Week Last Date](static/images/set_last_date.png)
 
